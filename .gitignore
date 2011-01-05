@@ -1,3 +1,5 @@
 *.[oa]
+depend.mk
 bin/
 obj/
+src/unit-test/coverage.log

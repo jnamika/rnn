@@ -32,6 +32,7 @@
 #include "test_rnn_lyapunov.h"
 #include "test_target.h"
 #include "test_parse.h"
+#include "test_rnn_runner.h"
 #include "utils.h"
 
 
@@ -59,6 +60,7 @@ int main (void)
         test_rnn_lyapunov();
         test_target();
         test_parse();
+        test_rnn_runner();
     } else {
         print_error_msg("exit(3) was called due to an unanticipated error\n");
         exit(EXIT_FAILURE);

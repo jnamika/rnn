@@ -1,0 +1,31 @@
+#!/bin/sh
+
+seed=0
+steps=1000
+index=-1
+
+while getopts s:n:i:h OPT
+do
+    case $OPT in
+        s ) seed=${OPTARG};;
+        n ) steps=${OPTARG};;
+        i ) index=${OPTARG};;
+        h ) echo "Usage: $0 [-s seed] [-n steps] [-i index] rnn-file"
+            exit 0;;
+        \?) exit 1;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+file=$1
+
+if [ ! -n "$file" ]; then
+    echo "Usage: $0 [-s seed] [-n steps] [-i index] rnn-file"
+    exit 1
+elif [ ! -f "$file" ]; then
+    echo "No such file or directory: $file"
+    exit 1
+fi
+
+python `dirname $0`/rnn_runner.py $seed $steps $index $file
