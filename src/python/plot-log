@@ -1,0 +1,26 @@
+#!/bin/sh
+
+epoch=None
+
+while getopts e:h OPT
+do
+    case $OPT in
+        e ) epoch=${OPTARG};;
+        h ) echo "Usage: $0 [-e epoch] file ..."
+            exit 0;;
+        \?) exit 1;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+for file in $@
+do
+    if [ ! -f "$file" ]; then
+        echo "No such file or directory: $file"
+        exit 1
+    fi
+done
+
+#python `dirname $0`/plot_log.py $epoch $@ | gnuplot -persist
+python `dirname $0`/plot_log.py $epoch $@
