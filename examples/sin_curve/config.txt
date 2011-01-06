@@ -1,0 +1,37 @@
+seed=91634
+
+epoch_size=5000
+print_interval=100
+
+rho=0.001
+momentum=0.95
+
+c_state_size=15
+output_type=0
+fixed_tau
+init_tau=10.0
+
+init_sigma=0.0
+prior_strength=0.001     # continuous time series cases
+#prior_strength=0.0001   # symbolic time series cases
+delay_length=1
+
+transient_length=0
+block_length=3
+divided_num=2
+lyapunov_spectrum_num=1
+
+state_file=stateXXXXXX.log
+closed_state_file=closed_stateXXXXXX.log
+weight_file=weight.log
+threshold_file=threshold.log
+tau_file=tau.log
+sigma_file=sigma.log
+init_file=init.log
+adapt_lr_file=adapt_lr.log
+error_file=error.log
+closed_error_file=closed_error.log
+lyapunov_file=lyapunov.log
+entropy_file=entropy.log
+save_file=rnn.dat
+
