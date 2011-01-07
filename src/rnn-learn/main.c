@@ -20,6 +20,7 @@
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
@@ -56,9 +57,9 @@ void display_help (void)
     puts("");
     puts("-s seed");
     puts("    `seed' is the seed for the initialization of random number "
-            "generator, which specifies a starting point for the random "
-            "number sequence, and provides for restarting at the same point. "
-            "Default is 1.");
+            "generator, which specifies a starting point for the random number "
+            "sequence, and provides for restarting at the same point. If this "
+            "option is omitted, the current system time is used.");
     puts("");
     puts("-n neurons");
     puts("    Number of context neurons in recurrent a neural network. "
@@ -173,7 +174,8 @@ static char* salloc (
 
 static void init_parameters (struct general_parameters *gp)
 {
-    gp->mp.seed = SEED;
+    // 0 < seed < 4294967296
+    gp->mp.seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
     gp->mp.epoch_size = EPOCH_SIZE;
     gp->mp.use_adaptive_lr = 0;
     gp->mp.rho = RHO;

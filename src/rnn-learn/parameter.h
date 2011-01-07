@@ -18,8 +18,6 @@
 #define PARAMETER_H
 
 
-#define SEED 1
-
 #define EPOCH_SIZE 1000
 #define PRINT_INTERVAL 100
 

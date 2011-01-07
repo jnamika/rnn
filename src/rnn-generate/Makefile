@@ -1,45 +1,68 @@
-# Makefile for: python scripts
-# Data created: 4 Jan 2011
+# Makefile for: a program to display output of recurrent neural networks
+# Data created: 7 Jan 2011
 # Whom: Jun Namikawa
 
-TARGET = librunner.so
-VERSION = 1
+TARGET = rnn-generate
+VERSION = 1.0
 
 CC = gcc
 CPP = gcc
 
-OBJ_DIR = ../../obj/python
+OBJ_DIR = ../../obj/rnn-generate
 BIN_DIR = ../../bin
 COMMON_DIR = ../common
+
+enable_mtrace = no
+enable_gprof = no
+
 
 INCLUDE_DIR := -I. -I$(COMMON_DIR)
 LIB_DIR :=
 WARNFLAG := -Wall -Wextra -Wno-unused-parameter
 STD := -std=gnu99 -pedantic
-OPT := -O3 -fPIC
-MACROS :=
+OPT := -O3 -fopenmp
+MACROS := -DVERSION=$(VERSION) -DENABLE_ADAPTIVE_LEARNING_RATE -DENABLE_ATTRACTION_OF_INIT_C -DNDEBUG
 SYSLIBS := -lm
 DEBUG :=
+
+
+ifneq ($(CC), gcc)
+enable_gprof = no
+endif
+
+ifeq ($(CC), icc)
+WARNFLAG := -Wall
+STD := -std=c99
+OPT := -O3 -openmp
+MACROS := $(MACROS) -D_POSIX_C_SOURCE=200112L
+endif
+
+ifeq ($(enable_mtrace), yes)
+MACROS := $(MACROS) -DENABLE_MTRACE
+OPT := -O
+DEBUG := $(DEBUG) -g
+endif
+ifeq ($(enable_gprof), yes)
+DEBUG := $(DEBUG) -pg
+endif
+
 
 CFLAGS = $(WARNFLAG) $(STD) $(OPT) $(MACROS) $(INCLUDE_DIR) $(LIB_DIR) $(DEBUG)
 
 
 vpath %.c $(COMMON_DIR)
-SRCS = rnn_runner.c rnn.c utils.c mt19937ar.c
-PY_SRCS = rnn_runner.py print_log.py plot_log.py gen_target.py
-SH_SRCS = print-log plot-log
+SRCS = main.c rnn.c rnn_runner.c utils.c mt19937ar.c
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
-
 .PHONY: all
-all: depend.mk $(OBJ_DIR) $(OBJ_DIR)/$(TARGET) $(PY_SRCS) $(SH_SRCS)
-	-@ if [ -d $(BIN_DIR) ]; then (cp $(OBJ_DIR)/$(TARGET) $(PY_SRCS) $(SH_SRCS) $(BIN_DIR)); fi
+all: depend.mk $(OBJ_DIR) $(OBJ_DIR)/$(TARGET)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
 $(OBJ_DIR)/$(TARGET): $(OBJS)
-	$(CC) -shared -Wl,-soname,$@.$(VERSION) -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
+	$(CC) -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
+	-@ if [ -d $(BIN_DIR) ]; then (cp $@ $(BIN_DIR)); fi
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)
@@ -67,8 +90,8 @@ help: info
 
 info:
 	-@ echo
-	-@ echo "Makefile for shared library of recurrent neural networks used by python script"
-	-@ echo "Jun Namikawa, 2010"
+	-@ echo "Makefile for rnn-generate"
+	-@ echo "Jun Namikawa, 2011"
 	-@ echo
 	-@ echo "USAGE: make [all | clean | help]"
 	-@ echo "all (default)      builds $(TARGET)"

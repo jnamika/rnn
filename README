@@ -30,7 +30,7 @@ Usage: rnn-learn [-v] [-h]
 Available options are:
 
 -s seed
-    `seed' is the seed for the initialization of random number generator, which specifies a starting point for the random number sequence, and provides for restarting at the same point. Default is 1.
+    `seed' is the seed for the initialization of random number generator, which specifies a starting point for the random number sequence, and provides for restarting at the same point. If this option is omitted, the current system time is used.
 
 -n neurons
     Number of context neurons in recurrent a neural network. Default is 10.
@@ -102,7 +102,7 @@ Usage: rnn-generate [-h]
 Available options are:
 
 -s seed
-    `seed' is the seed for the initialization of random number generator, which specifies a starting point for the random number sequence, and provides for restarting at the same point. If this option is omitted, current system time is used.
+    `seed' is the seed for the initialization of random number generator, which specifies a starting point for the random number sequence, and provides for restarting at the same point. If this option is omitted, the current system time is used.
 
 -n steps
     Number of steps to generate output of a network. Default is 1000.
