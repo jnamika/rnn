@@ -31,6 +31,9 @@
 #include "rnn_runner.h"
 
 
+#define TO_STRING_I(s) #s
+#define TO_STRING(s) TO_STRING_I(s)
+
 void display_help (void)
 {
     puts("rnn-generate - a program to display output of recurrent neural "
@@ -47,10 +50,10 @@ void display_help (void)
             "option is omitted, the current system time is used.");
     puts("-n steps");
     puts("    Number of steps to generate output of a network. "
-            "Default is 1000.");
+            "Default is " TO_STRING(STEP_SIZE) ".");
     puts("-i index");
     puts("    Index of an initial state corresponding to a training example. "
-            "Default is -1 (use a random initial state).");
+            "Default is " TO_STRING(INDEX) " (use a random initial state).");
     puts("-v");
     puts("    Prints the version information and exit.");
     puts("-h");
@@ -62,9 +65,6 @@ void display_help (void)
             "output of a network up to given steps with respect to the initial "
             "state corresponding to given index.");
 }
-
-#define TO_STRING_I(s) #s
-#define TO_STRING(s) TO_STRING_I(s)
 
 static void display_version (void)
 {

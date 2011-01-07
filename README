@@ -24,6 +24,8 @@ There are some other useful programs in this package.
 
 === rnn-learn' usage === 
 
+rnn-learn  - an implementation of a gradient-based learning algorithm for recurrent neural networks focusing on the problem of time-series prediction and generation
+
 Usage: rnn-learn [-s seed] [-n neurons] [-t time-constant] [-d feedback-delay] [-k output-type] [-e epochs] [-l log-interval] [-x learning-rate] [-m momentum] [-a] [-p prior-strength] [-i input-file] [-o output-file] [-c config-file] [-V] [target-file ...]
 Usage: rnn-learn [-v] [-h]
 
@@ -47,7 +49,7 @@ Available options are:
 -x learning-rate
     Learning rate for the gradient-descent method. Default is 0.001.
 -m momentum
-    Learning momentum for the gradient-descent method. Default is 0.95.
+    Learning momentum for the gradient-descent method. Default is 0.9.
 -a
     Use an algorithm to update the learning rate adaptively with respect to the error.
 -p prior-strength
@@ -74,6 +76,8 @@ In a target-file, the data columns are separated by a tab or comma. The number o
 
 
 === rnn-generate' usage === 
+
+rnn-generate - a program to display output of recurrent neural networks
 
 Usage: rnn-generate [-s seed] [-n steps] [-i index] rnn-file
 Usage: rnn-generate [-v] [-h]

@@ -22,20 +22,20 @@
 #define PRINT_INTERVAL 100
 
 #define RHO 0.001
-#define MOMENTUM 0.95
+#define MOMENTUM 0.9
 
 #define C_STATE_SIZE 10
 
 #define DELAY_LENGTH 1
 
 #define OUTPUT_TYPE 0
-#define INIT_TAU 5.0
+#define INIT_TAU 5
 #define INIT_SIGMA 0.0
 #define PRIOR_STRENGTH 0
 #define LAMBDA 1.0
 #define ALPHA 0.0
 
-#define TRANSIENT_LENGTH 0
+#define TRUNCATE_LENGTH 0
 #define BLOCK_LENGTH 5
 #define DIVIDED_NUM 2
 #define LYAPUNOV_SPECTRUM_NUM 1

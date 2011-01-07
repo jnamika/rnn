@@ -4,7 +4,7 @@ epoch_size=10000
 print_interval=100
 
 rho=0.001
-momentum=0.95
+momentum=0.9
 
 use_adaptive_lr
 
@@ -13,11 +13,9 @@ output_type=1
 fixed_tau
 init_tau=2.0
 
-#prior_strength=0.001     # continuous time series cases
-prior_strength=0.0001   # symbolic time series cases
 delay_length=1
 
-transient_length=0
+truncate_length=0
 block_length=3
 divided_num=2
 lyapunov_spectrum_num=3

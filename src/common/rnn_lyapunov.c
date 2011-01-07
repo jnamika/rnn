@@ -31,20 +31,20 @@ void init_rnn_lyapunov_info (
         struct rnn_lyapunov_info *rl_info,
         const struct rnn_state *rnn_s,
         int delay_length,
-        int transient_length)
+        int truncate_length)
 {
     const struct rnn_parameters *rnn_p = rnn_s->rnn_p;
 
     assert(rnn_p->in_state_size == rnn_p->out_state_size ||
             rnn_p->in_state_size == 0);
     assert(delay_length > 0);
-    assert(transient_length >= 0);
-    assert(rnn_s->length > transient_length);
+    assert(truncate_length >= 0);
+    assert(rnn_s->length > truncate_length);
 
     rl_info->rnn_s = rnn_s;
     rl_info->delay_length = delay_length;
-    rl_info->transient_length = transient_length;
-    rl_info->length = rnn_s->length - transient_length;
+    rl_info->truncate_length = truncate_length;
+    rl_info->length = rnn_s->length - truncate_length;
     rl_info->dimension = rnn_p->in_state_size * rl_info->delay_length +
         rnn_p->c_state_size;
 
@@ -171,7 +171,7 @@ double** rnn_jacobian_for_lyapunov_spectrum (
 {
     struct rnn_lyapunov_info *rl_info = (rnn_lyapunov_info*)obj;
     const struct rnn_state *rnn_s = rl_info->rnn_s;
-    const int T = t + rl_info->transient_length;
+    const int T = t + rl_info->truncate_length;
 
     assert(t >= 0);
     assert(rnn_s->length > T);
@@ -191,14 +191,14 @@ void reset_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
     const struct rnn_state *rnn_s = rl_info->rnn_s;
     const int length = rl_info->length;
     const int delay_length = rl_info->delay_length;
-    const int transient_length = rl_info->transient_length;
+    const int truncate_length = rl_info->truncate_length;
     const int in_state_size = rnn_s->rnn_p->in_state_size;
     const int c_state_size = rnn_s->rnn_p->c_state_size;
 
     for (int n = 0; n < length; n++) {
         int I = 0;
         for (int k = delay_length-1; k >= 0; k--) {
-            const int N = n + transient_length + k;
+            const int N = n + truncate_length + k;
             if (N < delay_length) {
                 if (N < rnn_s->length) {
                     for (int i = 0; i < in_state_size; i++, I++) {
@@ -215,12 +215,12 @@ void reset_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
                 }
             }
         }
-        if (n + transient_length == 0) {
+        if (n + truncate_length == 0) {
             for (int i = 0; i < c_state_size; i++, I++) {
                 rl_info->state[n][I] = rnn_s->init_c_inter_state[i];
             }
         } else {
-            const int N = n + transient_length;
+            const int N = n + truncate_length;
             for (int i = 0; i < c_state_size; i++, I++) {
                 rl_info->state[n][I] = rnn_s->c_inter_state[N-1][i];
             }

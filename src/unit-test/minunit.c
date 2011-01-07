@@ -25,17 +25,15 @@
 static unsigned int mu_test_count = 0;
 static unsigned int mu_assertion_count = 0;
 static unsigned int mu_failure_count = 0;
-static char str_buf[BUFSIZ];
 
 
 void mu_summary (void)
 {
-    fprintf(stderr, "%u test(s), %u assertion(s), %u failure(s)\n",
-            mu_test_count, mu_assertion_count, mu_failure_count);
+    printf("%u test(s), %u assertion(s), %u failure(s)\n", mu_test_count,
+            mu_assertion_count, mu_failure_count);
     if (mu_assertion_count > 0) {
-        fprintf(stderr, "%d%% passed\n", (int)floor(
-                    (100 * (mu_assertion_count - mu_failure_count)) /
-                    ((double)mu_assertion_count)));
+        printf("%d%% passed\n", (int)floor((100 * (mu_assertion_count -
+                            mu_failure_count)) / ((double)mu_assertion_count)));
     }
 }
 
@@ -49,37 +47,15 @@ void mu_reset_test (void)
 
 
 
-void ___mu_preprocess_test (void)
+void ___mu_preprocess (const char *funcname)
 {
-    str_buf[0] = '\0';
+    printf("test: %s()\n", funcname); \
 }
 
-void ___mu_postprocess_test (void)
+void ___mu_postprocess (void)
 {
     mu_test_count++;
-    fprintf(stderr, "\n%s\n", str_buf);
-}
-
-static void print_failure_msg (
-        const char* file,
-        int line,
-        const char *fmt,
-        va_list argp)
-{
-    int len, add_len;
-    static char str[BUFSIZ];
-
-    snprintf(str, BUFSIZ, "%u) Failure: %s:%d\n", mu_failure_count, file, line);
-    len = strlen(str);
-    vsnprintf(str + len, BUFSIZ -len, fmt, argp);
-
-    len = strlen(str_buf);
-    add_len = strlen(str);
-    if (BUFSIZ - len < add_len) {
-        fprintf(stderr, "\n%s\n", str_buf);
-        len = 0;
-    }
-    snprintf(str_buf + len, BUFSIZ - len, "%s", str);
+    printf("\n");
 }
 
 void ___mu_assert (
@@ -89,16 +65,18 @@ void ___mu_assert (
         const char *fmt, ...)
 {
     va_list argp;
-
     mu_assertion_count++;
     if (!cond) {
-        fprintf(stderr, "F");
+        printf("F");
         mu_failure_count++;
         va_start(argp, fmt);
-        print_failure_msg(filename, line, fmt, argp);
+        fprintf(stderr, "%u) Failure:%s:%d: ", mu_failure_count, filename,
+                line);
+        vfprintf(stderr, fmt, argp);
+        fprintf(stderr, "\n");
         va_end(argp);
     } else {
-        fprintf(stderr, ".");
+        printf(".");
     }
 }
 

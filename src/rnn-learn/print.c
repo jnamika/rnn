@@ -213,7 +213,7 @@ static void print_general_parameters (
     fprintf(fp, "# lambda = %f\n", gp->mp.lambda);
     fprintf(fp, "# alpha = %f\n", gp->mp.alpha);
 
-    fprintf(fp, "# transient_length = %d\n", gp->ap.transient_length);
+    fprintf(fp, "# truncate_length = %d\n", gp->ap.truncate_length);
     fprintf(fp, "# block_length = %d\n", gp->ap.block_length);
     fprintf(fp, "# divided_num = %d\n", gp->ap.divided_num);
     fprintf(fp, "# lyapunov_spectrum_num = %d\n", gp->ap.lyapunov_spectrum_num);
@@ -453,12 +453,12 @@ static void compute_lyapunov_spectrum_of_rnn_state (
         const struct rnn_state *rnn_s,
         int spectrum_num,
         int delay_length,
-        int transient_length,
+        int truncate_length,
         double *spectrum)
 {
-    if (rnn_s->length > transient_length) {
+    if (rnn_s->length > truncate_length) {
         struct rnn_lyapunov_info rl_info;
-        init_rnn_lyapunov_info(&rl_info, rnn_s, delay_length, transient_length);
+        init_rnn_lyapunov_info(&rl_info, rnn_s, delay_length, truncate_length);
         spectrum = rnn_lyapunov_spectrum(&rl_info, spectrum, spectrum_num);
         if (spectrum == NULL) {
             print_error_msg();
@@ -479,7 +479,7 @@ static void print_lyapunov_spectrum_of_rnn (
         const struct recurrent_neural_network *rnn,
         int spectrum_num,
         int delay_length,
-        int transient_length)
+        int truncate_length)
 {
     int max_num;
     // decides spectrum_num which is the number of evaluating Lyapunov exponents
@@ -500,7 +500,7 @@ static void print_lyapunov_spectrum_of_rnn (
     for (int i = 0; i < rnn->series_num; i++) {
         spectrum[i] = spectrum[0] + i * spectrum_num;
         compute_lyapunov_spectrum_of_rnn_state(rnn->rnn_s + i, spectrum_num,
-                delay_length, transient_length, spectrum[i]);
+                delay_length, truncate_length, spectrum[i]);
     }
     fprintf(fp, "%ld", epoch);
     for (int i = 0; i < rnn->series_num; i++) {
@@ -547,7 +547,7 @@ static int vector2symbol (
 
 static void compute_kl_divergence_of_rnn_compression_state (
         const struct rnn_state *rnn_s,
-        int transient_length,
+        int truncate_length,
         int block_length,
         int divided_num,
         double *kl_div,
@@ -555,11 +555,11 @@ static void compute_kl_divergence_of_rnn_compression_state (
         double *entropy_y,
         double *gen_rate)
 {
-    if (rnn_s->length > transient_length) {
+    if (rnn_s->length > truncate_length) {
         double min, max;
         int *sequence_x, *sequence_y;
         struct block_frequency bf_x, bf_y;
-        const int length = rnn_s->length - transient_length;
+        const int length = rnn_s->length - truncate_length;
         MALLOC(sequence_x, length);
         MALLOC(sequence_y, length);
         if (rnn_s->rnn_p->output_type == STANDARD_TYPE) {
@@ -568,7 +568,7 @@ static void compute_kl_divergence_of_rnn_compression_state (
             min = 0.0; max = 1.0;
         }
         for (int n = 0; n < length; n++) {
-            int N = n + transient_length;
+            int N = n + truncate_length;
             sequence_x[n] = vector2symbol(rnn_s->teach_state[N],
                     rnn_s->rnn_p->out_state_size, min, max, divided_num);
             sequence_y[n] = vector2symbol(rnn_s->out_state[N],
@@ -597,7 +597,7 @@ static void print_kl_divergence_of_rnn (
         FILE *fp,
         long epoch,
         const struct recurrent_neural_network *rnn,
-        int transient_length,
+        int truncate_length,
         int block_length,
         int divided_num)
 {
@@ -610,7 +610,7 @@ static void print_kl_divergence_of_rnn (
 #endif
     for (int i = 0; i < rnn->series_num; i++) {
         compute_kl_divergence_of_rnn_compression_state(rnn->rnn_s + i,
-                transient_length, block_length, divided_num, kl_div + i,
+                truncate_length, block_length, divided_num, kl_div + i,
                 entropy_x + i, entropy_y + i, gen_rate + i);
     }
     fprintf(fp, "%ld", epoch);
@@ -764,7 +764,7 @@ static void print_closed_loop_data_with_epoch (
         }
         print_lyapunov_spectrum_of_rnn(fp_list->fp_wlyapunov, epoch, rnn,
                 gp->ap.lyapunov_spectrum_num, gp->mp.delay_length,
-                gp->ap.transient_length);
+                gp->ap.truncate_length);
         fflush(fp_list->fp_wlyapunov);
     }
 
@@ -776,7 +776,7 @@ static void print_closed_loop_data_with_epoch (
             compute_forward_dynamics = 1;
         }
         print_kl_divergence_of_rnn(fp_list->fp_wentropy, epoch, rnn,
-                gp->ap.transient_length, gp->ap.block_length,
+                gp->ap.truncate_length, gp->ap.block_length,
                 gp->ap.divided_num);
         fflush(fp_list->fp_wentropy);
     }

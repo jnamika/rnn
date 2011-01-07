@@ -67,7 +67,7 @@ typedef struct main_parameters {
 
 /* parameters used in computing entropy, KL divergence and Lyapunov spectrum */
 typedef struct analysis_parameters {
-    int transient_length;
+    int truncate_length;
     int block_length;
     int divided_num;
     int lyapunov_spectrum_num;

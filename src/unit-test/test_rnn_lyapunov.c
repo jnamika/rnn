@@ -38,7 +38,7 @@ void assert_reset_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
 
     for (int n = 0; n < rl_info->length; n++) {
         int is_equal = 1;
-        int N = n + rl_info->transient_length;
+        int N = n + rl_info->truncate_length;
         for (int m = 0; m < rl_info->delay_length; m++) {
             int I = rnn_s->rnn_p->in_state_size *
                 (rl_info->delay_length - (m+1));

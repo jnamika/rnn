@@ -1,6 +1,6 @@
-seed=42004
+seed=101177
 
-epoch_size=2000
+epoch_size=10000
 print_interval=100
 
 rho=0.001
@@ -8,19 +8,17 @@ momentum=0.9
 
 use_adaptive_lr
 
-c_state_size=20
-output_type=0
+c_state_size=30
+output_type=1
 fixed_tau
-init_tau=5.0
+init_tau=10.0
 
-init_sigma=0.0
-prior_strength=0.001
 delay_length=1
 
 truncate_length=0
 block_length=3
 divided_num=2
-lyapunov_spectrum_num=2
+lyapunov_spectrum_num=3
 
 state_file=stateXXXXXX.log
 closed_state_file=closed_stateXXXXXX.log

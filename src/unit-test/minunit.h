@@ -19,6 +19,7 @@
 
 /*
  * MinUnit: a minimal unit testing framework for C (customized version)
+ * Original version is <http://www.jera.com/techinfo/jtns/jtn002.html>
  */
 
 
@@ -32,16 +33,14 @@
 
 
 #define mu_run_test(func) do { \
-    ___mu_preprocess_test(); \
-    fprintf(stderr, "test: %s()\n", #func); \
+    ___mu_preprocess(#func); \
     func(); \
-    ___mu_postprocess_test();} while(0)
+    ___mu_postprocess();} while(0)
 
 #define mu_run_test_with_args(func,...) do { \
-    ___mu_preprocess_test(); \
-    fprintf(stderr, "test: %s()\n", #func); \
+    ___mu_preprocess(#func); \
     func(__VA_ARGS__); \
-    ___mu_postprocess_test();} while(0)
+    ___mu_postprocess();} while(0)
 
 
 
@@ -57,8 +56,8 @@ void mu_reset_test(void);
 
 void ___mu_assert (int cond, const char *filename, int line,
         const char *fmt, ...);
-void ___mu_preprocess_test (void);
-void ___mu_postprocess_test (void);
+void ___mu_preprocess (const char* funcname);
+void ___mu_postprocess (void);
 
 #endif
 

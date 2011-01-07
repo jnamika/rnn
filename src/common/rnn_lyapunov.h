@@ -23,7 +23,7 @@
 typedef struct rnn_lyapunov_info {
     const struct rnn_state *rnn_s;
     int delay_length;
-    int transient_length;
+    int truncate_length;
 
     int dimension;
     double **tmp_matrix;
@@ -37,7 +37,7 @@ void init_rnn_lyapunov_info (
         struct rnn_lyapunov_info *rl_info,
         const struct rnn_state *rnn_s,
         int delay_length,
-        int transient_length);
+        int truncate_length);
 
 void rnn_lyapunov_info_alloc (struct rnn_lyapunov_info *rl_info);
 
