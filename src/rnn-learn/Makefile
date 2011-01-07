@@ -55,14 +55,16 @@ SRCS = main.c rnn.c target.c training.c print.c entropy.c rnn_lyapunov.c solver.
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
 .PHONY: all
-all: depend.mk $(OBJ_DIR) $(OBJ_DIR)/$(TARGET)
+all: depend.mk $(OBJ_DIR) $(BIN_DIR) $(BIN_DIR)/$(TARGET)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/$(TARGET): $(OBJS)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BIN_DIR)/$(TARGET): $(OBJS)
 	$(CC) -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
-	-@ if [ -d $(BIN_DIR) ]; then (cp $@ $(BIN_DIR)); fi
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)
@@ -83,7 +85,7 @@ depend.mk: $(SRCS)
 
 .PHONY: clean
 clean:
-	-@ rm -rf $(OBJ_DIR) depend.mk
+	-@ rm -rf $(OBJ_DIR) $(BIN_DIR)/$(TARGET) depend.mk
 
 .PHONY: help
 help: info

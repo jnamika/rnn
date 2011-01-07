@@ -26,19 +26,22 @@ CFLAGS = $(WARNFLAG) $(STD) $(OPT) $(MACROS) $(INCLUDE_DIR) $(LIB_DIR) $(DEBUG)
 
 vpath %.c $(COMMON_DIR)
 SRCS = rnn_runner.c rnn.c utils.c mt19937ar.c
-PY_SRCS = rnn_runner.py print_log.py plot_log.py gen_target.py
-SH_SRCS = print-log plot-log
+PY_SRCS = rnn_runner.py print_log.py plot_log.py gen_target.py rnn_scale.py
+SH_SRCS = print-log plot-log rnn-scale rnn-scale-restore
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
 
 .PHONY: all
-all: depend.mk $(OBJ_DIR) $(OBJ_DIR)/$(TARGET) $(PY_SRCS) $(SH_SRCS)
-	-@ if [ -d $(BIN_DIR) ]; then (cp $(OBJ_DIR)/$(TARGET) $(PY_SRCS) $(SH_SRCS) $(BIN_DIR)); fi
+all: depend.mk $(OBJ_DIR) $(BIN_DIR) $(BIN_DIR)/$(TARGET) $(PY_SRCS) $(SH_SRCS)
+	-@ cp $(PY_SRCS) $(SH_SRCS) $(BIN_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/$(TARGET): $(OBJS)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BIN_DIR)/$(TARGET): $(OBJS)
 	$(CC) -shared -Wl,-soname,$@.$(VERSION) -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
 
 $(OBJ_DIR)/%.o: %.c
@@ -60,7 +63,7 @@ depend.mk: $(SRCS)
 
 .PHONY: clean
 clean:
-	-@ rm -rf $(OBJ_DIR) depend.mk
+	-@ rm -rf $(OBJ_DIR) $(BIN_DIR)/$(TARGET) $(PY_SRCS:%=$(BIN_DIR)/%) $(SH_SRCS:%=$(BIN_DIR)/%) depend.mk
 
 .PHONY: help
 help: info

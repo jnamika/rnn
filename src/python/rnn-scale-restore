@@ -1,0 +1,31 @@
+#!/bin/sh
+
+parameter_file="scale.log"
+
+while getopts f:h OPT
+do
+    case $OPT in
+        f ) parameter_file=${OPTARG};;
+        h ) echo "Usage: $0 [-f parameter-file] file ..."
+            exit 0;;
+        \?) exit 1;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+for file in $@
+do
+    if [ ! -f "$file" ]; then
+        echo "No such file or directory: $file"
+        exit 1
+    fi
+done
+
+if [ ! -f "$parameter_file" ]; then
+    echo "cannot find parameter-file \`$parameter_file'"
+    exit 1
+fi
+
+python `dirname $0`/rnn_scale.py 1 0 $parameter_file $@
+

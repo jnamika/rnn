@@ -1,0 +1,28 @@
+#!/bin/sh
+
+output_type=0
+parameter_file="scale.log"
+
+while getopts k:f:h OPT
+do
+    case $OPT in
+        k ) output_type=${OPTARG};;
+        f ) parameter_file=${OPTARG};;
+        h ) echo "Usage: $0 [-k output-type] [-f parameter-file] file ..."
+            exit 0;;
+        \?) exit 1;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+for file in $@
+do
+    if [ ! -f "$file" ]; then
+        echo "No such file or directory: $file"
+        exit 1
+    fi
+done
+
+python `dirname $0`/rnn_scale.py 0 $output_type $parameter_file $@
+
