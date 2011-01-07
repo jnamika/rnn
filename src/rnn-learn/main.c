@@ -40,7 +40,7 @@
 #define TO_STRING_I(s) #s
 #define TO_STRING(s) TO_STRING_I(s)
 
-void display_help (void)
+static void display_help (void)
 {
     puts("rnn-learn  - an implementation of a gradient-based learning "
             "algorithm for recurrent neural networks focusing on the problem "
@@ -772,7 +772,35 @@ static void read_options (int argc, char *argv[], struct general_parameters *gp)
 }
 
 
-void setup_parameters (
+static void setup_target (
+        int argc,
+        char *argv[],
+        const struct general_parameters *gp,
+        struct target_reader *t_reader)
+{
+    init_target_reader(t_reader);
+    if (argc == optind && strlen(gp->iop.load_filename) == 0) {
+        if (read_target_from_file(t_reader, "\t,", stdin) == -1) {
+            print_error_msg("error in the standard input");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        for (int i = optind; i < argc; i++) {
+            FILE *fp;
+            if ((fp = fopen(argv[i], "r")) == NULL) {
+                print_error_msg("cannot open %s", argv[i]);
+                exit(EXIT_FAILURE);
+            }
+            if (read_target_from_file(t_reader, "\t,", fp) == -1) {
+                print_error_msg("error in %s", argv[i]);
+                exit(EXIT_FAILURE);
+            }
+            fclose(fp);
+        }
+    }
+}
+
+static void setup_parameters (
         struct general_parameters *gp,
         const struct target_reader *t_reader)
 {
@@ -815,7 +843,7 @@ void setup_parameters (
     str_to_init_tau(gp->mp.init_tau, gp->mp.c_state_size, gp->inp.init_tau);
 }
 
-void check_parameters (
+static void check_parameters (
         const struct general_parameters *gp,
         const struct target_reader *t_reader)
 {
@@ -905,29 +933,9 @@ int main (int argc, char *argv[])
     read_options(argc, argv, &gp);
 
     struct target_reader t_reader;
-    init_target_reader(&t_reader);
-    if (argc == optind && strlen(gp.iop.load_filename) == 0) {
-        if (read_target_from_file(&t_reader, "\t,", stdin) == -1) {
-            print_error_msg("error in the standard input");
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        for (int i = optind; i < argc; i++) {
-            FILE *fp;
-            if ((fp = fopen(argv[i], "r")) == NULL) {
-                print_error_msg("cannot open %s", argv[i]);
-                exit(EXIT_FAILURE);
-            }
-            if (read_target_from_file(&t_reader, "\t,", fp) == -1) {
-                print_error_msg("error in %s", argv[i]);
-                exit(EXIT_FAILURE);
-            }
-            fclose(fp);
-        }
-    }
+    setup_target(argc, argv, &gp, &t_reader);
 
     setup_parameters(&gp, &t_reader);
-
     check_parameters(&gp, &t_reader);
 
     training_main(&gp, &t_reader);

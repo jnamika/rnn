@@ -34,7 +34,7 @@
 #define TO_STRING_I(s) #s
 #define TO_STRING(s) TO_STRING_I(s)
 
-void display_help (void)
+static void display_help (void)
 {
     puts("rnn-generate - a program to display output of recurrent neural "
             "networks");
@@ -85,7 +85,7 @@ int main (int argc, char *argv[])
     seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
 
     int opt;
-    while ((opt = getopt(argc, argv, "s:n:i:hv")) != -1) {
+    while ((opt = getopt(argc, argv, "s:n:i:vh")) != -1) {
         switch (opt) {
             case 's':
                 seed = strtoul(optarg, NULL, 0);

@@ -551,17 +551,17 @@ static void compute_kl_divergence_of_rnn_compression_state (
         int block_length,
         int divided_num,
         double *kl_div,
-        double *entropy_x,
-        double *entropy_y,
+        double *entropy_t,
+        double *entropy_o,
         double *gen_rate)
 {
     if (rnn_s->length > truncate_length) {
         double min, max;
-        int *sequence_x, *sequence_y;
-        struct block_frequency bf_x, bf_y;
+        int *sequence_t, *sequence_o;
+        struct block_frequency bf_t, bf_o;
         const int length = rnn_s->length - truncate_length;
-        MALLOC(sequence_x, length);
-        MALLOC(sequence_y, length);
+        MALLOC(sequence_t, length);
+        MALLOC(sequence_o, length);
         if (rnn_s->rnn_p->output_type == STANDARD_TYPE) {
             min = -1.0; max = 1.0;
         } else {
@@ -569,25 +569,25 @@ static void compute_kl_divergence_of_rnn_compression_state (
         }
         for (int n = 0; n < length; n++) {
             int N = n + truncate_length;
-            sequence_x[n] = vector2symbol(rnn_s->teach_state[N],
+            sequence_t[n] = vector2symbol(rnn_s->teach_state[N],
                     rnn_s->rnn_p->out_state_size, min, max, divided_num);
-            sequence_y[n] = vector2symbol(rnn_s->out_state[N],
+            sequence_o[n] = vector2symbol(rnn_s->out_state[N],
                     rnn_s->rnn_p->out_state_size, min, max, divided_num);
         }
-        init_block_frequency(&bf_x, sequence_x, length, block_length);
-        init_block_frequency(&bf_y, sequence_y, length, block_length);
-        *kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
-        *entropy_x = block_entropy(&bf_x) / block_length;
-        *entropy_y = block_entropy(&bf_y) / block_length;
-        *gen_rate = generation_rate(&bf_x, &bf_y);
-        free_block_frequency(&bf_x);
-        free_block_frequency(&bf_y);
-        free(sequence_x);
-        free(sequence_y);
+        init_block_frequency(&bf_t, sequence_t, length, block_length);
+        init_block_frequency(&bf_o, sequence_o, length, block_length);
+        *kl_div = kullback_leibler_divergence(&bf_t, &bf_o);
+        *entropy_t = block_entropy(&bf_t) / block_length;
+        *entropy_o = block_entropy(&bf_o) / block_length;
+        *gen_rate = generation_rate(&bf_t, &bf_o);
+        free_block_frequency(&bf_t);
+        free_block_frequency(&bf_o);
+        free(sequence_t);
+        free(sequence_o);
     } else {
         *kl_div = 0;
-        *entropy_x = 0;
-        *entropy_y = 0;
+        *entropy_t = 0;
+        *entropy_o = 0;
         *gen_rate = 0;
     }
 }
@@ -602,8 +602,8 @@ static void print_kl_divergence_of_rnn (
         int divided_num)
 {
     double kl_div[rnn->series_num];
-    double entropy_x[rnn->series_num];
-    double entropy_y[rnn->series_num];
+    double entropy_t[rnn->series_num];
+    double entropy_o[rnn->series_num];
     double gen_rate[rnn->series_num];
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -611,12 +611,12 @@ static void print_kl_divergence_of_rnn (
     for (int i = 0; i < rnn->series_num; i++) {
         compute_kl_divergence_of_rnn_compression_state(rnn->rnn_s + i,
                 truncate_length, block_length, divided_num, kl_div + i,
-                entropy_x + i, entropy_y + i, gen_rate + i);
+                entropy_t + i, entropy_o + i, gen_rate + i);
     }
     fprintf(fp, "%ld", epoch);
     for (int i = 0; i < rnn->series_num; i++) {
-        fprintf(fp, "\t%g\t%g\t%g\t%g", kl_div[i], gen_rate[i], entropy_x[i],
-                entropy_y[i]);
+        fprintf(fp, "\t%g\t%g\t%g\t%g", kl_div[i], gen_rate[i], entropy_t[i],
+                entropy_o[i]);
     }
     fprintf(fp, "\n");
 }

@@ -19,7 +19,7 @@
 
 /*
  * MinUnit: a minimal unit testing framework for C (customized version)
- * Original version is <http://www.jera.com/techinfo/jtns/jtn002.html>
+ * The original version is at http://www.jera.com/techinfo/jtns/jtn002.html
  */
 
 
