@@ -60,7 +60,7 @@ double** rnn_jacobian_matrix_with_delay (
 double* rnn_lyapunov_spectrum (
         struct rnn_lyapunov_info *rl_info,
         double *spectrum,
-        int spectrum_num);
+        int spectrum_size);
 
 #endif
 

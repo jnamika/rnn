@@ -14,11 +14,15 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef LYAPUNOV_H
+#define LYAPUNOV_H
 
-#define LENGTH 1000
-#define INDEX -1
+#include "main.h"
+#include "rnn_runner.h"
+
+void compute_lyapunov_main (
+        const struct analysis_parameters *ap,
+        struct rnn_runner *runner);
 
 #endif
 

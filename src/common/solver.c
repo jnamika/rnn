@@ -48,7 +48,7 @@ static int check_in_box (const double* vector, const double* median_point,
  *
  *   @parameter  data     : n-dimensional time series
  *   @parameter  t        : length of time series
- *   @parameter  m        : number of evaluating Lyapunov exponents
+ *   @parameter  m        : number of Lyapunov exponents
  *   @parameter  n        : dimension of time series
  *   @parameter  T        : interval to compute Gram-Schmidt orthogonalization
  *   @parameter  pfunc    : function pointer to compute Jacobian matrix

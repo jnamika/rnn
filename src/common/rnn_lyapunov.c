@@ -233,11 +233,11 @@ void reset_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
 double* rnn_lyapunov_spectrum (
         struct rnn_lyapunov_info *rl_info,
         double *spectrum,
-        int spectrum_num)
+        int spectrum_size)
 {
     reset_rnn_lyapunov_info(rl_info);
     return lyapunov_spectrum((const double* const*)rl_info->state,
-            rl_info->length, spectrum_num, rl_info->dimension, 1,
+            rl_info->length, spectrum_size, rl_info->dimension, 1,
             rnn_jacobian_for_lyapunov_spectrum, rl_info, spectrum, NULL, NULL);
 }
 

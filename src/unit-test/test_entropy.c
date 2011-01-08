@@ -93,7 +93,7 @@ static void test_block_entropy (void)
     for (int n = 1; n <= max_block_length ; n++) {
         init_block_frequency(&bf, sequence, length, n);
         entropy = block_entropy(&bf) / n;
-        mu_assert_with_msg(entropy >= 0.5, "entropy(=%f) < 0.5\n", entropy);
+        mu_assert(entropy >= 0.5);
         free_block_frequency(&bf);
     }
     free(sequence);
@@ -134,21 +134,21 @@ static void test_kullback_leibler_divergence (void)
             init_block_frequency(&bf_x, x, length, n);
             init_block_frequency(&bf_y, y, length, n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
-            mu_assert_with_msg(kl_div >= 0, "kl_div(=%f) < 0\n", kl_div);
+            mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
             free_block_frequency(&bf_y);
 
             init_block_frequency(&bf_x, x, length-100, n);
             init_block_frequency(&bf_y, y, length, n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
-            mu_assert_with_msg(kl_div >= 0, "kl_div(=%f) < 0\n", kl_div);
+            mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
             free_block_frequency(&bf_y);
 
             init_block_frequency(&bf_x, x, length, n);
             init_block_frequency(&bf_y, y, length-100, n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
-            mu_assert_with_msg(kl_div >= 0, "kl_div(=%f) < 0\n", kl_div);
+            mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
             free_block_frequency(&bf_y);
         }
@@ -162,7 +162,7 @@ static void test_kullback_leibler_divergence (void)
         init_block_frequency(&bf_x, x, length, n);
         init_block_frequency(&bf_y, y, length, n);
         kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
-        mu_assert_with_msg(kl_div > 0, "kl_div(=%f) <= 0\n", kl_div);
+        mu_assert(kl_div > 0);
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }

@@ -18,7 +18,7 @@ delay_length=1
 truncate_length=0
 block_length=3
 divided_num=2
-lyapunov_spectrum_num=3
+lyapunov_spectrum_size=3
 
 state_file=stateXXXXXX.log
 closed_state_file=closed_stateXXXXXX.log

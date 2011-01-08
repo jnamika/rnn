@@ -147,7 +147,8 @@ def plot_adapt_lr(f, filename):
     p.stdin.write("set logscale y;")
     p.stdin.write("set title 'Type=Learning-rate  File=%s';" % filename)
     p.stdin.write("set xlabel 'Learning epoch';")
-    p.stdin.write("set ylabel 'Adaptive learning rate';")
+    p.stdin.write(
+            "set ylabel 'Current learning rate / Initial learning rate';")
     p.stdin.write("plot '%s' u 1:2 w l" % filename)
     p.stdin.write('\n')
 
@@ -170,8 +171,8 @@ def plot_error(f, filename):
 def plot_lyapunov(f, filename):
     params = print_log.read_parameter(f)
     target_num = int(params['target_num'])
-    ls_num = int(params['lyapunov_spectrum_num'])
-    for i in xrange(ls_num):
+    ls_size = int(params['lyapunov_spectrum_size'])
+    for i in xrange(ls_size):
         p = subprocess.Popen(['gnuplot -persist'], stdin=subprocess.PIPE,
                 shell=True)
         p.stdin.write("set nokey;")
@@ -180,7 +181,7 @@ def plot_lyapunov(f, filename):
         p.stdin.write("set ylabel 'Lyapunov[%d]';" % i)
         command = ["plot 0 w l lt 0"]
         for j in xrange(target_num):
-            command.append("'%s' u 1:%d w l" % (filename, i+j*ls_num+2))
+            command.append("'%s' u 1:%d w l" % (filename, i+j*ls_size+2))
         p.stdin.write(','.join(command))
         p.stdin.write('\n')
 

@@ -178,7 +178,7 @@ static void init_parameters (struct general_parameters *gp)
     gp->ap.truncate_length = TRUNCATE_LENGTH;
     gp->ap.block_length = BLOCK_LENGTH;
     gp->ap.divided_num = DIVIDED_NUM;
-    gp->ap.lyapunov_spectrum_num = LYAPUNOV_SPECTRUM_NUM;
+    gp->ap.lyapunov_spectrum_size = LYAPUNOV_SPECTRUM_SIZE;
 
     gp->iop.state_filename = salloc(NULL, STATE_FILENAME);
     gp->iop.closed_state_filename = salloc(NULL, CLOSED_STATE_FILENAME);
@@ -387,11 +387,11 @@ static void set_divided_num (const char *opt, struct general_parameters *gp)
     gp->ap.divided_num = atoi(opt);
 }
 
-static void set_lyapunov_spectrum_num (
+static void set_lyapunov_spectrum_size (
         const char *opt,
         struct general_parameters *gp)
 {
-    gp->ap.lyapunov_spectrum_num = atoi(opt);
+    gp->ap.lyapunov_spectrum_size = atoi(opt);
 }
 
 static void set_state_file (const char *opt, struct general_parameters *gp)
@@ -610,7 +610,7 @@ static struct option_information {
     {"truncate_length", 1, set_truncate_length},
     {"block_length", 1, set_block_length},
     {"divided_num", 1, set_divided_num},
-    {"lyapunov_spectrum_num", 1, set_lyapunov_spectrum_num},
+    {"lyapunov_spectrum_size", 1, set_lyapunov_spectrum_size},
     {"state_file", 1, set_state_file},
     {"closed_state_file", 1, set_closed_state_file},
     {"weight_file", 1, set_weight_file},
@@ -689,7 +689,7 @@ static void read_config_file (FILE *fp, struct general_parameters *gp)
             while (opt_info[i].setter != NULL) {
                 if (strcmp(opt, opt_info[i].name) == 0) {
                     if (opt_info[i].has_arg && arg == NULL) {
-                        print_error_msg("warning: option '%s' requires an "
+                        print_error_msg("warning: option `%s' requires an "
                                 "argument at line %d", opt, line);
                     } else {
                         opt_info[i].setter(arg, gp);
@@ -699,7 +699,7 @@ static void read_config_file (FILE *fp, struct general_parameters *gp)
                 i++;
             }
             if (opt_info[i].setter == NULL) {
-                print_error_msg("warning: unknown option '%s' at line %d",
+                print_error_msg("warning: unknown option `%s' at line %d",
                         opt, line);
             }
         }
@@ -880,24 +880,24 @@ static void check_parameters (
         exit(EXIT_FAILURE);
     }
     if (gp->mp.lambda < 0) {
-        print_error_msg("'lambda' not in valid range: x >= 0 (float)");
+        print_error_msg("`lambda' not in valid range: x >= 0 (float)");
         exit(EXIT_FAILURE);
     }
     if (gp->mp.alpha < 0) {
-        print_error_msg("'alpha' not in valid range: x >= 0 (float)");
+        print_error_msg("`alpha' not in valid range: x >= 0 (float)");
         exit(EXIT_FAILURE);
     }
     if (gp->ap.truncate_length < 0) {
-        print_error_msg("'truncate_length' not in valid range: "
+        print_error_msg("`truncate_length' not in valid range: "
                 "x >= 0 (integer)");
         exit(EXIT_FAILURE);
     }
     if (gp->ap.block_length < 0) {
-        print_error_msg("'block_length' not in valid range: x >= 0 (integer)");
+        print_error_msg("`block_length' not in valid range: x >= 0 (integer)");
         exit(EXIT_FAILURE);
     }
     if (gp->ap.divided_num <= 0) {
-        print_error_msg("'divided_num' not in valid range: x >= 1 (integer)");
+        print_error_msg("`divided_num' not in valid range: x >= 1 (integer)");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < gp->mp.c_state_size; i++) {

@@ -23,7 +23,7 @@ def read_parameter(f):
     r['c_state_size'] = re.compile(r'^# c_state_size')
     r['out_state_size'] = re.compile(r'^# out_state_size')
     r['delay_length'] = re.compile(r'^# delay_length')
-    r['lyapunov_spectrum_num'] = re.compile(r'^# lyapunov_spectrum_num')
+    r['lyapunov_spectrum_size'] = re.compile(r'^# lyapunov_spectrum_size')
     r['target_num'] = re.compile(r'^# target_num')
     r['target'] = re.compile(r'^# target ([0-9]+)')
     r_comment = re.compile(r'^#')
@@ -207,19 +207,19 @@ def print_error(f, epoch=None):
 def print_lyapunov(f, epoch=None):
     params = read_parameter(f)
     target_num = int(params['target_num'])
-    ls_num = int(params['lyapunov_spectrum_num'])
+    ls_size = int(params['lyapunov_spectrum_size'])
     s = current_line(f, epoch)
     if s != None:
         epoch = s[0]
         s = s[1:]
         print "epoch : %s" % epoch
         line = ["target"]
-        for i in xrange(ls_num):
+        for i in xrange(ls_size):
             line.append("lyapunov[%d]" % i)
         print '\t'.join(line)
         for i in xrange(target_num):
-            print "%d\t%s" % (i, '\t'.join([str(x) for x in s[:ls_num]]))
-            s = s[ls_num:]
+            print "%d\t%s" % (i, '\t'.join([str(x) for x in s[:ls_size]]))
+            s = s[ls_size:]
 
 def print_entropy(f, epoch=None):
     params = read_parameter(f)

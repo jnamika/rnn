@@ -17,8 +17,15 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define LENGTH 1000
-#define INDEX -1
+typedef struct analysis_parameters {
+    unsigned long seed;
+    long length;
+    int sample_num;
+    int mem_size;
+    long truncate_length;
+    int lyapunov_spectrum_size;
+    double noise_deviation;
+} analysis_parameters;
 
 #endif
 

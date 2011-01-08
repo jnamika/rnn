@@ -18,14 +18,16 @@
 #define MINUNIT_H
 
 /*
- * MinUnit: a minimal unit testing framework for C (customized version)
+ * MinUnit: a minimal unit testing framework for C99
  * The original version is at http://www.jera.com/techinfo/jtns/jtn002.html
  */
 
 
 /* public assert functions */
-
-#define mu_assert(cond) ___mu_assert(cond, __FILE__, __LINE__, "")
+// Assertion `1 == 0' failed
+#define mu_assert_I(cond) ___mu_assert(cond, __FILE__, __LINE__, \
+        "assertion `" #cond "' failed")
+#define mu_assert(cond) mu_assert_I(cond)
 #define mu_assert_with_msg(cond,...) \
     ___mu_assert(cond, __FILE__, __LINE__, "" __VA_ARGS__)
 #define mu_fail(...) ___mu_assert(0, __FILE__, __LINE__, "" __VA_ARGS__)
@@ -33,14 +35,14 @@
 
 
 #define mu_run_test(func) do { \
-    ___mu_preprocess(#func); \
+    ___mu_test_preprocess(#func); \
     func(); \
-    ___mu_postprocess();} while(0)
+    ___mu_test_postprocess();} while(0)
 
 #define mu_run_test_with_args(func,...) do { \
-    ___mu_preprocess(#func); \
+    ___mu_test_preprocess(#func); \
     func(__VA_ARGS__); \
-    ___mu_postprocess();} while(0)
+    ___mu_test_postprocess();} while(0)
 
 
 
@@ -56,8 +58,8 @@ void mu_reset_test(void);
 
 void ___mu_assert (int cond, const char *filename, int line,
         const char *fmt, ...);
-void ___mu_preprocess (const char* funcname);
-void ___mu_postprocess (void);
+void ___mu_test_preprocess (const char* funcname);
+void ___mu_test_postprocess (void);
 
 #endif
 

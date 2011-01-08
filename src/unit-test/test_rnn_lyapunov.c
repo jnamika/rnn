@@ -277,12 +277,9 @@ static void test_rnn_lyapunov_spectrum (
         rnn_forward_dynamics_in_closed_loop(rnn_s, rl_info.delay_length);
         reset_rnn_lyapunov_info(&rl_info);
         rnn_lyapunov_spectrum(&rl_info, spectrum, rl_info.dimension);
-        mu_assert_with_msg(spectrum[0] < 0, "spectrum[0](=%f) >= 0\n",
-                spectrum[0]);
+        mu_assert(spectrum[0] < 0);
         for (int i = 1; i < rl_info.dimension; i++) {
-            mu_assert_with_msg(spectrum[i-1] >= spectrum[i],
-                    "spectrum[%d](=%f) < spectrum[%d](=%f)\n", i-1,
-                    spectrum[i-1], i, spectrum[i]);
+            mu_assert(spectrum[i-1] >= spectrum[i]);
         }
     }
 

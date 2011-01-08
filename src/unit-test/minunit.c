@@ -14,12 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <math.h>
-#include <string.h>
-
 #include "minunit.h"
 
 static unsigned int mu_test_count = 0;
@@ -32,8 +28,8 @@ void mu_summary (void)
     printf("%u test(s), %u assertion(s), %u failure(s)\n", mu_test_count,
             mu_assertion_count, mu_failure_count);
     if (mu_assertion_count > 0) {
-        printf("%d%% passed\n", (int)floor((100 * (mu_assertion_count -
-                            mu_failure_count)) / ((double)mu_assertion_count)));
+        printf("%u%% passed\n", (100 * (mu_assertion_count - mu_failure_count))
+                / mu_assertion_count);
     }
 }
 
@@ -47,12 +43,12 @@ void mu_reset_test (void)
 
 
 
-void ___mu_preprocess (const char *funcname)
+void ___mu_test_preprocess (const char *funcname)
 {
     printf("test: %s()\n", funcname); \
 }
 
-void ___mu_postprocess (void)
+void ___mu_test_postprocess (void)
 {
     mu_test_count++;
     printf("\n");

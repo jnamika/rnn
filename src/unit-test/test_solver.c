@@ -160,8 +160,7 @@ static void test_lyapunov_spectrum (struct test_solver_info *ts_info)
     lyapunov_spectrum((const double* const*)ts_info->data, ts_info->length,
             1, 1, 5, dlogistic_map, &a, ts_info->spectrum, NULL, NULL);
 
-    mu_assert_with_msg(ts_info->spectrum[0] > 0,
-            "ts_info->spectrum[0](=%f) <= 0\n", ts_info->spectrum[0]);
+    mu_assert(ts_info->spectrum[0] > 0);
 
     a = 3.5;
     ts_info->data[0][0] = 0.341;
@@ -171,8 +170,7 @@ static void test_lyapunov_spectrum (struct test_solver_info *ts_info)
     lyapunov_spectrum((const double* const*)ts_info->data, ts_info->length,
             1, 1, 5, dlogistic_map, &a, ts_info->spectrum, NULL, NULL);
 
-    mu_assert_with_msg(ts_info->spectrum[0] <= 0,
-            "ts_info->spectrum[0](=%f) > 0\n", ts_info->spectrum[0]);
+    mu_assert(ts_info->spectrum[0] <= 0);
 
 
     if (ts_info->dim < 2) return;
@@ -188,11 +186,8 @@ static void test_lyapunov_spectrum (struct test_solver_info *ts_info)
     lyapunov_spectrum((const double* const*)ts_info->data, ts_info->length,
             2, 2, 5, dhenon_map, &h_info, ts_info->spectrum, NULL, NULL);
 
-    mu_assert_with_msg(ts_info->spectrum[0] > 0,
-            "ts_info->spectrum[0](=%f) <= 0\n", ts_info->spectrum[0]);
-    mu_assert_with_msg(ts_info->spectrum[1] <= ts_info->spectrum[0],
-            "ts_info->spectrum[1](=%f) > ts_info->spectrum[0](=%f)\n",
-            ts_info->spectrum[1], ts_info->spectrum[0]);
+    mu_assert(ts_info->spectrum[0] > 0);
+    mu_assert(ts_info->spectrum[1] <= ts_info->spectrum[0]);
 
     h_info.a = 0.9;
     h_info.b = 0.3;
@@ -204,11 +199,8 @@ static void test_lyapunov_spectrum (struct test_solver_info *ts_info)
     lyapunov_spectrum((const double* const*)ts_info->data, ts_info->length,
             2, 2, 5, dhenon_map, &h_info, ts_info->spectrum, NULL, NULL);
 
-    mu_assert_with_msg(ts_info->spectrum[0] <= 0,
-            "ts_info->spectrum[0](=%f) <= 0\n", ts_info->spectrum[0]);
-    mu_assert_with_msg(ts_info->spectrum[1] <= ts_info->spectrum[0],
-            "ts_info->spectrum[1](=%f) > ts_info->spectrum[0](=%f)\n",
-            ts_info->spectrum[1], ts_info->spectrum[0]);
+    mu_assert(ts_info->spectrum[0] <= 0);
+    mu_assert(ts_info->spectrum[1] <= ts_info->spectrum[0]);
 }
 
 
@@ -225,10 +217,10 @@ static void test_lyapunov_exponent (struct test_solver_info *ts_info)
     }
     ly_exp = lyapunov_exponent_sss((const double* const*)ts_info->data,
             ts_info->length, 1, 10, 1000);
-    mu_assert_with_msg(ly_exp > 0, "ly_exp(=%f) <= 0\n", ly_exp);
+    mu_assert(ly_exp > 0);
     ly_exp = lyapunov_exponent_wolf((const double* const*)ts_info->data,
             ts_info->length, 1, 0.1);
-    mu_assert_with_msg(ly_exp > 0, "ly_exp(=%f) <= 0\n", ly_exp);
+    mu_assert(ly_exp > 0);
 
     a = 3.5;
     ts_info->data[0][0] = 0.341;
@@ -237,10 +229,10 @@ static void test_lyapunov_exponent (struct test_solver_info *ts_info)
     }
     ly_exp = lyapunov_exponent_sss((const double* const*)ts_info->data,
             ts_info->length, 1, 10, 1000);
-    mu_assert_with_msg(ly_exp <= 0, "ly_exp(=%f) > 0\n", ly_exp);
+    mu_assert(ly_exp <= 0);
     ly_exp = lyapunov_exponent_wolf((const double* const*)ts_info->data,
             ts_info->length, 1, 0.1);
-    mu_assert_with_msg(ly_exp <= 0, "ly_exp(=%f) > 0\n", ly_exp);
+    mu_assert(ly_exp <= 0);
 
 
     if (ts_info->dim < 2) return;
@@ -255,10 +247,10 @@ static void test_lyapunov_exponent (struct test_solver_info *ts_info)
     }
     ly_exp = lyapunov_exponent_sss((const double* const*)ts_info->data,
             ts_info->length, 2, 10, 1000);
-    mu_assert_with_msg(ly_exp > 0, "ly_exp(=%f) <= 0\n", ly_exp);
+    mu_assert(ly_exp > 0);
     ly_exp = lyapunov_exponent_wolf((const double* const*)ts_info->data,
             ts_info->length, 2, 0.1);
-    mu_assert_with_msg(ly_exp > 0, "ly_exp(=%f) <= 0\n", ly_exp);
+    mu_assert(ly_exp > 0);
 
     h_info.a = 0.9;
     h_info.b = 0.3;
@@ -269,10 +261,10 @@ static void test_lyapunov_exponent (struct test_solver_info *ts_info)
     }
     ly_exp = lyapunov_exponent_sss((const double* const*)ts_info->data,
             ts_info->length, 2, 10, 1000);
-    mu_assert_with_msg(ly_exp <= 0, "ly_exp(=%f) > 0\n", ly_exp);
+    mu_assert(ly_exp <= 0);
     ly_exp = lyapunov_exponent_wolf((const double* const*)ts_info->data,
             ts_info->length, 2, 0.1);
-    mu_assert_with_msg(ly_exp <= 0, "ly_exp(=%f) > 0\n", ly_exp);
+    mu_assert(ly_exp <= 0);
 }
 
 
@@ -333,9 +325,7 @@ static void test_generalized_dimension (struct test_solver_info *ts_info)
                 1, 1e-2, q, &box_num);
     }
     for (int q = 1; q < dnum; q++) {
-        mu_assert_with_msg(dimension[q-1] >= dimension[q],
-                "dimension[%d](=%f) < dimension[%d](=%f)\n", q-1,
-                dimension[q-1], q, dimension[q]);
+        mu_assert(dimension[q-1] >= dimension[q]);
     }
 
     free(box_count);

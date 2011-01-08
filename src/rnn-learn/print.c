@@ -216,7 +216,8 @@ static void print_general_parameters (
     fprintf(fp, "# truncate_length = %d\n", gp->ap.truncate_length);
     fprintf(fp, "# block_length = %d\n", gp->ap.block_length);
     fprintf(fp, "# divided_num = %d\n", gp->ap.divided_num);
-    fprintf(fp, "# lyapunov_spectrum_num = %d\n", gp->ap.lyapunov_spectrum_num);
+    fprintf(fp, "# lyapunov_spectrum_size = %d\n",
+            gp->ap.lyapunov_spectrum_size);
 }
 
 
@@ -451,7 +452,7 @@ static void print_rnn_state_forall (
 
 static void compute_lyapunov_spectrum_of_rnn_state (
         const struct rnn_state *rnn_s,
-        int spectrum_num,
+        int spectrum_size,
         int delay_length,
         int truncate_length,
         double *spectrum)
@@ -459,14 +460,14 @@ static void compute_lyapunov_spectrum_of_rnn_state (
     if (rnn_s->length > truncate_length) {
         struct rnn_lyapunov_info rl_info;
         init_rnn_lyapunov_info(&rl_info, rnn_s, delay_length, truncate_length);
-        spectrum = rnn_lyapunov_spectrum(&rl_info, spectrum, spectrum_num);
+        spectrum = rnn_lyapunov_spectrum(&rl_info, spectrum, spectrum_size);
         if (spectrum == NULL) {
             print_error_msg();
             exit(EXIT_FAILURE);
         }
         free_rnn_lyapunov_info(&rl_info);
     } else {
-        for (int i = 0; i < spectrum_num; i++) {
+        for (int i = 0; i < spectrum_size; i++) {
             spectrum[i] = 0;
         }
     }
@@ -477,34 +478,34 @@ static void print_lyapunov_spectrum_of_rnn (
         FILE *fp,
         long epoch,
         const struct recurrent_neural_network *rnn,
-        int spectrum_num,
+        int spectrum_size,
         int delay_length,
         int truncate_length)
 {
     int max_num;
-    // decides spectrum_num which is the number of evaluating Lyapunov exponents
+    // decides spectrum_size which is the number to evaluate Lyapunov exponents
     max_num = (rnn->rnn_p.in_state_size * delay_length) +
         rnn->rnn_p.c_state_size;
-    if (max_num < spectrum_num || spectrum_num < 0) {
-        spectrum_num = max_num;
+    if (max_num < spectrum_size || spectrum_size < 0) {
+        spectrum_size = max_num;
     }
 
-    if (spectrum_num <= 0) return;
+    if (spectrum_size <= 0) return;
 
     double **spectrum = NULL;
     MALLOC(spectrum, rnn->series_num);
-    MALLOC(spectrum[0], rnn->series_num * spectrum_num);
+    MALLOC(spectrum[0], rnn->series_num * spectrum_size);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
     for (int i = 0; i < rnn->series_num; i++) {
-        spectrum[i] = spectrum[0] + i * spectrum_num;
-        compute_lyapunov_spectrum_of_rnn_state(rnn->rnn_s + i, spectrum_num,
+        spectrum[i] = spectrum[0] + i * spectrum_size;
+        compute_lyapunov_spectrum_of_rnn_state(rnn->rnn_s + i, spectrum_size,
                 delay_length, truncate_length, spectrum[i]);
     }
     fprintf(fp, "%ld", epoch);
     for (int i = 0; i < rnn->series_num; i++) {
-        for (int j = 0; j < spectrum_num; j++) {
+        for (int j = 0; j < spectrum_size; j++) {
             fprintf(fp, "\t%f", spectrum[i][j]);
         }
     }
@@ -763,7 +764,7 @@ static void print_closed_loop_data_with_epoch (
             compute_forward_dynamics = 1;
         }
         print_lyapunov_spectrum_of_rnn(fp_list->fp_wlyapunov, epoch, rnn,
-                gp->ap.lyapunov_spectrum_num, gp->mp.delay_length,
+                gp->ap.lyapunov_spectrum_size, gp->mp.delay_length,
                 gp->ap.truncate_length);
         fflush(fp_list->fp_wlyapunov);
     }
