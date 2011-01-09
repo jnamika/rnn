@@ -166,9 +166,6 @@ def print_sigma(f, epoch=None):
 
 def print_init(f, epoch=None):
     params = read_parameter(f)
-    in_state_size = int(params['in_state_size'])
-    c_state_size = int(params['c_state_size'])
-    delay_length = int(params['delay_length'])
     target_num = int(params['target_num'])
     r = re.compile(r'^# epoch')
     if epoch == None:
@@ -201,7 +198,7 @@ def print_error(f, epoch=None):
         epoch = s[0]
         error = s[1:]
         print "epoch : %s" % epoch
-        print "error / length"
+        print "error / (length * dimension)"
         print '\t'.join([str(x) for x in error])
 
 def print_lyapunov(f, epoch=None):
@@ -236,14 +233,9 @@ def print_entropy(f, epoch=None):
             print "%d\t%s" % (i, '\t'.join([str(x) for x in s[:4]]))
             s = s[4:]
 
-
-def main():
-    epoch = None
-    if str.isdigit(sys.argv[1]):
-        epoch = int(sys.argv[1])
-    args = sys.argv[2:]
-    for arg in args:
-        f = open(arg, 'r')
+def print_log(files, epoch=None):
+    for file in files:
+        f = open(file, 'r')
         line = f.readline()
         if (re.compile(r'^# STATE FILE').match(line)):
             print_state(f, epoch)
@@ -266,6 +258,13 @@ def main():
         elif (re.compile(r'^# ENTROPY FILE').match(line)):
             print_entropy(f, epoch)
         f.close()
+
+def main():
+    epoch = None
+    if str.isdigit(sys.argv[1]):
+        epoch = int(sys.argv[1])
+    args = sys.argv[2:]
+    print_log(sys.argv[2:], epoch)
 
 
 if __name__ == "__main__":

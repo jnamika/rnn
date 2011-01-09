@@ -3,7 +3,6 @@
 import sys
 import re
 import math
-import datetime
 import rnn_runner
 
 def append_sequence_to_frequency(sequence, block_length=1, frequency={}):
@@ -39,18 +38,8 @@ def kullback_leibler_divergence(f1, f2):
             kl_div += lower * math.log(lower/v)
     return kl_div
 
-def main():
-    seed, steps, samples, truncate_length, block_length, divide_num = \
-            map(lambda x: int(x) if str.isdigit(x) else 0, sys.argv[1:7])
-    p = re.compile(r'(^#)|(^$)')
-    rnn_file = sys.argv[7]
-    if seed == 0:
-        now = datetime.datetime.utcnow()
-        seed = ((now.hour * 3600 + now.minute * 60 + now.second) *
-                now.microsecond)
-    rnn_runner.init_genrand(seed % 4294967295)
-    runner = rnn_runner.rnn_runner()
-    runner.init(rnn_file)
+def get_KL_div(length, samples, truncate_length, block_length, divide_num,
+        runner, files):
     def divide(x):
         s = int(math.floor(divide_num * x))
         if (s == divide_num):
@@ -67,21 +56,31 @@ def main():
         for x,y in runner.closed_loop(truncate_length):
             pass
         sequence = []
-        for x,y in runner.closed_loop(steps):
+        for x,y in runner.closed_loop(length):
             s = tuple(map(func, x))
             sequence.append(s)
         f1 = append_sequence_to_frequency(sequence, block_length, f1)
-    args = sys.argv[8:]
+    p = re.compile(r'(^#)|(^$)')
     f2 = {}
-    for arg in args:
+    for file in files:
         sequence = []
-        for line in open(arg, 'r'):
+        for line in open(file, 'r'):
             if (p.match(line) == None):
                 input = map(float, line[:-1].split())
                 s = tuple(map(func, input))
                 sequence.append(s)
         f2 = append_sequence_to_frequency(sequence, block_length, f2)
-    print kullback_leibler_divergence(f1, f2)
+    return kullback_leibler_divergence(f1, f2)
+
+def main():
+    seed, length, samples, truncate_length, block_length, divide_num = \
+            map(lambda x: int(x) if str.isdigit(x) else 0, sys.argv[1:7])
+    rnn_file = sys.argv[7]
+    rnn_runner.init_genrand(seed)
+    runner = rnn_runner.rnn_runner()
+    runner.init(rnn_file)
+    print get_KL_div(length, samples, truncate_length, block_length,
+            divide_num, runner, sys.argv[8:])
 
 
 if __name__ == "__main__":

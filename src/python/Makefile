@@ -26,8 +26,8 @@ CFLAGS = $(WARNFLAG) $(STD) $(OPT) $(MACROS) $(INCLUDE_DIR) $(LIB_DIR) $(DEBUG)
 
 vpath %.c $(COMMON_DIR)
 SRCS = rnn_runner.c rnn.c utils.c mt19937ar.c
-PY_SRCS = rnn_runner.py print_log.py plot_log.py gen_target.py rnn_scale.py
-SH_SRCS = print-log plot-log rnn-scale rnn-scale-restore
+PY_SRCS = rnn_runner.py print_log.py plot_log.py gen_target.py rnn_scale.py rnn_kl_div.py
+SH_SRCS = print-log plot-log rnn-scale rnn-scale-restore rnn-kl-div
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
 

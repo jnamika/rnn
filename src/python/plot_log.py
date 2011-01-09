@@ -161,7 +161,7 @@ def plot_error(f, filename):
     p.stdin.write("set logscale y;")
     p.stdin.write("set title 'Type=Error  File=%s';" % filename)
     p.stdin.write("set xlabel 'Learning epoch';")
-    p.stdin.write("set ylabel 'Error / Length';")
+    p.stdin.write("set ylabel 'Error / (Length times Dimension)';")
     command = ["plot "]
     for i in xrange(target_num):
         command.append("'%s' u 1:%d w l," % (filename, i+2))
@@ -203,35 +203,38 @@ def plot_entropy(f, filename):
         p.stdin.write(''.join(command)[:-1])
         p.stdin.write('\n')
 
+def plot_log(files, epoch=None):
+    for file in files:
+        f = open(file, 'r')
+        line = f.readline()
+        if (re.compile(r'^# STATE FILE').match(line)):
+            plot_state(f, file, epoch)
+        elif (re.compile(r'^# WEIGHT FILE').match(line)):
+            plot_weight(f, file)
+        elif (re.compile(r'^# THRESHOLD FILE').match(line)):
+            plot_threshold(f, file)
+        elif (re.compile(r'^# TAU FILE').match(line)):
+            plot_tau(f, file)
+        elif (re.compile(r'^# SIGMA FILE').match(line)):
+            plot_sigma(f, file)
+        elif (re.compile(r'^# INIT FILE').match(line)):
+            plot_init(f, file, epoch)
+        elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
+            plot_adapt_lr(f, file)
+        elif (re.compile(r'^# ERROR FILE').match(line)):
+            plot_error(f, file)
+        elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
+            plot_lyapunov(f, file)
+        elif (re.compile(r'^# ENTROPY FILE').match(line)):
+            plot_entropy(f, file)
+        f.close()
+
+
 def main():
     epoch = None
     if str.isdigit(sys.argv[1]):
         epoch = int(sys.argv[1])
-    args = sys.argv[2:]
-    for arg in args:
-        f = open(arg, 'r')
-        line = f.readline()
-        if (re.compile(r'^# STATE FILE').match(line)):
-            plot_state(f, arg, epoch)
-        elif (re.compile(r'^# WEIGHT FILE').match(line)):
-            plot_weight(f, arg)
-        elif (re.compile(r'^# THRESHOLD FILE').match(line)):
-            plot_threshold(f, arg)
-        elif (re.compile(r'^# TAU FILE').match(line)):
-            plot_tau(f, arg)
-        elif (re.compile(r'^# SIGMA FILE').match(line)):
-            plot_sigma(f, arg)
-        elif (re.compile(r'^# INIT FILE').match(line)):
-            plot_init(f, arg, epoch)
-        elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
-            plot_adapt_lr(f, arg)
-        elif (re.compile(r'^# ERROR FILE').match(line)):
-            plot_error(f, arg)
-        elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
-            plot_lyapunov(f, arg)
-        elif (re.compile(r'^# ENTROPY FILE').match(line)):
-            plot_entropy(f, arg)
-        f.close()
+    plot_log(sys.argv[2:], epoch)
 
 
 if __name__ == "__main__":

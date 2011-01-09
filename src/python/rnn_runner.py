@@ -22,7 +22,11 @@ librunner.rnn_out_state_from_runner.restype = POINTER(c_double)
 
 
 def init_genrand(seed):
-    librunner.init_genrand(c_ulong(seed))
+    if seed == 0:
+        now = datetime.datetime.utcnow()
+        seed = ((now.hour * 3600 + now.minute * 60 + now.second) *
+                now.microsecond)
+    librunner.init_genrand(c_ulong(seed % 4294967295 + 1))
 
 
 class rnn_runner:
@@ -114,11 +118,7 @@ def main():
     seed, steps, index = map(lambda x: int(x) if str.isdigit(x) else 0,
             sys.argv[1:4])
     rnn_file = sys.argv[4]
-    if seed == 0:
-        now = datetime.datetime.utcnow()
-        seed = ((now.hour * 3600 + now.minute * 60 + now.second) *
-                now.microsecond)
-    init_genrand(seed % 4294967295)
+    init_genrand(seed)
     runner = rnn_runner()
     runner.init(rnn_file)
     runner.set_time_series_id(index)
