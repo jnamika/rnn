@@ -177,7 +177,7 @@ static void init_parameters (struct general_parameters *gp)
 
     gp->ap.truncate_length = TRUNCATE_LENGTH;
     gp->ap.block_length = BLOCK_LENGTH;
-    gp->ap.divided_num = DIVIDED_NUM;
+    gp->ap.divide_num = DIVIDE_NUM;
     gp->ap.lyapunov_spectrum_size = LYAPUNOV_SPECTRUM_SIZE;
 
     gp->iop.state_filename = salloc(NULL, STATE_FILENAME);
@@ -382,9 +382,9 @@ static void set_block_length (const char *opt, struct general_parameters *gp)
     gp->ap.block_length = atoi(opt);
 }
 
-static void set_divided_num (const char *opt, struct general_parameters *gp)
+static void set_divide_num (const char *opt, struct general_parameters *gp)
 {
-    gp->ap.divided_num = atoi(opt);
+    gp->ap.divide_num = atoi(opt);
 }
 
 static void set_lyapunov_spectrum_size (
@@ -609,7 +609,7 @@ static struct option_information {
     {"alpha", 1, set_alpha},
     {"truncate_length", 1, set_truncate_length},
     {"block_length", 1, set_block_length},
-    {"divided_num", 1, set_divided_num},
+    {"divide_num", 1, set_divide_num},
     {"lyapunov_spectrum_size", 1, set_lyapunov_spectrum_size},
     {"state_file", 1, set_state_file},
     {"closed_state_file", 1, set_closed_state_file},
@@ -896,8 +896,8 @@ static void check_parameters (
         print_error_msg("`block_length' not in valid range: x >= 0 (integer)");
         exit(EXIT_FAILURE);
     }
-    if (gp->ap.divided_num <= 0) {
-        print_error_msg("`divided_num' not in valid range: x >= 1 (integer)");
+    if (gp->ap.divide_num <= 0) {
+        print_error_msg("`divide_num' not in valid range: x >= 1 (integer)");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < gp->mp.c_state_size; i++) {

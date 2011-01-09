@@ -215,7 +215,7 @@ static void print_general_parameters (
 
     fprintf(fp, "# truncate_length = %d\n", gp->ap.truncate_length);
     fprintf(fp, "# block_length = %d\n", gp->ap.block_length);
-    fprintf(fp, "# divided_num = %d\n", gp->ap.divided_num);
+    fprintf(fp, "# divide_num = %d\n", gp->ap.divide_num);
     fprintf(fp, "# lyapunov_spectrum_size = %d\n",
             gp->ap.lyapunov_spectrum_size);
 }
@@ -522,25 +522,25 @@ static int vector2symbol (
         int dimension,
         double min,
         double max,
-        int divided_num)
+        int divide_num)
 {
     int e, symbol;
     double mesh_size, split;
 
-    mesh_size = (max - min)/divided_num;
+    mesh_size = (max - min)/divide_num;
 
     symbol = 0;
     e = 1;
     for (int i = 0; i < dimension; i++) {
         split = min;
-        for (int j = 0; j < divided_num; j++) {
+        for (int j = 0; j < divide_num; j++) {
             split += mesh_size;
-            if (vector[i] <= split || j == divided_num-1) {
+            if (vector[i] <= split || j == divide_num-1) {
                 symbol += e * j;
                 break;
             }
         }
-        e *= divided_num;
+        e *= divide_num;
     }
     return symbol;
 }
@@ -550,7 +550,7 @@ static void compute_kl_divergence_of_rnn_compression_state (
         const struct rnn_state *rnn_s,
         int truncate_length,
         int block_length,
-        int divided_num,
+        int divide_num,
         double *kl_div,
         double *entropy_t,
         double *entropy_o,
@@ -571,9 +571,9 @@ static void compute_kl_divergence_of_rnn_compression_state (
         for (int n = 0; n < length; n++) {
             int N = n + truncate_length;
             sequence_t[n] = vector2symbol(rnn_s->teach_state[N],
-                    rnn_s->rnn_p->out_state_size, min, max, divided_num);
+                    rnn_s->rnn_p->out_state_size, min, max, divide_num);
             sequence_o[n] = vector2symbol(rnn_s->out_state[N],
-                    rnn_s->rnn_p->out_state_size, min, max, divided_num);
+                    rnn_s->rnn_p->out_state_size, min, max, divide_num);
         }
         init_block_frequency(&bf_t, sequence_t, length, block_length);
         init_block_frequency(&bf_o, sequence_o, length, block_length);
@@ -600,7 +600,7 @@ static void print_kl_divergence_of_rnn (
         const struct recurrent_neural_network *rnn,
         int truncate_length,
         int block_length,
-        int divided_num)
+        int divide_num)
 {
     double kl_div[rnn->series_num];
     double entropy_t[rnn->series_num];
@@ -611,7 +611,7 @@ static void print_kl_divergence_of_rnn (
 #endif
     for (int i = 0; i < rnn->series_num; i++) {
         compute_kl_divergence_of_rnn_compression_state(rnn->rnn_s + i,
-                truncate_length, block_length, divided_num, kl_div + i,
+                truncate_length, block_length, divide_num, kl_div + i,
                 entropy_t + i, entropy_o + i, gen_rate + i);
     }
     fprintf(fp, "%ld", epoch);
@@ -778,7 +778,7 @@ static void print_closed_loop_data_with_epoch (
         }
         print_kl_divergence_of_rnn(fp_list->fp_wentropy, epoch, rnn,
                 gp->ap.truncate_length, gp->ap.block_length,
-                gp->ap.divided_num);
+                gp->ap.divide_num);
         fflush(fp_list->fp_wentropy);
     }
 }

@@ -17,7 +17,7 @@ delay_length=1
 
 truncate_length=0
 block_length=3
-divided_num=2
+divide_num=2
 lyapunov_spectrum_size=1
 
 state_file=stateXXXXXX.log

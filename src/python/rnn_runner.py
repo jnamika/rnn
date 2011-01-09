@@ -70,6 +70,9 @@ class rnn_runner:
     def delay_length(self):
         return self.librunner.rnn_delay_length_from_runner(self.runner)
 
+    def output_type(self):
+        return self.librunner.rnn_output_type_from_runner(self.runner)
+
     def update(self):
         self.librunner.update_rnn_runner(self.runner)
 

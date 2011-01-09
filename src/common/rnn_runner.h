@@ -49,6 +49,7 @@ int rnn_in_state_size_from_runner (struct rnn_runner *runner);
 int rnn_c_state_size_from_runner (struct rnn_runner *runner);
 int rnn_out_state_size_from_runner (struct rnn_runner *runner);
 int rnn_delay_length_from_runner (struct rnn_runner *runner);
+int rnn_output_type_from_runner (struct rnn_runner *runner);
 int rnn_target_num_from_runner (struct rnn_runner *runner);
 double* rnn_in_state_from_runner (struct rnn_runner *runner);
 double* rnn_c_state_from_runner (struct rnn_runner *runner);

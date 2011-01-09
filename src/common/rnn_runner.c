@@ -175,6 +175,11 @@ int rnn_delay_length_from_runner (struct rnn_runner *runner)
     return runner->rnn.rnn_s[runner->id].length;
 }
 
+int rnn_output_type_from_runner (struct rnn_runner *runner)
+{
+    return (int)runner->rnn.rnn_p.output_type;
+}
+
 int rnn_target_num_from_runner (struct rnn_runner *runner)
 {
     return runner->id;

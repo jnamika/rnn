@@ -1,0 +1,43 @@
+#!/bin/sh
+
+seed=0
+steps=1000
+samples=1
+truncate_length=0
+block_length=1
+divide_num=1
+rnn_file=rnn.dat
+
+while getopts s:n:c:b:d:f:h OPT
+do
+    case $OPT in
+        s ) seed=${OPTARG};;
+        n ) steps=${OPTARG};;
+        c ) samples=${OPTARG};;
+        t ) truncate_length=${OPTARG};;
+        b ) block_length=${OPTARG};;
+        d ) divide_num=${OPTARG};;
+        f ) rnn_file=${OPTARG};;
+        h ) echo "Usage: $0 [-s seed] [-n steps] [-c samples] [-t truncate-length] [-b block-length] [-d divide-num] [-f rnn-file] target-file ..."
+            exit 0;;
+        \?) exit 1;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
+for file in $@
+do
+    if [ ! -f "$file" ]; then
+        echo "No such file or directory: $file"
+        exit 1
+    fi
+done
+
+if [ ! -f "$rnn_file" ]; then
+    echo "cannot find rnn-file \`$rnn_file'"
+    exit 1
+fi
+
+python `dirname $0`/rnn_kl_div.py $seed $steps $samples $truncate_length $block_length $divide_num $rnn_file $@
+

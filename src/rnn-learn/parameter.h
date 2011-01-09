@@ -37,7 +37,7 @@
 
 #define TRUNCATE_LENGTH 0
 #define BLOCK_LENGTH 5
-#define DIVIDED_NUM 2
+#define DIVIDE_NUM 2
 #define LYAPUNOV_SPECTRUM_SIZE 1
 
 #define STATE_FILENAME ""

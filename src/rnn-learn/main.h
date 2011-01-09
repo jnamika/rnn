@@ -69,7 +69,7 @@ typedef struct main_parameters {
 typedef struct analysis_parameters {
     int truncate_length;
     int block_length;
-    int divided_num;
+    int divide_num;
     int lyapunov_spectrum_size;
 } analysis_parameters;
 
