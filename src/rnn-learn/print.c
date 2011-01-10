@@ -203,7 +203,6 @@ static void print_general_parameters (
         const struct general_parameters *gp)
 {
     fprintf(fp, "# seed = %lu\n", gp->mp.seed);
-    fprintf(fp, "# epoch_size = %ld\n", gp->mp.epoch_size);
     if (gp->mp.use_adaptive_lr) {
         fprintf(fp, "# use_adaptive_lr\n");
     }
@@ -368,17 +367,11 @@ static void print_rnn_sigma (
 static void print_rnn_init (
         FILE *fp,
         long epoch,
-        const struct recurrent_neural_network *rnn,
-        int delay_length)
+        const struct recurrent_neural_network *rnn)
 {
     fprintf(fp, "# epoch = %ld\n", epoch);
     for (int i = 0; i < rnn->series_num; i++) {
         fprintf(fp, "%d", i);
-        for (int n = 0; n < delay_length; n++) {
-            for (int j = 0; j < rnn->rnn_p.in_state_size; j++) {
-                fprintf(fp, "\t%f", rnn->rnn_s[i].in_state[n][j]);
-            }
-        }
         for (int j = 0; j < rnn->rnn_p.c_state_size; j++) {
             fprintf(fp, "\t%f", rnn->rnn_s[i].init_c_inter_state[j]);
         }
@@ -518,7 +511,7 @@ static void print_lyapunov_spectrum_of_rnn (
 /* assigns an index to the vector with respect to indexed hypercubes in the
  * R^dimension space */
 static int vector2symbol (
-        double *vector,
+        const double *vector,
         int dimension,
         double min,
         double max,
@@ -645,8 +638,8 @@ static int enable_print (
 
 static void print_parameters_with_epoch (
         long epoch,
-        struct general_parameters *gp,
-        struct recurrent_neural_network *rnn,
+        const struct general_parameters *gp,
+        const struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {
     if (fp_list->fp_wweight &&
@@ -672,7 +665,7 @@ static void print_parameters_with_epoch (
 
     if (fp_list->fp_winit &&
             enable_print(epoch, &gp->iop.interval_for_init_file)) {
-        print_rnn_init(fp_list->fp_winit, epoch, rnn, gp->mp.delay_length);
+        print_rnn_init(fp_list->fp_winit, epoch, rnn);
     }
 
     if (fp_list->fp_wadapt_lr &&
@@ -685,7 +678,7 @@ static void print_parameters_with_epoch (
 
 static void print_open_loop_data_with_epoch (
         long epoch,
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {
@@ -720,7 +713,7 @@ static void print_open_loop_data_with_epoch (
 
 static void print_closed_loop_data_with_epoch (
         long epoch,
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {
@@ -738,7 +731,7 @@ static void print_closed_loop_data_with_epoch (
     }
 
     if (fp_list->fp_wclosed_state_array &&
-            enable_print(epoch, &gp->iop.interval_for_state_file)) {
+            enable_print(epoch, &gp->iop.interval_for_closed_state_file)) {
         if (!compute_forward_dynamics) {
             rnn_forward_dynamics_in_closed_loop_forall(rnn,
                     gp->mp.delay_length);
@@ -785,8 +778,8 @@ static void print_closed_loop_data_with_epoch (
 
 
 void print_training_main_begin (
-        struct general_parameters *gp,
-        struct recurrent_neural_network *rnn,
+        const struct general_parameters *gp,
+        const struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {
     if (fp_list->fp_wstate_array) {
@@ -857,7 +850,7 @@ void print_training_main_begin (
 
 void print_training_main_loop (
         long epoch,
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {

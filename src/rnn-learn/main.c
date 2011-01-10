@@ -217,42 +217,6 @@ static void init_parameters (struct general_parameters *gp)
 }
 
 
-
-static void free_parameters (struct general_parameters *gp)
-{
-    free(gp->mp.connection_i2c);
-    free(gp->mp.connection_c2c);
-    free(gp->mp.connection_c2o);
-    free(gp->mp.const_init_c);
-    free(gp->mp.softmax_group);
-    free(gp->mp.init_tau);
-    free(gp->iop.state_filename);
-    free(gp->iop.closed_state_filename);
-    free(gp->iop.weight_filename);
-    free(gp->iop.threshold_filename);
-    free(gp->iop.tau_filename);
-    free(gp->iop.sigma_filename);
-    free(gp->iop.init_filename);
-    free(gp->iop.adapt_lr_filename);
-    free(gp->iop.error_filename);
-    free(gp->iop.closed_error_filename);
-    free(gp->iop.lyapunov_filename);
-    free(gp->iop.entropy_filename);
-    free(gp->iop.save_filename);
-    free(gp->iop.load_filename);
-    free(gp->inp.has_connection_ci[0]);
-    free(gp->inp.has_connection_cc[0]);
-    free(gp->inp.has_connection_oc[0]);
-    free(gp->inp.has_connection_ci);
-    free(gp->inp.has_connection_cc);
-    free(gp->inp.has_connection_oc);
-    free(gp->inp.softmax_group_id);
-    free(gp->inp.const_init_c);
-    free(gp->inp.init_tau);
-}
-
-
-
 static void set_seed (const char *opt, struct general_parameters *gp)
 {
     gp->mp.seed = strtoul(opt, NULL, 0);
@@ -647,10 +611,7 @@ static struct option_information {
 };
 
 
-static void parse_option_and_arg (
-        char *str,
-        char **opt,
-        char **arg)
+static void parse_option_and_arg (char *str, char **opt, char **arg)
 {
     char *p, *q;
     p = str;
@@ -941,7 +902,6 @@ int main (int argc, char *argv[])
     training_main(&gp, &t_reader);
 
     free_target_reader(&t_reader);
-    free_parameters(&gp);
 
 #ifdef ENABLE_MTRACE
     muntrace();

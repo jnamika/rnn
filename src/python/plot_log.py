@@ -114,10 +114,7 @@ def plot_sigma(f, filename):
 
 def plot_init(f, filename, epoch):
     params = print_log.read_parameter(f)
-    in_state_size = int(params['in_state_size'])
     c_state_size = int(params['c_state_size'])
-    delay_length = int(params['delay_length'])
-    dimension = in_state_size * delay_length + c_state_size
     tmp = tempfile.NamedTemporaryFile()
     sys.stdout = tmp
     print_log.print_init(f, epoch)
@@ -130,8 +127,8 @@ def plot_init(f, filename, epoch):
     p.stdin.write("set ylabel 'Initial state';")
     p.stdin.write("set pointsize 3;")
     command = ["plot "]
-    index = [(2*x,(2*x+1)%dimension) for x in xrange(dimension) if 2*x <
-            dimension]
+    index = [(2*x,(2*x+1)%c_state_size) for x in xrange(c_state_size) if 2*x <
+            c_state_size]
     for x in index:
         command.append("'%s' u %d:%d w p," % (tmp.name, x[0]+2, x[1]+2))
     p.stdin.write(''.join(command)[:-1])

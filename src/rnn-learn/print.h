@@ -47,13 +47,13 @@ void free_output_files (struct output_files *fp_list);
 
 
 void print_training_main_begin (
-        struct general_parameters *gp,
-        struct recurrent_neural_network *rnn,
+        const struct general_parameters *gp,
+        const struct recurrent_neural_network *rnn,
         struct output_files *fp_list);
 
 void print_training_main_loop (
         long epoch,
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn,
         struct output_files *fp_list);
 

@@ -39,8 +39,8 @@ static void init_rnn (
         struct recurrent_neural_network *rnn);
 
 static void save_rnn (
-        struct general_parameters *gp,
-        struct recurrent_neural_network *rnn);
+        const struct general_parameters *gp,
+        const struct recurrent_neural_network *rnn);
 
 static void load_rnn (
         struct general_parameters *gp,
@@ -50,7 +50,7 @@ static void load_rnn (
 static void free_rnn (struct recurrent_neural_network *rnn);
 
 static void set_parameters_to_recurrent_neural_network (
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn);
 
 /******************************************************************************/
@@ -77,7 +77,7 @@ static void init_training_main (
 
     set_parameters_to_recurrent_neural_network(gp, rnn);
 
-    if (has_load_file || t_reader->num > 0) {
+    if (!has_load_file || t_reader->num > 0) {
         init_output_files(gp, rnn, fp_list, "w");
     } else {
         init_output_files(gp, rnn, fp_list, "a");
@@ -86,7 +86,7 @@ static void init_training_main (
 
 
 static void fini_training_main (
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn,
         struct output_files *fp_list)
 {
@@ -141,7 +141,7 @@ void training_main (
 /******************************************************************************/
 
 static void set_parameters_to_recurrent_neural_network (
-        struct general_parameters *gp,
+        const struct general_parameters *gp,
         struct recurrent_neural_network *rnn)
 {
     struct rnn_parameters *rnn_p = &rnn->rnn_p;
@@ -198,8 +198,8 @@ static void init_rnn (
 
 
 static void save_rnn (
-        struct general_parameters *gp,
-        struct recurrent_neural_network *rnn)
+        const struct general_parameters *gp,
+        const struct recurrent_neural_network *rnn)
 {
     FILE *fp;
     long init_epoch;
