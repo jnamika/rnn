@@ -190,6 +190,11 @@ static void init_rnn (
     init_recurrent_neural_network(rnn, t_reader->dimension, gp->mp.c_state_size,
             t_reader->dimension);
     for (int i = 0; i < t_reader->num; i++) {
+        if (t_reader->t_list[i].length <= gp->mp.delay_length) {
+            print_error_msg("length of target time series must be greater "
+                    "than time delay.");
+            exit(EXIT_FAILURE);
+        }
         rnn_add_target(rnn, t_reader->t_list[i].length - gp->mp.delay_length,
                 t_reader->t_list[i].target, t_reader->t_list[i].target +
                 gp->mp.delay_length);
@@ -231,6 +236,11 @@ static void reset_target_of_rnn (
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < t_reader->num; i++) {
+        if (t_reader->t_list[i].length <= gp->mp.delay_length) {
+            print_error_msg("length of target time series must be greater "
+                    "than time delay.");
+            exit(EXIT_FAILURE);
+        }
         rnn_add_target(rnn, t_reader->t_list[i].length,
                 t_reader->t_list[i].target, t_reader->t_list[i].target +
                 gp->mp.delay_length);

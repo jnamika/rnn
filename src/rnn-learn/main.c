@@ -121,11 +121,11 @@ static void display_help (void)
             "exhausted, rnn-learn executes training iterations.");
     puts("");
     puts("Target-file format which rnn-learn can recognize:");
-    puts("In a target-file, the data columns are separated by a tab or comma. "
-            "The number of data columns means the dimension of time series of "
-            "training examples. Comments begin at a sign \"#\" and continue to "
-            "the end of the line. If data are separated by a blank line, each "
-            "data block is recognized as a different time series.");
+    puts("In a target-file, the data columns are separated by a space, tab or "
+            "comma. The number of data columns means the dimension of time "
+            "series of training examples. Comments begin at a sign \"#\" and "
+            "continue to the end of the line. If data are separated by a blank "
+            "line, each data block is recognized as a different time series.");
 }
 
 static void display_version (void)
@@ -216,6 +216,40 @@ static void init_parameters (struct general_parameters *gp)
     gp->iop.verbose = 0;
 }
 
+static void free_parameters (struct general_parameters *gp)
+{
+    if (strlen(gp->iop.load_filename) == 0) {
+        free(gp->inp.has_connection_ci[0]);
+        free(gp->inp.has_connection_cc[0]);
+        free(gp->inp.has_connection_oc[0]);
+        free(gp->inp.has_connection_ci);
+        free(gp->inp.has_connection_cc);
+        free(gp->inp.has_connection_oc);
+        free(gp->inp.const_init_c);
+        free(gp->inp.softmax_group_id);
+        free(gp->inp.init_tau);
+    }
+    free(gp->mp.connection_i2c);
+    free(gp->mp.connection_c2c);
+    free(gp->mp.connection_c2o);
+    free(gp->mp.const_init_c);
+    free(gp->mp.softmax_group);
+    free(gp->mp.init_tau);
+    free(gp->iop.state_filename);
+    free(gp->iop.closed_state_filename);
+    free(gp->iop.weight_filename);
+    free(gp->iop.threshold_filename);
+    free(gp->iop.tau_filename);
+    free(gp->iop.sigma_filename);
+    free(gp->iop.init_filename);
+    free(gp->iop.adapt_lr_filename);
+    free(gp->iop.error_filename);
+    free(gp->iop.closed_error_filename);
+    free(gp->iop.lyapunov_filename);
+    free(gp->iop.entropy_filename);
+    free(gp->iop.save_filename);
+    free(gp->iop.load_filename);
+}
 
 static void set_seed (const char *opt, struct general_parameters *gp)
 {
@@ -741,7 +775,7 @@ static void setup_target (
 {
     init_target_reader(t_reader);
     if (argc == optind && strlen(gp->iop.load_filename) == 0) {
-        if (read_target_from_file(t_reader, "\t,", stdin) == -1) {
+        if (read_target_from_file(t_reader, " \t,", stdin) == -1) {
             print_error_msg("error in the standard input");
             exit(EXIT_FAILURE);
         }
@@ -752,7 +786,7 @@ static void setup_target (
                 print_error_msg("cannot open %s", argv[i]);
                 exit(EXIT_FAILURE);
             }
-            if (read_target_from_file(t_reader, "\t,", fp) == -1) {
+            if (read_target_from_file(t_reader, " \t,", fp) == -1) {
                 print_error_msg("error in %s", argv[i]);
                 exit(EXIT_FAILURE);
             }
@@ -767,7 +801,7 @@ static void setup_parameters (
 {
     gp->inp.adapt_lr = 1.0;
     gp->inp.init_epoch = 0;
-    if (t_reader->num > 0) {
+    if (strlen(gp->iop.load_filename) == 0) {
         MALLOC(gp->inp.has_connection_ci, gp->mp.c_state_size);
         MALLOC(gp->inp.has_connection_cc, gp->mp.c_state_size);
         MALLOC(gp->inp.has_connection_oc, t_reader->dimension);
@@ -796,12 +830,12 @@ static void setup_parameters (
         MALLOC(gp->inp.softmax_group_id, t_reader->dimension);
         str_to_softmax_group(gp->mp.softmax_group, t_reader->dimension,
                 &gp->inp.softmax_group_num, gp->inp.softmax_group_id);
+        MALLOC(gp->inp.const_init_c, gp->mp.c_state_size);
+        str_to_const_init_c(gp->mp.const_init_c, gp->mp.c_state_size,
+                gp->inp.const_init_c);
+        MALLOC(gp->inp.init_tau, gp->mp.c_state_size);
+        str_to_init_tau(gp->mp.init_tau, gp->mp.c_state_size, gp->inp.init_tau);
     }
-    MALLOC(gp->inp.const_init_c, gp->mp.c_state_size);
-    str_to_const_init_c(gp->mp.const_init_c, gp->mp.c_state_size,
-            gp->inp.const_init_c);
-    MALLOC(gp->inp.init_tau, gp->mp.c_state_size);
-    str_to_init_tau(gp->mp.init_tau, gp->mp.c_state_size, gp->inp.init_tau);
 }
 
 static void check_parameters (
@@ -861,22 +895,9 @@ static void check_parameters (
         print_error_msg("`divide_num' not in valid range: x >= 1 (integer)");
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < gp->mp.c_state_size; i++) {
-        if (gp->inp.init_tau[i] < 1.0) {
-            print_error_msg("time constant not in valid range: x >= 1 (float)");
-            exit(EXIT_FAILURE);
-        }
-    }
     if (t_reader->num == 0 && strlen(gp->iop.load_filename) == 0) {
         print_error_msg("training data is empty.");
         exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < t_reader->num; i++) {
-        if (t_reader->t_list[i].length <= gp->mp.delay_length) {
-            print_error_msg("length of target time series must be greater "
-                    "than time delay.");
-            exit(EXIT_FAILURE);
-        }
     }
 }
 
@@ -902,6 +923,7 @@ int main (int argc, char *argv[])
     training_main(&gp, &t_reader);
 
     free_target_reader(&t_reader);
+    free_parameters(&gp);
 
 #ifdef ENABLE_MTRACE
     muntrace();

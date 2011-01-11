@@ -71,7 +71,7 @@ void str_to_connection (
         MALLOC(buf, length + 1);
         strcpy(buf, str);
         char *p = strtok(buf, ",");
-        do {
+        while (p != NULL) {
             char *q;
             if ((q = strpbrk(p, "t")) == NULL) {
                 print_error_msg("warning: syntax error in `%s'", str);
@@ -88,7 +88,8 @@ void str_to_connection (
                     has_connection[i][j] = 1;
                 }
             }
-        } while ((p = strtok(NULL, ",")) != NULL);
+            p = strtok(NULL, ",");
+        }
         free(buf);
     }
     return;
@@ -115,13 +116,14 @@ void str_to_const_init_c (
         MALLOC(buf, length + 1);
         strcpy(buf, str);
         char *p = strtok(buf, ",");
-        do {
+        while (p != NULL) {
             int begin, end;
             str_to_intpair(p, &begin, &end, 0, c_state_size);
             for (int i = begin; i < end; i++) {
                 const_init_c[i] = 1;
             }
-        } while ((p = strtok(NULL, ",")) != NULL);
+            p = strtok(NULL, ",");
+        }
         free(buf);
     }
 }
@@ -145,8 +147,7 @@ void str_to_softmax_group (
         MALLOC(buf, length + 1);
         strcpy(buf, str);
         char *p = strtok(buf, ",");
-        int c = 1;
-        do {
+        for (int c = 1; p != NULL; c++) {
             do {
                 char *q;
                 if ((q = strpbrk(p, "&")) != NULL) {
@@ -160,9 +161,9 @@ void str_to_softmax_group (
                 }
                 p = q;
             } while (p != NULL);
-            c++;
-        } while ((p = strtok(NULL, ",")) != NULL);
-        c = 0;
+            p = strtok(NULL, ",");
+        }
+        int c = 0;
         for (int i = 0; i < out_state_size; i++) {
             if (softmax_group_id[i] > c) {
                 int swap_c = softmax_group_id[i];
@@ -196,7 +197,7 @@ void str_to_init_tau (
         MALLOC(buf, length + 1);
         strcpy(buf, str);
         char *p = strtok(buf, ",");
-        do {
+        while (p != NULL) {
             int begin, end;
             char *q;
             if ((q = strpbrk(p, ":")) != NULL) {
@@ -208,10 +209,14 @@ void str_to_init_tau (
                 end = c_state_size;
             }
             double t = atof(p);
+            if (t < 1.0) {
+                t = 1.0;
+            }
             for (int i = begin; i < end; i++) {
                 tau[i] = t;
             }
-        } while ((p = strtok(NULL, ",")) != NULL);
+            p = strtok(NULL, ",");
+        }
         free(buf);
     }
 }

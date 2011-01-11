@@ -37,12 +37,17 @@ static int num_of_items_in_str (
         const char *str,
         const char *separator)
 {
-    int num = 1;
-    while ((str = strpbrk(str, separator)) != NULL) {
-        str++;
-        num++;
+    char *tmp;
+    MALLOC(tmp, strlen(str) + 1);
+    strcpy(tmp, str);
+    int n = 0;
+    char *p = strtok(tmp, separator);
+    while (p != NULL) {
+        n++;
+        p = strtok(NULL, separator);
     }
-    return num;
+    free(tmp);
+    return n;
 }
 
 static double* string_to_double (
@@ -71,18 +76,15 @@ static int str2vector (
 {
     int num = num_of_items_in_str(str, separator);
     MALLOC(*vector, num);
+    int n = 0;
     char *p = strtok(str, separator);
-    if (string_to_double(p, *vector) == NULL) {
-        print_error_msg("error at column 1");
-        goto error;
-    }
-    int n = 1;
-    while ((p = strtok(NULL, separator)) != NULL) {
+    while (p != NULL) {
         if (string_to_double(p, *vector + n) == NULL) {
             print_error_msg("error at column %d", n + 1);
             goto error;
         }
         n++;
+        p = strtok(NULL, separator);
     }
     return num;
 error:

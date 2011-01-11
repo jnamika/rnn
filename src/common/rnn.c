@@ -900,6 +900,9 @@ void rnn_set_uniform_tau (
         struct rnn_parameters *rnn_p,
         double tau)
 {
+    if (tau < 1) {
+        tau = 1;
+    }
     for (int i = 0; i < rnn_p->c_state_size; i++) {
         rnn_p->tau[i] = tau;
         rnn_p->eta[i] = 1.0 / tau;
@@ -912,6 +915,9 @@ void rnn_set_tau (
 {
     for (int i = 0; i < rnn_p->c_state_size; i++) {
         rnn_p->tau[i] = tau[i];
+        if (rnn_p->tau[i] < 1) {
+            rnn_p->tau[i] = 1;
+        }
         rnn_p->eta[i] = 1.0 / tau[i];
     }
 }
