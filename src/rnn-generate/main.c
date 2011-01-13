@@ -39,7 +39,8 @@ static void display_help (void)
     puts("rnn-generate  - a program to display output of recurrent neural "
             "networks");
     puts("");
-    puts("Usage: rnn-generate [-s seed] [-n length] [-i index] rnn-file");
+    puts("Usage: rnn-generate [-s seed] [-n length] [-i index] [-c] [-a] "
+            "rnn-file");
     puts("Usage: rnn-generate [-v] [-h]");
     puts("");
     puts("Available options are:");
@@ -54,6 +55,10 @@ static void display_help (void)
     puts("-i index");
     puts("    Index of an initial state corresponding to a training example. "
             "Default is " TO_STRING(INDEX) " (use a random initial state).");
+    puts("-c");
+    puts("    Displays context states instead of output.");
+    puts("-a");
+    puts("    Displays output and context states.");
     puts("-v");
     puts("    Prints the version information and exit.");
     puts("-h");
@@ -71,6 +76,43 @@ static void display_version (void)
     printf("rnn-generate version %s\n", TO_STRING(VERSION));
 }
 
+static void display_rnn_state (
+        struct rnn_runner *runner,
+        long length,
+        int mode)
+{
+    const int out_state_size = rnn_out_state_size_from_runner(runner);
+    const int c_state_size = rnn_c_state_size_from_runner(runner);
+    for (long n = 0; n < length; n++) {
+        update_rnn_runner(runner);
+        if (mode == 0) {
+            double *out_state = rnn_out_state_from_runner(runner);
+            printf("%f", out_state[0]);
+            for (int i = 1; i < out_state_size; i++) {
+                printf("\t%f", out_state[i]);
+            }
+            printf("\n");
+        } else if (mode == 1) {
+            double *c_inter_state = rnn_c_inter_state_from_runner(runner);
+            printf("%f", c_inter_state[0]);
+            for (int i = 1; i < c_state_size; i++) {
+                printf("\t%f", c_inter_state[i]);
+            }
+            printf("\n");
+        } else if (mode == 2) {
+            double *out_state = rnn_out_state_from_runner(runner);
+            double *c_inter_state = rnn_c_inter_state_from_runner(runner);
+            printf("%f", out_state[0]);
+            for (int i = 1; i < out_state_size; i++) {
+                printf("\t%f", out_state[i]);
+            }
+            for (int i = 0; i < c_state_size; i++) {
+                printf("\t%f", c_inter_state[i]);
+            }
+            printf("\n");
+        }
+    }
+}
 
 int main (int argc, char *argv[])
 {
@@ -80,12 +122,13 @@ int main (int argc, char *argv[])
     unsigned long seed;
     long length = LENGTH;
     int index = INDEX;
+    int mode = 0;
 
     // 0 < seed < 4294967296
     seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
 
     int opt;
-    while ((opt = getopt(argc, argv, "s:n:i:vh")) != -1) {
+    while ((opt = getopt(argc, argv, "s:n:i:cavh")) != -1) {
         switch (opt) {
             case 's':
                 seed = strtoul(optarg, NULL, 0);
@@ -95,6 +138,12 @@ int main (int argc, char *argv[])
                 break;
             case 'i':
                 index = atoi(optarg);
+                break;
+            case 'c':
+                mode = 1;
+                break;
+            case 'a':
+                mode = 2;
                 break;
             case 'v':
                 display_version();
@@ -130,15 +179,8 @@ int main (int argc, char *argv[])
     init_rnn_runner(&runner, fp);
     fclose(fp);
 
-    const int out_state_size = rnn_out_state_size_from_runner(&runner);
     set_init_state_of_rnn_runner(&runner, index);
-    for (long n = 0; n < length; n++) {
-        update_rnn_runner(&runner);
-        double *out_state = rnn_out_state_from_runner(&runner);
-        for (int i = 0; i < out_state_size; i++) {
-            printf("%f%c", out_state[i], i < out_state_size - 1 ? '\t' : '\n');
-        }
-    }
+    display_rnn_state(&runner, length, mode);
     free_rnn_runner(&runner);
 
 #ifdef ENABLE_MTRACE
