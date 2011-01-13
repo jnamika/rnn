@@ -6,7 +6,8 @@ import datetime
 from ctypes import *
 
 libc = cdll.LoadLibrary("libc.so.6")
-librunner = cdll.LoadLibrary("%s/librunner.so" % os.path.dirname(sys.argv[0]))
+librunner = cdll.LoadLibrary("%s/librunner.so" %
+        os.path.dirname(os.path.abspath(sys.argv[0])))
 
 libc.fopen.argtypes = [c_char_p, c_char_p]
 libc.fopen.restype = c_void_p
@@ -42,7 +43,7 @@ class rnn_runner:
 
     def init(self, file_name):
         fp = libc.fopen(file_name, "r")
-        if (fp):
+        if fp:
             self.free()
             self.librunner.init_rnn_runner(self.runner, fp)
             self.is_initialized = True
@@ -52,7 +53,7 @@ class rnn_runner:
                     file_name)
 
     def free(self):
-        if (self.is_initialized):
+        if self.is_initialized:
             self.librunner.free_rnn_runner(self.runner)
         self.is_initialized = False
 

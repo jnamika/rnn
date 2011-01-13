@@ -22,6 +22,7 @@ def read_parameter(f):
     r['in_state_size'] = re.compile(r'^# in_state_size')
     r['c_state_size'] = re.compile(r'^# c_state_size')
     r['out_state_size'] = re.compile(r'^# out_state_size')
+    r['output_type'] = re.compile(r'^# output_type')
     r['delay_length'] = re.compile(r'^# delay_length')
     r['lyapunov_spectrum_size'] = re.compile(r'^# lyapunov_spectrum_size')
     r['target_num'] = re.compile(r'^# target_num')
@@ -31,7 +32,7 @@ def read_parameter(f):
     for line in f:
         for k,v in r.iteritems():
             if (v.match(line)):
-                x = int(line.split('=')[1])
+                x = line.split('=')[1]
                 if k == 'target':
                     m = int(v.match(line).group(1))
                     if (k in params):
@@ -79,7 +80,7 @@ def print_state(f, epoch=None):
     if epoch == None:
         params = read_parameter(f)
         t = current_target(f)
-        length = params['target'][t]
+        length = int(params['target'][t])
         lines = tail_n(f, length + 3)
         flag = 0
         for line in lines:

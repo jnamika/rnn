@@ -10,14 +10,22 @@ def plot_state(f, filename, epoch):
     params = print_log.read_parameter(f)
     c_state_size = int(params['c_state_size'])
     out_state_size = int(params['out_state_size'])
+    output_type = params['output_type']
+    if re.search('STANDARD_TYPE', output_type):
+        yrange = 'set yrange [-1:1];'
+        pass
+    elif re.search('SOFTMAX_TYPE', output_type):
+        yrange = 'set yrange [0:1];'
+    else:
+        yrange = ''
     tmp = tempfile.NamedTemporaryFile()
     sys.stdout = tmp
     print_log.print_state(f, epoch)
     sys.stdout.flush()
     type = {}
-    type['Target'] = (out_state_size, lambda x: 2 * x + 2)
-    type['Output'] = (out_state_size, lambda x: 2 * x + 3)
-    type['Context'] = (c_state_size, lambda x: x + 2 * out_state_size + 2)
+    type['Target'] = (out_state_size, lambda x: 2 * x + 2, yrange)
+    type['Output'] = (out_state_size, lambda x: 2 * x + 3, yrange)
+    type['Context'] = (c_state_size, lambda x: x + 2 * out_state_size + 2, '')
     for k,v in type.iteritems():
         p = subprocess.Popen(['gnuplot -persist'], stdin=subprocess.PIPE,
                 shell=True)
@@ -25,6 +33,7 @@ def plot_state(f, filename, epoch):
         p.stdin.write("set title 'Type=%s  File=%s';" % (k, filename))
         p.stdin.write("set xlabel 'Time step';")
         p.stdin.write("set ylabel '%s';" % k)
+        p.stdin.write(v[2])
         command = ["plot "]
         for i in xrange(v[0]):
             command.append("'%s' u 1:%d w l," % (tmp.name, v[1](i)))
@@ -200,6 +209,25 @@ def plot_entropy(f, filename):
         p.stdin.write(''.join(command)[:-1])
         p.stdin.write('\n')
 
+def plot_unknown(f, filename):
+    p = re.compile(r'(^#)|(^$)')
+    columns = -1
+    f.seek(0)
+    for line in f:
+        if (p.match(line) == None):
+            n = len(line[:-1].split())
+            if (columns == -1 or columns > n):
+                columns = n
+    p = subprocess.Popen(['gnuplot -persist'], stdin=subprocess.PIPE,
+            shell=True)
+    p.stdin.write("set nokey;")
+    p.stdin.write("set title 'Type=Unknown  File=%s';" % filename)
+    command = ["plot "]
+    for i in xrange(columns):
+        command.append("'%s' u %d w l," % (filename, i + 1))
+    p.stdin.write(''.join(command)[:-1])
+    p.stdin.write('\n')
+
 def plot_log(files, epoch=None):
     for file in files:
         f = open(file, 'r')
@@ -224,6 +252,8 @@ def plot_log(files, epoch=None):
             plot_lyapunov(f, file)
         elif (re.compile(r'^# ENTROPY FILE').match(line)):
             plot_entropy(f, file)
+        else:
+            plot_unknown(f, file)
         f.close()
 
 

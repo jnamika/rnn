@@ -801,7 +801,7 @@ static void setup_parameters (
 {
     gp->inp.adapt_lr = 1.0;
     gp->inp.init_epoch = 0;
-    if (strlen(gp->iop.load_filename) == 0) {
+    if (strlen(gp->iop.load_filename) == 0 && t_reader->num) {
         MALLOC(gp->inp.has_connection_ci, gp->mp.c_state_size);
         MALLOC(gp->inp.has_connection_cc, gp->mp.c_state_size);
         MALLOC(gp->inp.has_connection_oc, t_reader->dimension);

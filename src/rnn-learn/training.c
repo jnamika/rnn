@@ -208,7 +208,11 @@ static void save_rnn (
 {
     FILE *fp;
     long init_epoch;
-    init_epoch = gp->mp.epoch_size + 1;
+    if (gp->mp.epoch_size >= 0) {
+        init_epoch = gp->mp.epoch_size + 1;
+    } else {
+        init_epoch = 0;
+    }
     if ((fp = fopen(gp->iop.save_filename, "wb")) == NULL) {
         print_error_msg("cannot open %s", gp->iop.save_filename);
         exit(EXIT_FAILURE);

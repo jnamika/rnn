@@ -1,19 +1,27 @@
-seed=271497
+seed=101177
 
 epoch_size=10000
-print_interval=100
+print_interval=1000
+print_init=0
+print_end=10000
+use_logscale_interval
 
 rho=0.001
 momentum=0.9
 
 use_adaptive_lr
 
-c_state_size=20
+c_state_size=30
 output_type=1
+#fixed_weight
+#fixed_threshold
 fixed_tau
-init_tau=2.0
+#fixed_init_c_state
+#fixed_sigma
+init_tau=10.0
 
 delay_length=1
+prior_strength=0
 
 truncate_length=0
 block_length=3
@@ -33,4 +41,3 @@ closed_error_file=closed_error.log
 lyapunov_file=lyapunov.log
 entropy_file=entropy.log
 save_file=rnn.dat
-
