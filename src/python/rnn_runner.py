@@ -5,15 +5,8 @@ import os
 import datetime
 from ctypes import *
 
-libc = cdll.LoadLibrary("libc.so.6")
 librunner = cdll.LoadLibrary("%s/librunner.so" %
         os.path.dirname(os.path.abspath(sys.argv[0])))
-
-libc.fopen.argtypes = [c_char_p, c_char_p]
-libc.fopen.restype = c_void_p
-libc.fclose.argtypes = [c_void_p]
-libc.fwrite.argtypes = [c_void_p, c_uint, c_uint, c_void_p]
-libc.fread.argtypes = [c_void_p, c_uint, c_uint, c_void_p]
 
 librunner.init_genrand.argtype = c_ulong
 librunner.rnn_in_state_from_runner.restype = POINTER(c_double)
@@ -42,15 +35,9 @@ class rnn_runner:
         self.librunner._delete_rnn_runner(self.runner)
 
     def init(self, file_name):
-        fp = libc.fopen(file_name, "r")
-        if fp:
-            self.free()
-            self.librunner.init_rnn_runner(self.runner, fp)
-            self.is_initialized = True
-            libc.fclose(fp)
-        else:
-            raise IOError("[Errno 2] No such file or directory: '%s'" %
-                    file_name)
+        self.free()
+        self.librunner.init_rnn_runner_with_filename(self.runner, file_name)
+        self.is_initialized = True
 
     def free(self):
         if self.is_initialized:

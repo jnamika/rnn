@@ -7,7 +7,7 @@ if [ "$1" = clean ]; then
     exit
 fi
 
-echo "
+cat <<EOS | python > target.txt
 import sys
 import re
 sys.path.append('$my_path')
@@ -17,7 +17,7 @@ for n in xrange(4):
     sys.stdout = open(file, 'w')
     gen_target.print_Reber_grammar(50, 100)
     sys.stdout = sys.__stdout__
-" | python
+EOS
 
 $my_path/rnn-learn -c config.txt target*.txt
 $my_path/rnn-generate -n 2000 rnn.dat > orbit.log

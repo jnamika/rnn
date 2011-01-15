@@ -42,7 +42,7 @@ $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
 $(BIN_DIR)/$(TARGET): $(OBJS)
-	$(CC) -shared -Wl,-soname,$@.$(VERSION) -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
+	$(CC) -shared -o $@ $(OBJS) $(CFLAGS) $(SYSLIBS)
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)

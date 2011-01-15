@@ -63,6 +63,22 @@ void init_rnn_runner (
 }
 
 
+void init_rnn_runner_with_filename (
+        struct rnn_runner *runner,
+        const char *filename)
+{
+    FILE *fp;
+    fp = fopen(filename, "rb");
+    if (fp != NULL) {
+        init_rnn_runner(runner, fp);
+        fclose(fp);
+    } else {
+        print_error_msg("cannot open %s", filename);
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 void free_rnn_runner (struct rnn_runner *runner)
 {
     free_recurrent_neural_network(&runner->rnn);

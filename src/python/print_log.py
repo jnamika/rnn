@@ -8,7 +8,7 @@ def tail_n(f, n=10, offset=0):
     to_read = n + offset
     while 1:
         try:
-            f.seek(-(avg_length * to_read), 2)
+            f.seek(-int(avg_length * to_read), 2)
         except IOError:
             f.seek(0)
         pos = f.tell()

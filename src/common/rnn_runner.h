@@ -36,6 +36,10 @@ void init_rnn_runner (
         struct rnn_runner *runner,
         FILE *fp);
 
+void init_rnn_runner_with_filename (
+        struct rnn_runner *runner,
+        const char *filename);
+
 void free_rnn_runner (struct rnn_runner *runner);
 
 void set_init_state_of_rnn_runner (
