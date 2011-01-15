@@ -39,7 +39,7 @@ EOS
 }
 
 
-while getopts s:n:c:b:d:f:vh OPT
+while getopts s:n:c:t:b:d:f:vh OPT
 do
     case $OPT in
         s ) seed=${OPTARG};;

@@ -228,40 +228,40 @@ def plot_unknown(f, filename):
     p.stdin.write(''.join(command)[:-1])
     p.stdin.write('\n')
 
-def plot_log(files, epoch=None):
-    for file in files:
-        f = open(file, 'r')
-        line = f.readline()
-        if (re.compile(r'^# STATE FILE').match(line)):
-            plot_state(f, file, epoch)
-        elif (re.compile(r'^# WEIGHT FILE').match(line)):
-            plot_weight(f, file)
-        elif (re.compile(r'^# THRESHOLD FILE').match(line)):
-            plot_threshold(f, file)
-        elif (re.compile(r'^# TAU FILE').match(line)):
-            plot_tau(f, file)
-        elif (re.compile(r'^# SIGMA FILE').match(line)):
-            plot_sigma(f, file)
-        elif (re.compile(r'^# INIT FILE').match(line)):
-            plot_init(f, file, epoch)
-        elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
-            plot_adapt_lr(f, file)
-        elif (re.compile(r'^# ERROR FILE').match(line)):
-            plot_error(f, file)
-        elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
-            plot_lyapunov(f, file)
-        elif (re.compile(r'^# ENTROPY FILE').match(line)):
-            plot_entropy(f, file)
-        else:
-            plot_unknown(f, file)
-        f.close()
+def plot_log(f, file, epoch=None):
+    line = f.readline()
+    if (re.compile(r'^# STATE FILE').match(line)):
+        plot_state(f, file, epoch)
+    elif (re.compile(r'^# WEIGHT FILE').match(line)):
+        plot_weight(f, file)
+    elif (re.compile(r'^# THRESHOLD FILE').match(line)):
+        plot_threshold(f, file)
+    elif (re.compile(r'^# TAU FILE').match(line)):
+        plot_tau(f, file)
+    elif (re.compile(r'^# SIGMA FILE').match(line)):
+        plot_sigma(f, file)
+    elif (re.compile(r'^# INIT FILE').match(line)):
+        plot_init(f, file, epoch)
+    elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
+        plot_adapt_lr(f, file)
+    elif (re.compile(r'^# ERROR FILE').match(line)):
+        plot_error(f, file)
+    elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
+        plot_lyapunov(f, file)
+    elif (re.compile(r'^# ENTROPY FILE').match(line)):
+        plot_entropy(f, file)
+    else:
+        plot_unknown(f, file)
 
 
 def main():
     epoch = None
     if str.isdigit(sys.argv[1]):
         epoch = int(sys.argv[1])
-    plot_log(sys.argv[2:], epoch)
+    for file in sys.argv[2:]:
+        f = open(file, 'r')
+        plot_log(f, file, epoch)
+        f.close()
 
 
 if __name__ == "__main__":

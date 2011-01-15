@@ -53,11 +53,11 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
     f1 = {}
     for i in xrange(samples):
         runner.set_time_series_id(-1)
-        for x,y in runner.closed_loop(truncate_length):
+        for x in runner.closed_loop(truncate_length):
             pass
         sequence = []
-        for x,y in runner.closed_loop(length):
-            s = tuple(map(func, x))
+        for x in runner.closed_loop(length):
+            s = tuple(map(func, x[0]))
             sequence.append(s)
         f1 = append_sequence_to_frequency(sequence, block_length, f1)
     p = re.compile(r'(^#)|(^$)')
