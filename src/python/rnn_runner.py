@@ -5,7 +5,7 @@ import os
 import datetime
 from ctypes import *
 
-librunner = cdll.LoadLibrary("%s/librunner.so" %
+librunner = cdll.LoadLibrary('%s/librunner.so' %
         os.path.dirname(os.path.abspath(sys.argv[0])))
 
 librunner.init_genrand.argtype = c_ulong
@@ -23,7 +23,7 @@ def init_genrand(seed):
     librunner.init_genrand(c_ulong(seed % 4294967295 + 1))
 
 
-class rnn_runner:
+class RNNRunner:
     def __init__(self, librunner=librunner):
         self.runner = c_void_p()
         self.librunner = librunner
@@ -107,12 +107,12 @@ def main():
             sys.argv[1:4])
     rnn_file = sys.argv[4]
     init_genrand(seed)
-    runner = rnn_runner()
+    runner = RNNRunner()
     runner.init(rnn_file)
     runner.set_time_series_id(index)
     for x,y in runner.closed_loop(steps):
         print '\t'.join([str(x) for x in x])
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

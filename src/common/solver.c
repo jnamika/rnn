@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "mt19937ar.h"
 
 #include "solver.h"
 #include "utils.h"
@@ -43,6 +42,20 @@ static int check_in_box (const double* vector, const double* median_point,
 
 
 /*
+ * A function pointer to compute Jacobian matrix
+ *
+ *   @parameter  vector : n-dimensional vector
+ *   @parameter    n    : dimension
+ *   @parameter    t    : current time step
+ *   @parameter  matrix : Jacobian matrix
+ *   @parameter   obj   : object
+ *
+ *   @return            : Jacobian matrix (returns NULL on failure)
+ */
+typedef double** (*jacobian_map)(const double* vector, int n, int t,
+        double** matrix, void *obj);
+
+/*
  * returns the Lyapunov spectrum from n-dimensional time series by using the
  * Jacobian matrix
  *
@@ -51,19 +64,29 @@ static int check_in_box (const double* vector, const double* median_point,
  *   @parameter  m        : number of Lyapunov exponents
  *   @parameter  n        : dimension of time series
  *   @parameter  T        : interval to compute Gram-Schmidt orthogonalization
- *   @parameter  pfunc    : function pointer to compute Jacobian matrix
- *   @parameter  obj      : object used in pfunc
+ *   @parameter  func     : function pointer to compute Jacobian matrix
+ *   @parameter  obj      : object used in func
  *   @parameter  spectrum : Lyapunov spectrum (result)
  *   @parameter  matrix   : Jacobian matrix (temporal data cache)
  *   @parameter  vector   : orthogonal vector (temporal data cache)
  *
  *   @return              : Lyapunov spectrum
  */
-double* lyapunov_spectrum (const double* const *data, int t, int m, int n,
-        int T, Jacobian_matrix pfunc, void *obj, double* spectrum,
-        double **matrix, double ***vector)
+double* lyapunov_spectrum (
+        const double* const *data,
+        int t,
+        int m,
+        int n,
+        int T,
+        jacobian_map func,
+        void *obj,
+        double* spectrum,
+        double **matrix,
+        double ***vector)
 {
-    if (m < 1 || n < 1) return spectrum;
+    if (m < 1 || n < 1) {
+        return spectrum;
+    }
 
     double tmp_vec[n];
     int flag_matrix_alloc, flag_vector_alloc;
@@ -112,7 +135,9 @@ double* lyapunov_spectrum (const double* const *data, int t, int m, int n,
     /* computing the Lyapunov spectrum */
     for (int i = 0; i < t; i++) {
         /* computing Jacobian matrix */
-        if (pfunc(data[i], n, i, matrix, obj) == NULL) return NULL;
+        if (func(data[i], n, i, matrix, obj) == NULL) {
+            return NULL;
+        }
         for (int j = 0; j < m; j++) {
             for (int k = 0; k <= j; k++) {
                 product((const double* const*)matrix, vector[j][k],
@@ -161,7 +186,10 @@ double* lyapunov_spectrum (const double* const *data, int t, int m, int n,
  *   @parameter  m      : number of vectors
  *   @parameter  n      : dimension of vectors (m <= n)
  */
-void gram_schmidt_orthogonalization (double** vector, int m, int n)
+void gram_schmidt_orthogonalization (
+        double** vector,
+        int m,
+        int n)
 {
     if (m <= 1) return;
 
@@ -197,7 +225,11 @@ void gram_schmidt_orthogonalization (double** vector, int m, int n)
  *
  *   @return            : maximum Lyapunov exponent
  */
-double lyapunov_exponent_sss (const double* const *data, int t, int n, int T,
+double lyapunov_exponent_sss (
+        const double* const *data,
+        int t,
+        int n,
+        int T,
         int N)
 {
     if (t <= T) return 0;
@@ -205,7 +237,7 @@ double lyapunov_exponent_sss (const double* const *data, int t, int n, int T,
     double lyap_exp = 0;
     for (int i = 0; i < N; i++) {
         /* selects a sample from data randomly */
-        int I = genrand_int32() % (t-T);
+        int I = xor128() % (t-T);
         int J = index_of_nearest_point((const double* const*)data, I, t-T, n);
         double dist_0 = get_distance(data[I], data[J], n);
         double dist_T = get_distance(data[I+T], data[J+T], n);
@@ -232,7 +264,10 @@ double lyapunov_exponent_sss (const double* const *data, int t, int n, int T,
  *
  *   @return            : maximum Lyapunov exponent
  */
-double lyapunov_exponent_wolf (const double* const *data, int t, int n,
+double lyapunov_exponent_wolf (
+        const double* const *data,
+        int t,
+        int n,
         double epsilon)
 {
     int I, J, T;
@@ -270,7 +305,11 @@ double lyapunov_exponent_wolf (const double* const *data, int t, int n,
  *
  *   @return               : number of hypercubes containing of data
  */
-int box_counter (const double* const *data, int t, int n, double epsilon,
+int box_counter (
+        const double* const *data,
+        int t,
+        int n,
+        double epsilon,
         int* box_count)
 {
     const double* median_points[t];
@@ -306,8 +345,13 @@ int box_counter (const double* const *data, int t, int n, double epsilon,
  *
  *   @return              : generalized dimension
  */
-double generalized_dimension (const double* const *data, int t, int n,
-        double epsilon, double q, int* box_num)
+double generalized_dimension (
+        const double* const *data,
+        int t,
+        int n,
+        double epsilon,
+        double q,
+        int* box_num)
 {
     double dim;
     int box_count[t];
@@ -338,8 +382,12 @@ double generalized_dimension (const double* const *data, int t, int n,
  * This function computes the capacity dimension
  * (generalized dimension with q==0)
  */
-double capacity_dimension (const double* const *data, int t, int n,
-        double epsilon, int* box_num)
+double capacity_dimension (
+        const double* const *data,
+        int t,
+        int n,
+        double epsilon,
+        int* box_num)
 {
     return generalized_dimension(data, t, n, epsilon, 0, box_num);
 }
@@ -348,8 +396,12 @@ double capacity_dimension (const double* const *data, int t, int n,
  * This function computes the information dimension
  * (generalized dimension with q==1)
  */
-double information_dimension (const double* const *data, int t, int n,
-        double epsilon, int* box_num)
+double information_dimension (
+        const double* const *data,
+        int t,
+        int n,
+        double epsilon,
+        int* box_num)
 {
     return generalized_dimension(data, t, n, epsilon, 1, box_num);
 }
@@ -358,8 +410,12 @@ double information_dimension (const double* const *data, int t, int n,
  * This function computes the correlation dimension
  * (generalized dimension with q==2)
  */
-double correlation_dimension (const double* const *data, int t, int n,
-        double epsilon, int* box_num)
+double correlation_dimension (
+        const double* const *data,
+        int t,
+        int n,
+        double epsilon,
+        int* box_num)
 {
     return generalized_dimension(data, t, n, epsilon, 2, box_num);
 }
@@ -379,7 +435,10 @@ double correlation_dimension (const double* const *data, int t, int n,
  *
  *   @return                    : length of embedding_data
  */
-int get_embedding_data (const double* data, int t, int n,
+int get_embedding_data (
+        const double* data,
+        int t,
+        int n,
         double** embedding_data)
 {
     const int emb_num = t - n + 1;
@@ -479,7 +538,10 @@ static double get_distance (const double* vector1, const double* vector2,
     return sqrt(dist);
 }
 
-static int index_of_nearest_point (const double* const *data, int I, int t,
+static int index_of_nearest_point (
+        const double* const *data,
+        int I,
+        int t,
         int n)
 {
     int J = (I+1) % t;
@@ -496,15 +558,22 @@ static int index_of_nearest_point (const double* const *data, int I, int t,
 }
 
 static int index_of_nearest_point_in_epsilon_neighborhood (
-        const double* const *data, int I, int t, int n, double epsilon)
+        const double* const *data,
+        int I,
+        int t,
+        int n,
+        double epsilon)
 {
     int J = index_of_nearest_point(data, I, t, n);
     if (get_distance(data[I], data[J], n) > epsilon) return -1;
     return J;
 }
 
-static int check_in_box (const double* vector, const double* median_point,
-        int n, double epsilon)
+static int check_in_box (
+        const double* vector,
+        const double* median_point,
+        int n,
+        double epsilon)
 {
     for (int i = 0; i < n; i++) {
         if (vector[i] < median_point[i]-(epsilon/2) ||

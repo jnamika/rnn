@@ -19,7 +19,6 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#include "mt19937ar.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

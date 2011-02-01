@@ -21,7 +21,6 @@
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
-#include "mt19937ar.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -87,7 +86,7 @@ static void display_version (void)
 static void init_parameters (struct analysis_parameters *ap)
 {
     // 0 < seed < 4294967296
-    ap->seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
+    ap->seed = (((unsigned long)(time(NULL) * getpid())) % 4294967295) + 1;
     ap->length = LENGTH;
     ap->sample_num = SAMPLE_NUM;
     ap->mem_size = MEM_SIZE;

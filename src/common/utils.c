@@ -16,13 +16,55 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <math.h>
 #include <string.h>
-#include "mt19937ar.h"
 
 #include "utils.h"
 
+
+
+static uint32_t x = 123456789;
+static uint32_t y = 362436069;
+static uint32_t z = 521288629;
+static uint32_t w = 88675123;
+
+uint32_t xor128(void)
+{
+    uint32_t t;
+    t = x ^ (x << 11);
+    x = y; y = z; z = w;
+    return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+}
+
+void init_xor128(uint32_t s)
+{
+    x = s;
+    y = 1812433253 * (x^(x>>30)) + 1;
+    z = 1812433253 * (y^(y>>30)) + 2;
+    w = 1812433253 * (z^(z>>30)) + 3;
+}
+
+void init_genrand(unsigned long s)
+{
+    init_xor128((uint32_t)(s & UINT32_MAX));
+}
+
+double genrand_real1(void)
+{
+    return ((double)xor128())/UINT32_MAX;
+}
+
+double genrand_real2(void)
+{
+    return ((double)xor128())/(UINT32_MAX + 1.0);
+}
+
+double genrand_real3(void)
+{
+    return ((double)xor128() + 0.5)/(UINT32_MAX + 1.0);
+}
 
 #ifndef _GNU_SOURCE
 

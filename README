@@ -1,7 +1,7 @@
 Recurrent neural network package for problems of time-series prediction and generation
 
 Copyright (c) 2009-2011, Jun Namikawa <jnamika@gmail.com>
-License: ISC license (BSD license: mt19937ar.c)
+License: ISC license
 
 This package implements a gradient-based learning algorithm for recurrent neural networks.
 The package supports

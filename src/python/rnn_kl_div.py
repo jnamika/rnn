@@ -77,12 +77,12 @@ def main():
             map(lambda x: int(x) if str.isdigit(x) else 0, sys.argv[1:7])
     rnn_file = sys.argv[7]
     rnn_runner.init_genrand(seed)
-    runner = rnn_runner.rnn_runner()
+    runner = rnn_runner.RNNRunner()
     runner.init(rnn_file)
     print get_KL_div(length, samples, truncate_length, block_length,
             divide_num, runner, sys.argv[8:])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

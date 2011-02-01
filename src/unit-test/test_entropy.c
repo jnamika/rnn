@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "mt19937ar.h"
 
 #include "minunit.h"
 #include "my_assert.h"
@@ -127,8 +126,8 @@ static void test_kullback_leibler_divergence (void)
     init_genrand(61107L);
     for (int i = 0; i < 10; i++) {
         for (int n = 0; n < length; n++) {
-            x[n] = genrand_int32() % 2;
-            y[n] = genrand_int32() % 2;
+            x[n] = xor128() % 2;
+            y[n] = xor128() % 2;
         }
         for (int n = 1; n < max_block_length; n++) {
             init_block_frequency(&bf_x, x, length, n);

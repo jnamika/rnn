@@ -21,7 +21,6 @@
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
-#include "mt19937ar.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -125,7 +124,7 @@ int main (int argc, char *argv[])
     int mode = 0;
 
     // 0 < seed < 4294967296
-    seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
+    seed = (((unsigned long)(time(NULL) * getpid())) % 4294967295) + 1;
 
     int opt;
     while ((opt = getopt(argc, argv, "s:n:i:cavh")) != -1) {

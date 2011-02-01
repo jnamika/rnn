@@ -19,7 +19,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
-#include "mt19937ar.h"
 
 #include "minunit.h"
 #include "my_assert.h"

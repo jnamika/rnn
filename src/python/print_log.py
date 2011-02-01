@@ -114,14 +114,14 @@ def print_weight(f, epoch=None):
         for i in xrange(out_state_size):
             w_c2o.append(s[:c_state_size])
             s = s[c_state_size:]
-        print "epoch : %s" % epoch
-        print "weight (input to context)"
+        print 'epoch : %s' % epoch
+        print 'weight (input to context)'
         for w in w_i2c:
             print '\t'.join([str(x) for x in w])
-        print "weight (context to context)"
+        print 'weight (context to context)'
         for w in w_c2c:
             print '\t'.join([str(x) for x in w])
-        print "weight (context to output)"
+        print 'weight (context to output)'
         for w in w_c2o:
             print '\t'.join([str(x) for x in w])
 
@@ -137,10 +137,10 @@ def print_threshold(f, epoch=None):
         t_c = s[:c_state_size]
         s = s[c_state_size:]
         t_o = s[:out_state_size]
-        print "epoch : %s" % epoch
-        print "threshold (context)"
+        print 'epoch : %s' % epoch
+        print 'threshold (context)'
         print '\t'.join([str(x) for x in t_c])
-        print "threshold (output)"
+        print 'threshold (output)'
         print '\t'.join([str(x) for x in t_o])
 
 def print_tau(f, epoch=None):
@@ -150,8 +150,8 @@ def print_tau(f, epoch=None):
     if s != None:
         epoch = s[0]
         tau = s[1:]
-        print "epoch : %s" % epoch
-        print "time constant"
+        print 'epoch : %s' % epoch
+        print 'time constant'
         print '\t'.join([str(x) for x in tau])
 
 def print_sigma(f, epoch=None):
@@ -160,9 +160,9 @@ def print_sigma(f, epoch=None):
         epoch = s[0]
         sigma = s[1]
         variance = s[2]
-        print "epoch : %s" % epoch
-        print "sigma : %s" % sigma
-        print "variance : %s" % variance
+        print 'epoch : %s' % epoch
+        print 'sigma : %s' % sigma
+        print 'variance : %s' % variance
 
 
 def print_init(f, epoch=None):
@@ -190,16 +190,16 @@ def print_adapt_lr(f, epoch=None):
     if s != None:
         epoch = s[0]
         adapt_lr = s[1]
-        print "epoch : %s" % epoch
-        print "adaptive learning rate: %s" % adapt_lr
+        print 'epoch : %s' % epoch
+        print 'adaptive learning rate: %s' % adapt_lr
 
 def print_error(f, epoch=None):
     s = current_line(f, epoch)
     if s != None:
         epoch = s[0]
         error = s[1:]
-        print "epoch : %s" % epoch
-        print "error / (length * dimension)"
+        print 'epoch : %s' % epoch
+        print 'error / (length * dimension)'
         print '\t'.join([str(x) for x in error])
 
 def print_lyapunov(f, epoch=None):
@@ -210,13 +210,13 @@ def print_lyapunov(f, epoch=None):
     if s != None:
         epoch = s[0]
         s = s[1:]
-        print "epoch : %s" % epoch
-        line = ["target"]
+        print 'epoch : %s' % epoch
+        line = ['target']
         for i in xrange(ls_size):
-            line.append("lyapunov[%d]" % i)
+            line.append('lyapunov[%d]' % i)
         print '\t'.join(line)
         for i in xrange(target_num):
-            print "%d\t%s" % (i, '\t'.join([str(x) for x in s[:ls_size]]))
+            print '%d\t%s' % (i, '\t'.join([str(x) for x in s[:ls_size]]))
             s = s[ls_size:]
 
 def print_entropy(f, epoch=None):
@@ -226,12 +226,12 @@ def print_entropy(f, epoch=None):
     if s != None:
         epoch = s[0]
         s = s[1:]
-        print "epoch : %s" % epoch
+        print 'epoch : %s' % epoch
         line = ['target', 'KL-divergence', 'generation-rate',
                 'entropy(target)', 'entropy(out)']
         print '\t'.join(line)
         for i in xrange(target_num):
-            print "%d\t%s" % (i, '\t'.join([str(x) for x in s[:4]]))
+            print '%d\t%s' % (i, '\t'.join([str(x) for x in s[:4]]))
             s = s[4:]
 
 
@@ -269,6 +269,6 @@ def main():
         f.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

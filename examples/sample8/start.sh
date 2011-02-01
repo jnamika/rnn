@@ -7,7 +7,7 @@ if [ "$1" = clean ]; then
     exit
 fi
 
-cat <<EOS | python > target.txt
+cat <<EOS | python
 import sys
 import re
 sys.path.append('$my_path')

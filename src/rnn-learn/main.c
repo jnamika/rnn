@@ -24,7 +24,6 @@
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
-#include "mt19937ar.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -151,7 +150,7 @@ static char* salloc (
 static void init_parameters (struct general_parameters *gp)
 {
     // 0 < seed < 4294967296
-    gp->mp.seed = (((unsigned long)time(NULL)) % 4294967295) + 1;
+    gp->mp.seed = (((unsigned long)(time(NULL) * getpid())) % 4294967295) + 1;
     gp->mp.epoch_size = EPOCH_SIZE;
     gp->mp.use_adaptive_lr = 0;
     gp->mp.rho = RHO;

@@ -216,7 +216,7 @@ def print_Lorenz_attractor(length, tau=1, truncate_length=0):
         x = v[0] / 25
         y = v[1] / 35
         z = (v[2] / 50) - 0.5
-        print "%f\t%f\t%f" % (x, y, z)
+        print '%f\t%f\t%f' % (x, y, z)
 
 
 def print_van_der_Pol_attractor(length, a=1, truncate_length=0):
@@ -224,7 +224,7 @@ def print_van_der_Pol_attractor(length, a=1, truncate_length=0):
             truncate_length=truncate_length):
         x = 0.2 * v[0]
         y = 0.2 * v[1]
-        print "%f\t%f" % (x, y)
+        print '%f\t%f' % (x, y)
 
 
 def print_comp_Lissajous_08curves(length, period, probability=0.5,
@@ -384,34 +384,34 @@ def print_golden_mean_shift(length, truncate_length=0, probability=0.5,
         output_type='tanh'):
     for x in generate_golden_mean_shift(length, truncate_length, probability):
         if (output_type == 'tanh'):
-            print "%d" % 1 if x == 1 else -1
+            print '%d' % 1 if x == 1 else -1
         elif (output_type == 'softmax'):
             y = 0 if x == 1 else 1
-            print "%d\t%d" % (x, y)
+            print '%d\t%d' % (x, y)
         else:
-            print "%d" % x
+            print '%d' % x
 
 def print_01x_shift(length, truncate_length=0, probability=0.5,
         output_type='tanh'):
     for x in generate_01x_shift(length, truncate_length, probability):
         if (output_type == 'tanh'):
-            print "%d" % 1 if x == 1 else -1
+            print '%d' % 1 if x == 1 else -1
         elif (output_type == 'softmax'):
             y = 0 if x == 1 else 1
-            print "%d\t%d" % (x, y)
+            print '%d\t%d' % (x, y)
         else:
-            print "%d" % x
+            print '%d' % x
 
 
 def print_Morse_shift(length, truncate_length=0, output_type='tanh'):
     for x in generate_Morse_shift(length, truncate_length=truncate_length):
         if (output_type == 'tanh'):
-            print "%d" % 1 if x == 1 else -1
+            print '%d' % 1 if x == 1 else -1
         elif (output_type == 'softmax'):
             y = 0 if x == 1 else 1
-            print "%d\t%d" % (x, y)
+            print '%d\t%d' % (x, y)
         else:
-            print "%d" % x
+            print '%d' % x
 
 def print_Reber_grammar(length, truncate_length=0, probability=0.5):
     s = {'T':0, 'P':1, 'S':2, 'X':3, 'V':4, 'E':5, 'B':6}
@@ -437,6 +437,6 @@ def main():
     print_Reber_grammar(100)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 

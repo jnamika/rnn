@@ -65,6 +65,16 @@
 #endif
 
 
+#include <stdint.h>
+
+uint32_t xor128(void);
+void init_xor128(uint32_t s);
+void init_genrand(unsigned long s);
+double genrand_real1(void);
+double genrand_real2(void);
+double genrand_real3(void);
+
+
 #include <sys/types.h>
 
 ssize_t getline (char **lineptr, size_t *n, FILE *fp);
