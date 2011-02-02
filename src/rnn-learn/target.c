@@ -60,8 +60,7 @@ static double* string_to_double (
     if (endptr == str) {
         print_error_msg("no digits were found");
         return NULL;
-    } else if ((errno == ERANGE && (*x == HUGE_VAL || *x == -HUGE_VAL)) ||
-            (errno != 0 && *x == 0)) {
+    } else if (errno == ERANGE) {
         print_error_msg();
         errno = 0;
         return NULL;

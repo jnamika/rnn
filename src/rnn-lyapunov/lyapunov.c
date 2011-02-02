@@ -65,8 +65,8 @@ static double gauss_dev()
             v1 = 2.0 * genrand_real1() - 1.0;
             v2 = 2.0 * genrand_real1() - 1.0;
             rsq = v1*v1 + v2*v2;
-        } while (rsq >= 1.0 || rsq == 0.0);
-        fac = sqrt(-2.0*log(rsq)/rsq);
+        } while (rsq >= 1.0 || fpclassify(rsq) == FP_ZERO);
+        fac = sqrt(-2.0 * log(rsq) / rsq);
         gset = v1 * fac;
         iset = 1;
         return v2 * fac;
@@ -113,8 +113,8 @@ void compute_lyapunov_main (
         for (long n = 0; n < ap->truncate_length; n++) {
             update_rnn_runner_with_noise(runner, ap->noise_deviation);
         }
-        for (int i = 0; i < spectrum_size; i++) {
-            lyapunov[i] = 0;
+        for (int j = 0; j < spectrum_size; j++) {
+            lyapunov[j] = 0;
         }
         for (long n = 0; n < ap->length; n++) {
             int m = (int)(n % rnn_s->length);
@@ -122,8 +122,8 @@ void compute_lyapunov_main (
             memcopy_rnn_state(rnn_s, rnn_state_from_runner(runner), m, 0);
             if ((m+1) >= rnn_s->length) {
                 rnn_lyapunov_spectrum(&rl_info, tmp, spectrum_size);
-                for (int i = 0; i < spectrum_size; i++) {
-                    lyapunov[i] += tmp[i] * rnn_s->length;
+                for (int j = 0; j < spectrum_size; j++) {
+                    lyapunov[j] += tmp[j] * rnn_s->length;
                 }
             }
         }
@@ -131,8 +131,8 @@ void compute_lyapunov_main (
             int len = rnn_s->length;
             rnn_s->length = ap->length % rnn_s->length;
             rnn_lyapunov_spectrum(&rl_info, tmp, spectrum_size);
-            for (int i = 0; i < spectrum_size; i++) {
-                lyapunov[i] += tmp[i] * rnn_s->length;
+            for (int j = 0; j < spectrum_size; j++) {
+                lyapunov[j] += tmp[j] * rnn_s->length;
             }
             rnn_s->length = len;
         }

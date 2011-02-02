@@ -114,9 +114,8 @@ double kullback_leibler_divergence (
     const int *y = bf_y->sequence;
     double kl_div = 0;
     for (int m = 0; m < bf_x->size; m++) {
-        double p = bf_x->count[m];
+        double p = 1.0 * bf_x->count[m];
         double q = NO_EXIST_FREQUENCY;
-        int has_item = 0;
         for (int n = 0; n < bf_y->size; n++) {
             int is_equal = 1;
             for (int i = 0; i < bf_x->block_length; i++) {
@@ -126,15 +125,14 @@ double kullback_leibler_divergence (
                 }
             }
             if (is_equal) {
-                has_item = 1;
-                q = bf_y->count[n];
+                q = 1.0 * bf_y->count[n];
                 break;
             }
         }
         kl_div += p * (log(p/q) + r);
     }
     for (int m = 0; m < bf_y->size; m++) {
-        double q = bf_y->count[m];
+        double q = 1.0 * bf_y->count[m];
         double p = NO_EXIST_FREQUENCY;
         int has_item = 0;
         for (int n = 0; n < bf_x->size; n++) {
