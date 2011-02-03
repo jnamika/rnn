@@ -234,6 +234,14 @@ def print_entropy(f, epoch=None):
             print '%d\t%s' % (i, '\t'.join([str(x) for x in s[:4]]))
             s = s[4:]
 
+def print_period(f, epoch=None):
+    s = current_line(f, epoch)
+    if s != None:
+        epoch = s[0]
+        error = s[1:]
+        print 'epoch : %s' % epoch
+        print 'Period'
+        print '\t'.join([str(x) for x in error])
 
 def print_log(f, epoch=None):
     line = f.readline()
@@ -257,6 +265,8 @@ def print_log(f, epoch=None):
         print_lyapunov(f, epoch)
     elif (re.compile(r'^# ENTROPY FILE').match(line)):
         print_entropy(f, epoch)
+    elif (re.compile(r'^# PERIOD FILE').match(line)):
+        print_period(f, epoch)
 
 
 def main():

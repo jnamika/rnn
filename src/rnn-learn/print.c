@@ -145,6 +145,12 @@ void init_output_files (
     } else {
         fp_list->fp_wentropy = NULL;
     }
+    if (strlen(gp->iop.period_filename) > 0) {
+        fp_list->fp_wperiod = fopen(gp->iop.period_filename, mode);
+        if (fp_list->fp_wperiod == NULL) goto error;
+    } else {
+        fp_list->fp_wperiod = NULL;
+    }
     return;
 error:
     print_error_msg();
@@ -195,6 +201,9 @@ void free_output_files (struct output_files *fp_list)
     if (fp_list->fp_wentropy) {
         fclose(fp_list->fp_wentropy);
     }
+    if (fp_list->fp_wperiod) {
+        fclose(fp_list->fp_wperiod);
+    }
 }
 
 static void print_general_parameters (
@@ -216,6 +225,7 @@ static void print_general_parameters (
     fprintf(fp, "# divide_num = %d\n", gp->ap.divide_num);
     fprintf(fp, "# lyapunov_spectrum_size = %d\n",
             gp->ap.lyapunov_spectrum_size);
+    fprintf(fp, "# threshold_period = %g\n", gp->ap.threshold_period);
 }
 
 
@@ -618,6 +628,51 @@ static void print_kl_divergence_of_rnn (
 }
 
 
+
+static int get_period_of_rnn_state (
+        const struct rnn_state *rnn_s,
+        double threshold)
+{
+    int period = 1;
+    for (int n = rnn_s->length - 2; n >= 0; n--, period++) {
+        double d = 0;
+        for (int i = 0; i < rnn_s->rnn_p->c_state_size; i++) {
+            double x = rnn_s->c_state[rnn_s->length-1][i] -
+                rnn_s->c_state[n][i];
+            d += x * x;
+        }
+        for (int i = 0; i < rnn_s->rnn_p->out_state_size; i++) {
+            double x = rnn_s->out_state[rnn_s->length-1][i] -
+                rnn_s->out_state[n][i];
+            d += x * x;
+        }
+        if (d <= threshold) {
+            break;
+        }
+    }
+    return period;
+}
+
+static void print_period_of_rnn (
+        FILE *fp,
+        long epoch,
+        const struct recurrent_neural_network *rnn,
+        double threshold)
+{
+    int period[rnn->series_num];
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int i = 0; i < rnn->series_num; i++) {
+        period[i] = get_period_of_rnn_state(rnn->rnn_s + i, threshold);
+    }
+    fprintf(fp, "%ld", epoch);
+    for (int i = 0; i < rnn->series_num; i++) {
+        fprintf(fp, "\t%d", period[i]);
+    }
+    fprintf(fp, "\n");
+}
+
 static int enable_print (
         long epoch,
         const struct print_interval *pi)
@@ -766,6 +821,18 @@ static void print_closed_loop_data_with_epoch (
                 gp->ap.divide_num);
         fflush(fp_list->fp_wentropy);
     }
+
+    if (fp_list->fp_wperiod &&
+            enable_print(epoch, &gp->iop.interval_for_period_file)) {
+        if (!compute_forward_dynamics) {
+            rnn_forward_dynamics_in_closed_loop_forall(rnn,
+                    gp->mp.delay_length);
+            compute_forward_dynamics = 1;
+        }
+        print_period_of_rnn(fp_list->fp_wperiod, epoch, rnn,
+                gp->ap.threshold_period);
+        fflush(fp_list->fp_wperiod);
+    }
 }
 
 
@@ -837,6 +904,11 @@ void print_training_main_begin (
         fprintf(fp_list->fp_wentropy, "# ENTROPY FILE\n");
         print_general_parameters(fp_list->fp_wentropy, gp);
         print_rnn_parameters(fp_list->fp_wentropy, rnn);
+    }
+    if (fp_list->fp_wperiod) {
+        fprintf(fp_list->fp_wperiod, "# PERIOD FILE\n");
+        print_general_parameters(fp_list->fp_wperiod, gp);
+        print_rnn_parameters(fp_list->fp_wperiod, rnn);
     }
 }
 

@@ -178,6 +178,7 @@ static void init_parameters (struct general_parameters *gp)
     gp->ap.block_length = BLOCK_LENGTH;
     gp->ap.divide_num = DIVIDE_NUM;
     gp->ap.lyapunov_spectrum_size = LYAPUNOV_SPECTRUM_SIZE;
+    gp->ap.threshold_period = THRESHOLD_PERIOD;
 
     gp->iop.state_filename = salloc(NULL, STATE_FILENAME);
     gp->iop.closed_state_filename = salloc(NULL, CLOSED_STATE_FILENAME);
@@ -191,6 +192,7 @@ static void init_parameters (struct general_parameters *gp)
     gp->iop.closed_error_filename = salloc(NULL, CLOSED_ERROR_FILENAME);
     gp->iop.lyapunov_filename = salloc(NULL, LYAPUNOV_FILENAME);
     gp->iop.entropy_filename = salloc(NULL, ENTROPY_FILENAME);
+    gp->iop.period_filename = salloc(NULL, PERIOD_FILENAME);
     gp->iop.save_filename = salloc(NULL, SAVE_FILENAME);
     gp->iop.load_filename = salloc(NULL, LOAD_FILENAME);
     struct print_interval default_interval = {
@@ -212,6 +214,7 @@ static void init_parameters (struct general_parameters *gp)
     gp->iop.interval_for_closed_error_file = default_interval;
     gp->iop.interval_for_lyapunov_file = default_interval;
     gp->iop.interval_for_entropy_file = default_interval;
+    gp->iop.interval_for_period_file = default_interval;
     gp->iop.verbose = 0;
 }
 
@@ -246,6 +249,7 @@ static void free_parameters (struct general_parameters *gp)
     free(gp->iop.closed_error_filename);
     free(gp->iop.lyapunov_filename);
     free(gp->iop.entropy_filename);
+    free(gp->iop.period_filename);
     free(gp->iop.save_filename);
     free(gp->iop.load_filename);
 }
@@ -391,6 +395,13 @@ static void set_lyapunov_spectrum_size (
     gp->ap.lyapunov_spectrum_size = atoi(opt);
 }
 
+static void set_threshold_period (
+        const char *opt,
+        struct general_parameters *gp)
+{
+    gp->ap.threshold_period = atof(opt);
+}
+
 static void set_state_file (const char *opt, struct general_parameters *gp)
 {
     gp->iop.state_filename = salloc(gp->iop.state_filename, opt);
@@ -455,6 +466,11 @@ static void set_entropy_file (const char *opt, struct general_parameters *gp)
     gp->iop.entropy_filename = salloc(gp->iop.entropy_filename, opt);
 }
 
+static void set_period_file (const char *opt, struct general_parameters *gp)
+{
+    gp->iop.period_filename = salloc(gp->iop.period_filename, opt);
+}
+
 static void set_save_file (const char *opt, struct general_parameters *gp)
 {
     gp->iop.save_filename = salloc(gp->iop.save_filename, opt);
@@ -487,6 +503,7 @@ static void set_load_file (const char *opt, struct general_parameters *gp)
         SET_DEFAULT_VALUE_OF_PRINT_INTERVAL_I(closed_error_file,OPT); \
         SET_DEFAULT_VALUE_OF_PRINT_INTERVAL_I(lyapunov_file,OPT); \
         SET_DEFAULT_VALUE_OF_PRINT_INTERVAL_I(entropy_file,OPT); \
+        SET_DEFAULT_VALUE_OF_PRINT_INTERVAL_I(period_file,OPT); \
     } while(0)
 
 static void set_print_interval (const char *opt, struct general_parameters *gp)
@@ -543,6 +560,7 @@ GEN_PRINT_INTERVAL_SETTER(error_file)
 GEN_PRINT_INTERVAL_SETTER(closed_error_file)
 GEN_PRINT_INTERVAL_SETTER(lyapunov_file)
 GEN_PRINT_INTERVAL_SETTER(entropy_file)
+GEN_PRINT_INTERVAL_SETTER(period_file)
 
 static void set_verbose (const char *opt, struct general_parameters *gp)
 {
@@ -608,6 +626,7 @@ static struct option_information {
     {"block_length", 1, set_block_length},
     {"divide_num", 1, set_divide_num},
     {"lyapunov_spectrum_size", 1, set_lyapunov_spectrum_size},
+    {"threshold_period", 1, set_threshold_period},
     {"state_file", 1, set_state_file},
     {"closed_state_file", 1, set_closed_state_file},
     {"weight_file", 1, set_weight_file},
@@ -620,6 +639,7 @@ static struct option_information {
     {"closed_error_file", 1, set_closed_error_file},
     {"lyapunov_file", 1, set_lyapunov_file},
     {"entropy_file", 1, set_entropy_file},
+    {"period_file", 1, set_period_file},
     {"save_file", 1, set_save_file},
     {"load_file", 1, set_load_file},
     {"print_interval", 1, set_print_interval},
@@ -638,6 +658,7 @@ static struct option_information {
     ENTRY_PRINT_INTERVAL_SETTER(closed_error_file),
     ENTRY_PRINT_INTERVAL_SETTER(lyapunov_file),
     ENTRY_PRINT_INTERVAL_SETTER(entropy_file),
+    ENTRY_PRINT_INTERVAL_SETTER(period_file),
     {"verbose", 0, set_verbose},
     {"config_file", 1, set_config_file},
     {0, 0, NULL}

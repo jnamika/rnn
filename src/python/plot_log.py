@@ -209,6 +209,22 @@ def plot_entropy(f, filename):
         p.stdin.write(''.join(command)[:-1])
         p.stdin.write('\n')
 
+def plot_period(f, filename):
+    params = print_log.read_parameter(f)
+    target_num = int(params['target_num'])
+    p = subprocess.Popen(['gnuplot -persist'], stdin=subprocess.PIPE,
+            shell=True)
+    p.stdin.write('set nokey;')
+    p.stdin.write('set logscale y;')
+    p.stdin.write("set title 'Type=Period  File=%s';" % filename)
+    p.stdin.write("set xlabel 'Learning epoch';")
+    p.stdin.write("set ylabel 'Period';")
+    command = ['plot ']
+    for i in xrange(target_num):
+        command.append("'%s' u 1:%d w l," % (filename, i+2))
+    p.stdin.write(''.join(command)[:-1])
+    p.stdin.write('\n')
+
 def plot_unknown(f, filename):
     p = re.compile(r'(^#)|(^$)')
     columns = -1
@@ -250,6 +266,8 @@ def plot_log(f, file, epoch=None):
         plot_lyapunov(f, file)
     elif (re.compile(r'^# ENTROPY FILE').match(line)):
         plot_entropy(f, file)
+    elif (re.compile(r'^# PERIOD FILE').match(line)):
+        plot_period(f, file)
     else:
         plot_unknown(f, file)
 

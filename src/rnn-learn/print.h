@@ -34,6 +34,7 @@ typedef struct output_files {
     FILE *fp_wclosed_error;
     FILE *fp_wlyapunov;
     FILE *fp_wentropy;
+    FILE *fp_wperiod;
 } output_files;
 
 

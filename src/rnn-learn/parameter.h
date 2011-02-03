@@ -39,6 +39,7 @@
 #define BLOCK_LENGTH 5
 #define DIVIDE_NUM 2
 #define LYAPUNOV_SPECTRUM_SIZE 1
+#define THRESHOLD_PERIOD 1e-6
 
 #define STATE_FILENAME ""
 #define CLOSED_STATE_FILENAME ""
@@ -52,6 +53,7 @@
 #define CLOSED_ERROR_FILENAME ""
 #define LYAPUNOV_FILENAME ""
 #define ENTROPY_FILENAME ""
+#define PERIOD_FILENAME ""
 #define SAVE_FILENAME "rnn.dat"
 #define LOAD_FILENAME ""
 
