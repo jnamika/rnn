@@ -85,13 +85,13 @@
 
 
 #define foreach(i,c) \
-    for (int ___c = 0; (c)[___c].begin != -1; ___c++) \
-        for (int i = (c)[___c].begin, ___e = (c)[___c].end; i < ___e; i++)
+    for (int _c = 0; (c)[_c].begin != -1; _c++) \
+        for (int i = (c)[_c].begin, _e = (c)[_c].end; i < _e; i++)
 
 #define foreach_maybe_break(i,c) \
     if ((c)[0].begin != -1) \
-        for (int i = (c)[0].begin, e = (c)[0].end, ___c = 0; \
-            i < e || (e = (c)[++___c].end, i = (c)[___c].begin) != -1; i++)
+        for (int i = (c)[0].begin, e = (c)[0].end, _c = 0; \
+            i < e || (e = (c)[++_c].end, i = (c)[_c].begin) != -1; i++)
 
 
 

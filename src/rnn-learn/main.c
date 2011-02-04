@@ -483,7 +483,7 @@ static void set_load_file (const char *opt, struct general_parameters *gp)
 
 #define SET_DEFAULT_VALUE_OF_PRINT_INTERVAL_I(FILENAME,OPT) \
     do { \
-        if (!gp->iop.interval_for_##FILENAME.___set_##OPT##_flag) { \
+        if (!gp->iop.interval_for_##FILENAME._set_##OPT##_flag) { \
             gp->iop.interval_for_##FILENAME.OPT = \
                 gp->iop.default_interval.OPT; \
         } \
@@ -537,7 +537,7 @@ static void set_##NAME##_for_##FILENAME (const char *opt, \
         struct general_parameters *gp) \
 { \
     gp->iop.interval_for_##FILENAME.OPT = IN; \
-    gp->iop.interval_for_##FILENAME.___set_##OPT##_flag = 1; \
+    gp->iop.interval_for_##FILENAME._set_##OPT##_flag = 1; \
 }
 
 #define GEN_PRINT_INTERVAL_SETTER(FILENAME) \
@@ -670,13 +670,14 @@ static void parse_option_and_arg (char *str, char **opt, char **arg)
     char *p, *q;
     p = str;
     while (*p == ' ') { p++; }
-    if ((q = strchr(p, '\n')) != NULL) { *q = '\0'; }
-    if ((q = strchr(p, '#')) != NULL) { *q = '\0'; }
+    if ((q = strpbrk(p, "#\n")) != NULL) { *q = '\0'; }
     if (strlen(p) > 0) {
+        char *r = p + strlen(p) - 1;
+        while (*r == ' ' && r >= p) { *r = '\0'; r--; }
         if ((q = strchr(p, '=')) != NULL) {
             *q = '\0';
-            char *r = q - 1;
-            while (*r == ' ' && r != p) { *r = '\0'; r--; }
+            r = q - 1;
+            while (*r == ' ' && r >= p) { *r = '\0'; r--; }
             q++;
             while (*q == ' ') { q++; }
         } else {

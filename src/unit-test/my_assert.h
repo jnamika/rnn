@@ -57,28 +57,28 @@
 
 
 
-extern jmp_buf ___g_jbuf; // defined in main.c
+extern jmp_buf _g_jbuf; // defined in main.c
 
-/* In the target source codes, exit() is overwrited as longjmp(___g_jbuf, 1)
+/* In the target source codes, exit() is overwrited as longjmp(_g_jbuf, 1)
  * (see config.h) */
 
 #define assert_exit_call(func,...) \
     do { \
         volatile int is_exit_called = 0; jmp_buf tmp_jbuf; \
-        memcpy(&tmp_jbuf, &___g_jbuf, sizeof(jmp_buf)); \
-        if (setjmp(___g_jbuf) == 0) { func(__VA_ARGS__); \
+        memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \
+        if (setjmp(_g_jbuf) == 0) { func(__VA_ARGS__); \
         } else { is_exit_called = 1; } \
-        memcpy(&___g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
+        memcpy(&_g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
         mu_assert_with_msg(is_exit_called, "exit() was not called\n"); \
     } while(0)
 
 #define assert_exit_nocall(func,...) \
     do { \
         volatile int is_exit_called = 1; jmp_buf tmp_jbuf; \
-        memcpy(&tmp_jbuf, &___g_jbuf, sizeof(jmp_buf)); \
-        if (setjmp(___g_jbuf) == 0) { func(__VA_ARGS__); \
+        memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \
+        if (setjmp(_g_jbuf) == 0) { func(__VA_ARGS__); \
         } else { is_exit_called = 0; } \
-        memcpy(&___g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
+        memcpy(&_g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
         mu_assert_with_msg(is_exit_called, "exit() was called\n"); \
     } while(0)
 

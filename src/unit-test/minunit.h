@@ -25,24 +25,24 @@
 
 /* public assert functions */
 // Assertion `1 == 0' failed
-#define mu_assert_I(cond) ___mu_assert(cond, __FILE__, __LINE__, \
+#define mu_assert_I(cond) _mu_assert(cond, __FILE__, __LINE__, \
         "assertion `" #cond "' failed")
 #define mu_assert(cond) mu_assert_I(cond)
 #define mu_assert_with_msg(cond,...) \
-    ___mu_assert(cond, __FILE__, __LINE__, "" __VA_ARGS__)
-#define mu_fail(...) ___mu_assert(0, __FILE__, __LINE__, "" __VA_ARGS__)
+    _mu_assert(cond, __FILE__, __LINE__, "" __VA_ARGS__)
+#define mu_fail(...) _mu_assert(0, __FILE__, __LINE__, "" __VA_ARGS__)
 
 
 
 #define mu_run_test(func) do { \
-    ___mu_test_preprocess(#func); \
+    _mu_test_preprocess(#func); \
     func(); \
-    ___mu_test_postprocess();} while(0)
+    _mu_test_postprocess();} while(0)
 
 #define mu_run_test_with_args(func,...) do { \
-    ___mu_test_preprocess(#func); \
+    _mu_test_preprocess(#func); \
     func(__VA_ARGS__); \
-    ___mu_test_postprocess();} while(0)
+    _mu_test_postprocess();} while(0)
 
 
 
@@ -56,10 +56,10 @@ void mu_reset_test(void);
  * Please use the aforementioned macros instead of them.
  */
 
-void ___mu_assert (int cond, const char *filename, int line,
+void _mu_assert (int cond, const char *filename, int line,
         const char *fmt, ...);
-void ___mu_test_preprocess (const char* funcname);
-void ___mu_test_postprocess (void);
+void _mu_test_preprocess (const char* funcname);
+void _mu_test_postprocess (void);
 
 #endif
 

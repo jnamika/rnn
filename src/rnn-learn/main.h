@@ -101,10 +101,10 @@ typedef struct io_parameters {
         long init;
         long end;
         int use_logscale_interval;
-        int ___set_interval_flag;
-        int ___set_init_flag;
-        int ___set_end_flag;
-        int ___set_use_logscale_interval_flag;
+        int _set_interval_flag;
+        int _set_init_flag;
+        int _set_end_flag;
+        int _set_use_logscale_interval_flag;
     } default_interval;
     struct print_interval interval_for_state_file;
     struct print_interval interval_for_closed_state_file;

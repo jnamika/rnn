@@ -37,11 +37,11 @@
  * This code is evil!
  */
 #include <setjmp.h>
-extern jmp_buf ___g_jbuf; // defined in main.c
+extern jmp_buf _g_jbuf; // defined in main.c
 #undef exit
 #undef assert
-#define exit(X) (longjmp(___g_jbuf, 1))
-#define assert(X) do { if (!(X)) { longjmp(___g_jbuf, 1); }} while(0)
+#define exit(X) (longjmp(_g_jbuf, 1))
+#define assert(X) do { if (!(X)) { longjmp(_g_jbuf, 1); }} while(0)
 
 #endif
 

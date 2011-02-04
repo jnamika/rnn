@@ -43,18 +43,18 @@ void mu_reset_test (void)
 
 
 
-void ___mu_test_preprocess (const char *funcname)
+void _mu_test_preprocess (const char *funcname)
 {
     printf("test: %s()\n", funcname); \
 }
 
-void ___mu_test_postprocess (void)
+void _mu_test_postprocess (void)
 {
     mu_test_count++;
     printf("\n");
 }
 
-void ___mu_assert (
+void _mu_assert (
         int cond,
         const char *filename,
         int line,
