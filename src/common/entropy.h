@@ -24,16 +24,18 @@ typedef struct block_frequency {
     long *count;
     int *index;
 
+    int dimension;
     int length;
     int block_length;
-    const int *sequence;
+    const int* const* sequence;
 } block_frequency;
 
 
 
 void init_block_frequency (
         struct block_frequency *bf,
-        const int *sequence,
+        const int* const* sequence,
+        int dimension,
         int length,
         int block_length);
 

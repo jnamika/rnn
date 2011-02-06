@@ -18,7 +18,7 @@
 #define SOLVER_H
 
 double* lyapunov_spectrum (
-        const double* const *data,
+        const double* const* data,
         int t,
         int m,
         int n,
@@ -35,27 +35,27 @@ void gram_schmidt_orthogonalization (
         int n);
 
 double lyapunov_exponent_sss (
-        const double* const *vector,
+        const double* const* vector,
         int t,
         int n,
         int T,
         int N);
 
 double lyapunov_exponent_wolf (
-        const double* const *vector,
+        const double* const* vector,
         int t,
         int n,
         double epsilon);
 
 int box_counter (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
         int* box_count);
 
 double generalized_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -63,21 +63,21 @@ double generalized_dimension (
         int* box_num);
 
 double capacity_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
         int* box_num);
 
 double information_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
         int* box_num);
 
 double correlation_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,

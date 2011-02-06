@@ -195,7 +195,8 @@ static void init_rnn (
             exit(EXIT_FAILURE);
         }
         rnn_add_target(rnn, t_reader->t_list[i].length - gp->mp.delay_length,
-                t_reader->t_list[i].target, t_reader->t_list[i].target +
+                (const double* const*)t_reader->t_list[i].target,
+                (const double* const*)t_reader->t_list[i].target +
                 gp->mp.delay_length);
     }
 }
@@ -245,7 +246,8 @@ static void reset_target_of_rnn (
             exit(EXIT_FAILURE);
         }
         rnn_add_target(rnn, t_reader->t_list[i].length,
-                t_reader->t_list[i].target, t_reader->t_list[i].target +
+                (const double* const*)t_reader->t_list[i].target,
+                (const double* const*)t_reader->t_list[i].target +
                 gp->mp.delay_length);
     }
     gp->inp.init_epoch = 0;

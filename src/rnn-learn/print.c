@@ -522,36 +522,29 @@ static void print_lyapunov_spectrum_of_rnn (
 
 /* assigns an index to the vector with respect to indexed hypercubes in the
  * R^dimension space */
-static int vector2symbol (
-        const double *vector,
-        int dimension,
+static inline int f2symbol (
+        const double x,
         double min,
         double max,
         int divide_num)
 {
-    int e, symbol;
+    int symbol;
     double mesh_size, split;
-
     mesh_size = (max - min)/divide_num;
-
     symbol = 0;
-    e = 1;
-    for (int i = 0; i < dimension; i++) {
-        split = min;
-        for (int j = 0; j < divide_num; j++) {
-            split += mesh_size;
-            if (vector[i] <= split || j == divide_num-1) {
-                symbol += e * j;
-                break;
-            }
+    split = min;
+    for (int i = 0; i < divide_num; i++) {
+        split += mesh_size;
+        if (x <= split || i == divide_num-1) {
+            symbol = i;
+            break;
         }
-        e *= divide_num;
     }
     return symbol;
 }
 
 
-static void compute_kl_divergence_of_rnn_compression_state (
+static void compute_kl_divergence_of_rnn_state (
         const struct rnn_state *rnn_s,
         int truncate_length,
         int block_length,
@@ -563,31 +556,41 @@ static void compute_kl_divergence_of_rnn_compression_state (
 {
     if (rnn_s->length > truncate_length) {
         double min, max;
-        int *sequence_t, *sequence_o;
+        int **sequence_t, **sequence_o;
         struct block_frequency bf_t, bf_o;
         const int length = rnn_s->length - truncate_length;
-        MALLOC(sequence_t, length);
-        MALLOC(sequence_o, length);
         if (rnn_s->rnn_p->output_type == STANDARD_TYPE) {
             min = -1.0; max = 1.0;
         } else {
             min = 0.0; max = 1.0;
         }
+        MALLOC(sequence_t, length);
+        MALLOC(sequence_o, length);
+        MALLOC(sequence_t[0], length * rnn_s->rnn_p->out_state_size);
+        MALLOC(sequence_o[0], length * rnn_s->rnn_p->out_state_size);
         for (int n = 0; n < length; n++) {
+            sequence_t[n] = sequence_t[0] + n * rnn_s->rnn_p->out_state_size;
+            sequence_o[n] = sequence_o[0] + n * rnn_s->rnn_p->out_state_size;
             int N = n + truncate_length;
-            sequence_t[n] = vector2symbol(rnn_s->teach_state[N],
-                    rnn_s->rnn_p->out_state_size, min, max, divide_num);
-            sequence_o[n] = vector2symbol(rnn_s->out_state[N],
-                    rnn_s->rnn_p->out_state_size, min, max, divide_num);
+            for (int i = 0; i < rnn_s->rnn_p->out_state_size; i++) {
+                sequence_t[n][i] = f2symbol(rnn_s->teach_state[N][i],
+                    min, max, divide_num);
+                sequence_o[n][i] = f2symbol(rnn_s->out_state[N][i], min,
+                        max, divide_num);
+            }
         }
-        init_block_frequency(&bf_t, sequence_t, length, block_length);
-        init_block_frequency(&bf_o, sequence_o, length, block_length);
+        init_block_frequency(&bf_t, (const int* const*)sequence_t,
+                rnn_s->rnn_p->out_state_size, length, block_length);
+        init_block_frequency(&bf_o, (const int* const*)sequence_o,
+                rnn_s->rnn_p->out_state_size, length, block_length);
         *kl_div = kullback_leibler_divergence(&bf_t, &bf_o);
         *entropy_t = block_entropy(&bf_t) / block_length;
         *entropy_o = block_entropy(&bf_o) / block_length;
         *gen_rate = generation_rate(&bf_t, &bf_o);
         free_block_frequency(&bf_t);
         free_block_frequency(&bf_o);
+        free(sequence_t[0]);
+        free(sequence_o[0]);
         free(sequence_t);
         free(sequence_o);
     } else {
@@ -615,7 +618,7 @@ static void print_kl_divergence_of_rnn (
 #pragma omp parallel for
 #endif
     for (int i = 0; i < rnn->series_num; i++) {
-        compute_kl_divergence_of_rnn_compression_state(rnn->rnn_s + i,
+        compute_kl_divergence_of_rnn_state(rnn->rnn_s + i,
                 truncate_length, block_length, divide_num, kl_div + i,
                 entropy_t + i, entropy_o + i, gen_rate + i);
     }

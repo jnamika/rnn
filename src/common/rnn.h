@@ -163,8 +163,8 @@ void init_rnn_state (
         struct rnn_state *rnn_s,
         struct rnn_parameters *rnn_p,
         int length,
-        double **input,
-        double **target);
+        const double* const* input,
+        const double* const* target);
 
 void init_recurrent_neural_network (
         struct recurrent_neural_network *rnn,
@@ -175,8 +175,8 @@ void init_recurrent_neural_network (
 void rnn_add_target (
         struct recurrent_neural_network *rnn,
         int length,
-        double **input,
-        double **target);
+        const double* const* input,
+        const double* const* target);
 
 void rnn_clean_target (struct recurrent_neural_network *rnn);
 

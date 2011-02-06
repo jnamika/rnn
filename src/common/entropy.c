@@ -35,10 +35,26 @@
 #endif
 
 
+static inline int eq_block (
+        const int* const* block_x,
+        const int* const* block_y,
+        int dimension,
+        int block_length)
+{
+    for (int n = 0; n < block_length; n++) {
+        for (int i = 0; i < dimension; i++) {
+            if (block_x[n][i] != block_y[n][i]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 void init_block_frequency (
         struct block_frequency *bf,
-        const int *sequence,
+        const int* const* sequence,
+        int dimension,
         int length,
         int block_length)
 {
@@ -47,6 +63,7 @@ void init_block_frequency (
     bf->count = NULL;
     bf->index = NULL;
     bf->sequence = sequence;
+    bf->dimension = dimension;
     bf->length = length;
     bf->block_length = block_length;
 
@@ -54,14 +71,8 @@ void init_block_frequency (
     for (int n = 0; n < sum; n++) {
         int has_item = 0;
         for (int i = 0; i < bf->size; i++) {
-            int is_equal = 1;
-            for (int j = 0; j < block_length; j++) {
-                if (sequence[n+j] != sequence[bf->index[i]+j]) {
-                    is_equal = 0;
-                    break;
-                }
-            }
-            if (is_equal) {
+            if (eq_block(sequence + n, sequence + bf->index[i], dimension,
+                        block_length)) {
                 has_item = 1;
                 bf->count[i]++;
                 break;
@@ -110,21 +121,15 @@ double kullback_leibler_divergence (
     const int len_x = bf_x->length - bf_x->block_length + 1;
     const int len_y = bf_y->length - bf_y->block_length + 1;
     const double r = (len_x == len_y) ? 0 : log(len_y/(double)len_x);
-    const int *x = bf_x->sequence;
-    const int *y = bf_y->sequence;
+    const int* const* x = bf_x->sequence;
+    const int* const* y = bf_y->sequence;
     double kl_div = 0;
     for (int m = 0; m < bf_x->size; m++) {
         double p = 1.0 * bf_x->count[m];
         double q = NO_EXIST_FREQUENCY;
         for (int n = 0; n < bf_y->size; n++) {
-            int is_equal = 1;
-            for (int i = 0; i < bf_x->block_length; i++) {
-                if (x[bf_x->index[m]+i] != y[bf_y->index[n]+i]) {
-                    is_equal = 0;
-                    break;
-                }
-            }
-            if (is_equal) {
+            if (eq_block(x + bf_x->index[m], y + bf_y->index[n],
+                        bf_x->dimension, bf_x->block_length)) {
                 q = 1.0 * bf_y->count[n];
                 break;
             }
@@ -136,14 +141,8 @@ double kullback_leibler_divergence (
         double p = NO_EXIST_FREQUENCY;
         int has_item = 0;
         for (int n = 0; n < bf_x->size; n++) {
-            int is_equal = 1;
-            for (int i = 0; i < bf_y->block_length; i++) {
-                if (y[bf_y->index[m]+i] != x[bf_x->index[n]+i]) {
-                    is_equal = 0;
-                    break;
-                }
-            }
-            if (is_equal) {
+            if (eq_block(y + bf_y->index[m], x + bf_x->index[n],
+                        bf_x->dimension, bf_x->block_length)) {
                 has_item = 1;
                 break;
             }
@@ -163,21 +162,15 @@ double generation_rate (
 {
     assert(bf_x->block_length == bf_y->block_length);
 
-    const int *x = bf_x->sequence;
-    const int *y = bf_y->sequence;
+    const int* const* x = bf_x->sequence;
+    const int* const* y = bf_y->sequence;
     int k, m;
     k = m = 0;
     while (m < bf_x->size) {
         int has_item = 0;
         for (int n = 0; n < bf_y->size; n++) {
-            int is_equal = 1;
-            for (int i = 0; i < bf_x->block_length; i++) {
-                if (x[bf_x->index[m]+i] != y[bf_y->index[n]+i]) {
-                    is_equal = 0;
-                    break;
-                }
-            }
-            if (is_equal) {
+            if (eq_block(x + bf_x->index[m], y + bf_y->index[n],
+                        bf_x->dimension, bf_x->block_length)) {
                 has_item = 1;
                 break;
             }

@@ -24,7 +24,7 @@
 
 
 static int compar (const void* x, const void* y);
-static void product (const double* const *a, const double* b, double* ab, int m,
+static void product (const double* const* a, const double* b, double* ab, int m,
         int n);
 static double get_length (const double* vector, int n);
 static void swap_maxlen_to_head (double** vector, int m, int n);
@@ -33,10 +33,10 @@ static double scalar_product (const double* vector1, const double* vector2,
 static void resize (double* vector, int n, double length);
 static double get_distance (const double* vector1, const double* vector2,
         int n);
-static int index_of_nearest_point (const double* const *data, int I, int t,
+static int index_of_nearest_point (const double* const* data, int I, int t,
         int n);
 static int index_of_nearest_point_in_epsilon_neighborhood (
-        const double* const *data, int I, int t, int n, double epsilon);
+        const double* const* data, int I, int t, int n, double epsilon);
 static int check_in_box (const double* vector, const double* median_point,
         int n, double epsilon);
 
@@ -73,7 +73,7 @@ typedef double** (*jacobian_map)(const double* vector, int n, int t,
  *   @return              : Lyapunov spectrum
  */
 double* lyapunov_spectrum (
-        const double* const *data,
+        const double* const* data,
         int t,
         int m,
         int n,
@@ -226,7 +226,7 @@ void gram_schmidt_orthogonalization (
  *   @return            : maximum Lyapunov exponent
  */
 double lyapunov_exponent_sss (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         int T,
@@ -265,7 +265,7 @@ double lyapunov_exponent_sss (
  *   @return            : maximum Lyapunov exponent
  */
 double lyapunov_exponent_wolf (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon)
@@ -306,7 +306,7 @@ double lyapunov_exponent_wolf (
  *   @return               : number of hypercubes containing of data
  */
 int box_counter (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -346,7 +346,7 @@ int box_counter (
  *   @return              : generalized dimension
  */
 double generalized_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -383,7 +383,7 @@ double generalized_dimension (
  * (generalized dimension with q==0)
  */
 double capacity_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -397,7 +397,7 @@ double capacity_dimension (
  * (generalized dimension with q==1)
  */
 double information_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -411,7 +411,7 @@ double information_dimension (
  * (generalized dimension with q==2)
  */
 double correlation_dimension (
-        const double* const *data,
+        const double* const* data,
         int t,
         int n,
         double epsilon,
@@ -468,7 +468,7 @@ static int compar (const void* x, const void* y)
     }
 }
 
-static void product (const double* const *a, const double* b, double* ab,
+static void product (const double* const* a, const double* b, double* ab,
         int m, int n)
 {
     for (int i = 0; i < m; i++) {
@@ -539,7 +539,7 @@ static double get_distance (const double* vector1, const double* vector2,
 }
 
 static int index_of_nearest_point (
-        const double* const *data,
+        const double* const* data,
         int I,
         int t,
         int n)
@@ -558,7 +558,7 @@ static int index_of_nearest_point (
 }
 
 static int index_of_nearest_point_in_epsilon_neighborhood (
-        const double* const *data,
+        const double* const* data,
         int I,
         int t,
         int n,

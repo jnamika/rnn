@@ -585,9 +585,9 @@ static void test_init_rnn_state (void)
     }
 
     assert_exit_call(init_rnn_state, &rnn_s, &rnn_p, 0,
-            input, target);
+            (const double* const*)input, (const double* const*)target);
     assert_exit_nocall(init_rnn_state, &rnn_s, &rnn_p, 1,
-            input, target);
+            (const double* const*)input, (const double* const*)target);
 
     free_rnn_state(&rnn_s);
     free_rnn_parameters(&rnn_p);
@@ -1448,7 +1448,8 @@ void test_rnn_state_setup (
                 target[n][j] = genrand_real1();
             }
         }
-        rnn_add_target(rnn, target_length[i], input, target);
+        rnn_add_target(rnn, target_length[i], (const double* const*)input,
+                (const double* const*)target);
         free(input[0]);
         free(target[0]);
         free(input);

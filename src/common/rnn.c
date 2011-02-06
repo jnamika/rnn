@@ -196,8 +196,8 @@ void init_rnn_state (
         struct rnn_state *rnn_s,
         struct rnn_parameters *rnn_p,
         int length,
-        double **input,
-        double **target)
+        const double* const* input,
+        const double* const* target)
 {
     assert(length > 0);
 
@@ -246,8 +246,8 @@ void init_recurrent_neural_network (
 void rnn_add_target (
         struct recurrent_neural_network *rnn,
         int length,
-        double **input,
-        double **target)
+        const double* const* input,
+        const double* const* target)
 {
     rnn->series_num++;
     REALLOC(rnn->rnn_s, rnn->series_num);

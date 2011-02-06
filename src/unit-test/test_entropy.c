@@ -48,76 +48,111 @@ static void gen_Morse_sequence (
 
 static void test_block_entropy (void)
 {
-    int length, max_block_length;
+    int dimension, length, max_block_length;
     double entropy;
     struct block_frequency bf;
-    int *sequence;
+    int **sequence;
 
+    dimension = 3;
     length = 10000;
     max_block_length = 5;
 
     MALLOC(sequence, length);
+    MALLOC(sequence[0], length * dimension);
 
     for (int n = 0; n < length; n++) {
-        sequence[n] = 0;
+        sequence[n] = sequence[0] + n * dimension;
+        for (int i = 0; i < dimension; i++) {
+            sequence[n][i] = 0;
+        }
     }
     for (int n = 1; n <= max_block_length; n++) {
-        init_block_frequency(&bf, sequence, length, n);
+        init_block_frequency(&bf, (const int* const*)sequence, dimension,
+                length, n);
         entropy = block_entropy(&bf) / n;
         assert_equal_double(0, entropy, 1e-3);
         free_block_frequency(&bf);
     }
 
     for (int n = 0; n < length; n++) {
-        sequence[n] = n % 2;
+        for (int i = 0; i < dimension; i++) {
+            sequence[n][i] = (n + i) % 2;
+        }
     }
     for (int n = 1; n <= max_block_length; n++) {
-        init_block_frequency(&bf, sequence, length, n);
+        init_block_frequency(&bf, (const int* const*)sequence, dimension,
+                length, n);
         entropy = block_entropy(&bf) / n;
         assert_equal_double(1.0/n, entropy, 1e-3);
         free_block_frequency(&bf);
     }
 
     for (int n = 0; n < length; n++) {
-        sequence[n] = n % 4;
+        for (int i = 0; i < dimension; i++) {
+            sequence[n][i] = (n + i) % 4;
+        }
     }
     for (int n = 1; n <= max_block_length; n++) {
-        init_block_frequency(&bf, sequence, length, n);
+        init_block_frequency(&bf, (const int* const*)sequence, dimension,
+                length, n);
         entropy = block_entropy(&bf) / n;
         assert_equal_double(2.0/n, entropy, 1e-3);
         free_block_frequency(&bf);
     }
 
-    gen_Morse_sequence(sequence, length);
+    int *tmp;
+    MALLOC(tmp, length);
+    gen_Morse_sequence(tmp, length);
+    for (int n = 0; n < length; n++) {
+        for (int i = 0; i < dimension; i++) {
+            sequence[n][i] = tmp[n];
+        }
+    }
+    free(tmp);
     for (int n = 1; n <= max_block_length ; n++) {
-        init_block_frequency(&bf, sequence, length, n);
+        init_block_frequency(&bf, (const int* const*)sequence, dimension,
+                length, n);
         entropy = block_entropy(&bf) / n;
         mu_assert(entropy >= 0.5);
         free_block_frequency(&bf);
     }
+    free(sequence[0]);
     free(sequence);
 }
 
 static void test_kullback_leibler_divergence (void)
 {
-    int length, max_block_length;
+    int dimension, length, max_block_length;
     struct block_frequency bf_x, bf_y;
-    int *x, *y;
+    int **x, **y;
     double kl_div;
 
+    dimension = 2;
     length = 1024;
     max_block_length = 5;
 
     MALLOC(x, length);
     MALLOC(y, length);
-
-    gen_Morse_sequence(x, length);
+    MALLOC(x[0], length * dimension);
+    MALLOC(y[0], length * dimension);
     for (int n = 0; n < length; n++) {
-        y[n] = x[(n+300)%length];
+        x[n] = x[0] + n * dimension;
+        y[n] = y[0] + n * dimension;
     }
+
+    int *tmp;
+    MALLOC(tmp, length);
+    gen_Morse_sequence(tmp, length);
+    for (int n = 0; n < length; n++) {
+        for (int i = 0; i < dimension; i++) {
+            x[n][i] = tmp[(n+i) % length];
+            y[n][i] = tmp[(n+i+300) % length];
+        }
+    }
+    free(tmp);
     for (int n = 1; n < max_block_length; n++) {
-        init_block_frequency(&bf_x, x, length, n);
-        init_block_frequency(&bf_y, y, length, n);
+        init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
+        init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
         kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
         assert_equal_double(0, kl_div, 1e-3);
         free_block_frequency(&bf_x);
@@ -126,26 +161,34 @@ static void test_kullback_leibler_divergence (void)
     init_genrand(61107L);
     for (int i = 0; i < 10; i++) {
         for (int n = 0; n < length; n++) {
-            x[n] = xor128() % 2;
-            y[n] = xor128() % 2;
+            for (int j = 0; j < dimension; j++) {
+                x[n][j] = xor128() % 2;
+                y[n][j] = xor128() % 2;
+            }
         }
         for (int n = 1; n < max_block_length; n++) {
-            init_block_frequency(&bf_x, x, length, n);
-            init_block_frequency(&bf_y, y, length, n);
+            init_block_frequency(&bf_x, (const int* const*)x, dimension, length,
+                    n);
+            init_block_frequency(&bf_y, (const int* const*)y, dimension, length,
+                    n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
             mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
             free_block_frequency(&bf_y);
 
-            init_block_frequency(&bf_x, x, length-100, n);
-            init_block_frequency(&bf_y, y, length, n);
+            init_block_frequency(&bf_x, (const int* const*)x, dimension,
+                    length-100, n);
+            init_block_frequency(&bf_y, (const int* const*)y, dimension, length,
+                    n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
             mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
             free_block_frequency(&bf_y);
 
-            init_block_frequency(&bf_x, x, length, n);
-            init_block_frequency(&bf_y, y, length-100, n);
+            init_block_frequency(&bf_x, (const int* const*)x, dimension, length,
+                    n);
+            init_block_frequency(&bf_y, (const int* const*)y, dimension,
+                    length-100, n);
             kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
             mu_assert(kl_div >= 0);
             free_block_frequency(&bf_x);
@@ -154,58 +197,79 @@ static void test_kullback_leibler_divergence (void)
     }
 
     for (int n = 0; n < length; n++) {
-        x[n] = 0;
-        y[n] = 1;
+        for (int i = 0; i < dimension; i++) {
+            x[n][i] = i;
+            y[n][i] = i + 1;
+        }
     }
     for (int n = 1; n < max_block_length; n++) {
-        init_block_frequency(&bf_x, x, length, n);
-        init_block_frequency(&bf_y, y, length, n);
+        init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
+        init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
         kl_div = kullback_leibler_divergence(&bf_x, &bf_y);
         mu_assert(kl_div > 0);
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }
+    free(x[0]);
+    free(y[0]);
     free(x);
     free(y);
 }
 
 static void test_generation_rate (void)
 {
-    int length, max_block_length;
+    int dimension, length, max_block_length;
     struct block_frequency bf_x, bf_y;
-    int *x, *y;
+    int **x, **y;
     double gen_rate;
 
+    dimension = 4;
     length = 1024;
     max_block_length = 5;
 
     MALLOC(x, length);
     MALLOC(y, length);
-
-    gen_Morse_sequence(x, length);
+    MALLOC(x[0], length * dimension);
+    MALLOC(y[0], length * dimension);
     for (int n = 0; n < length; n++) {
-        y[n] = x[(n+300)%length];
+        x[n] = x[0] + n * dimension;
+        y[n] = y[0] + n * dimension;
     }
+
+    int *tmp;
+    MALLOC(tmp, length);
+    gen_Morse_sequence(tmp, length);
+    for (int n = 0; n < length; n++) {
+        for (int i = 0; i < dimension; i++) {
+            x[n][i] = tmp[(n+i) % length];
+            y[n][i] = tmp[(n+i+300) % length];
+        }
+    }
+    free(tmp);
     for (int n = 1; n < max_block_length; n++) {
-        init_block_frequency(&bf_x, x, length, n);
-        init_block_frequency(&bf_y, y, length, n);
+        init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
+        init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
         gen_rate = generation_rate(&bf_x, &bf_y);
         assert_equal_double(1, gen_rate, 1e-3);
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }
     for (int n = 0; n < length; n++) {
-        x[n] = 0;
-        y[n] = 1;
+        for (int i = 0; i < dimension; i++) {
+            x[n][i] = i;
+            y[n][i] = i + 1;
+        }
     }
     for (int n = 1; n < max_block_length; n++) {
-        init_block_frequency(&bf_x, x, length, n);
-        init_block_frequency(&bf_y, y, length, n);
+        init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
+        init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
         gen_rate = generation_rate(&bf_x, &bf_y);
         assert_equal_double(0, gen_rate, 1e-3);
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }
+    free(x[0]);
+    free(y[0]);
     free(x);
     free(y);
 }
