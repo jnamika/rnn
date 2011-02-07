@@ -47,6 +47,30 @@
     }} while(0)
 #endif
 
+#ifndef FREE
+#define FREE(x) do { \
+        free(x); (x) = NULL; \
+    } while(0)
+#endif
+
+
+#ifndef MALLOC2
+#define MALLOC2(x,m,n) do { \
+    const int _m = (m); \
+    const int _n = (n); \
+    MALLOC(x,_m); \
+    MALLOC((x)[0],_m * _n); \
+    for (int _i = 0; _i < _m; _i++) { \
+        (x)[_i] = (x)[0] + _i * _n; \
+    }} while(0)
+#endif
+
+#ifndef FREE2
+#define FREE2(x) do { \
+        free((x)[0]); free(x); (x) = NULL; \
+    } while(0)
+#endif
+
 
 #ifndef FWRITE
 #define FWRITE(x,n,fp) do { \

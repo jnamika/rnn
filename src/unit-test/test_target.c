@@ -66,12 +66,10 @@ static void test_read_target_from_file2 (void)
     double **src = NULL;
     const int length = 50;
     const int dim = 10;
-    MALLOC(src, length);
-    MALLOC(src[0], length * dim);
+    MALLOC2(src, length, dim);
 
     fprintf(fp, "# comment\n");
     for (int n = 0; n < length; n++) {
-        src[n] = src[0] + dim * n;
         for (int i = 0; i < dim; i++) {
             src[n][i] = 0.1*(n+i);
             fprintf(fp, "%f%c", src[n][i], (i<dim-1)?separator[0]:'\n');
@@ -91,8 +89,7 @@ static void test_read_target_from_file2 (void)
         }
     }
     free_target_reader(&t_reader);
-    free(src[0]);
-    free(src);
+    FREE2(src);
 
     fclose(fp);
 }

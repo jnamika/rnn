@@ -92,11 +92,7 @@ double* lyapunov_spectrum (
     int flag_matrix_alloc, flag_vector_alloc;
 
     if (matrix == NULL) {
-        MALLOC(matrix, n);
-        MALLOC(matrix[0], n * n);
-        for (int i = 0; i < n; i++) {
-            matrix[i] = matrix[0] + i * n;
-        }
+        MALLOC2(matrix, n, n);
         flag_matrix_alloc = 1;
     } else {
         flag_matrix_alloc = 0;
@@ -165,13 +161,12 @@ double* lyapunov_spectrum (
     qsort(spectrum, m, sizeof(double), compar);
 
     if (flag_matrix_alloc) {
-        free(matrix[0]);
-        free(matrix);
+        FREE2(matrix);
     }
     if (flag_vector_alloc) {
-        free(vector[0][0]);
-        free(vector[0]);
-        free(vector);
+        FREE(vector[0][0]);
+        FREE(vector[0]);
+        FREE(vector);
     }
     return spectrum;
 }

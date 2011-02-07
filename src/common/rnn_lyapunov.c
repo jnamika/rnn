@@ -55,26 +55,14 @@ void rnn_lyapunov_info_alloc (struct rnn_lyapunov_info *rl_info)
 {
     const struct rnn_parameters *rnn_p = rl_info->rnn_s->rnn_p;
     const int tmp_dimension = rnn_p->out_state_size + rnn_p->c_state_size;
-
-    MALLOC(rl_info->tmp_matrix, tmp_dimension);
-    MALLOC(rl_info->tmp_matrix[0], tmp_dimension * tmp_dimension);
-    for (int i = 1; i < tmp_dimension; i++) {
-        rl_info->tmp_matrix[i] = rl_info->tmp_matrix[0] + i * tmp_dimension;
-    }
-
-    MALLOC(rl_info->state, rl_info->length);
-    MALLOC(rl_info->state[0], rl_info->length * rl_info->dimension);
-    for (int i = 1; i < rl_info->length; i++) {
-        rl_info->state[i] = rl_info->state[0] + i * rl_info->dimension;
-    }
+    MALLOC2(rl_info->tmp_matrix, tmp_dimension, tmp_dimension);
+    MALLOC2(rl_info->state, rl_info->length, rl_info->dimension);
 }
 
 void free_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
 {
-    free(rl_info->tmp_matrix[0]);
-    free(rl_info->tmp_matrix);
-    free(rl_info->state[0]);
-    free(rl_info->state);
+    FREE2(rl_info->tmp_matrix);
+    FREE2(rl_info->state);
 }
 
 

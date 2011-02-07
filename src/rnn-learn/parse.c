@@ -75,7 +75,7 @@ void str_to_connection (
             char *q;
             if ((q = strpbrk(p, "t")) == NULL) {
                 print_error_msg("warning: syntax error in `%s'", str);
-                free(buf);
+                FREE(buf);
                 goto error;
             }
             *q = '\0';
@@ -90,7 +90,7 @@ void str_to_connection (
             }
             p = strtok(NULL, ",");
         }
-        free(buf);
+        FREE(buf);
     }
     return;
 error:
@@ -124,7 +124,7 @@ void str_to_const_init_c (
             }
             p = strtok(NULL, ",");
         }
-        free(buf);
+        FREE(buf);
     }
 }
 
@@ -180,7 +180,7 @@ void str_to_softmax_group (
             }
         }
         *softmax_group_num = c;
-        free(buf);
+        FREE(buf);
     }
 }
 
@@ -217,7 +217,7 @@ void str_to_init_tau (
             }
             p = strtok(NULL, ",");
         }
-        free(buf);
+        FREE(buf);
     }
 }
 

@@ -38,11 +38,7 @@ static void test_str_to_connection (void)
     int **has_connection;
 
     MALLOC(str, BUFSIZ);
-    MALLOC(has_connection, 10);
-    MALLOC(has_connection[0], 10 * 10);
-    for (int i = 0; i < 10; i++) {
-        has_connection[i] = has_connection[0] + (i * 10);
-    }
+    MALLOC2(has_connection, 10, 10);
 
     int has_connection2[10][2] = {{1,0},{1,0},{1,0},{1,0},{1,0},{0,1},{0,1},
         {0,1}, {0,1},{0,1}};
@@ -77,9 +73,8 @@ static void test_str_to_connection (void)
             assert_equal_int(1, has_connection[i][j]);
         }
     }
-    free(has_connection[0]);
-    free(has_connection);
-    free(str);
+    FREE2(has_connection);
+    FREE(str);
 }
 
 
@@ -100,7 +95,7 @@ static void test_str_to_const_init_c (void)
     for (int i = 0; i < 10; i++) {
         assert_equal_int(const_init_c3[i], const_init_c[i]);
     }
-    free(str);
+    FREE(str);
 }
 
 static void test_str_to_softmax_group (void)
@@ -125,7 +120,7 @@ static void test_str_to_softmax_group (void)
     for (int i = 0; i < 10; i++) {
         assert_equal_int(softmax_group_id3[i], softmax_group_id[i]);
     }
-    free(str);
+    FREE(str);
 }
 
 
@@ -154,7 +149,7 @@ static void test_str_to_init_tau (void)
             mu_assert(isinf(tau[i]));
         }
     }
-    free(str);
+    FREE(str);
 }
 
 

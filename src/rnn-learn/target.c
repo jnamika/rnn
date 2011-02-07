@@ -46,7 +46,7 @@ static int num_of_items_in_str (
         n++;
         p = strtok(NULL, separator);
     }
-    free(tmp);
+    FREE(tmp);
     return n;
 }
 
@@ -87,7 +87,7 @@ static int str2vector (
     }
     return num;
 error:
-    free(*vector);
+    FREE(*vector);
     return -1;
 }
 
@@ -102,10 +102,9 @@ void init_target_reader (struct target_reader *t_reader)
 void free_target_reader (struct target_reader *t_reader)
 {
     for (int i = 0; i < t_reader->num; i++) {
-        free(t_reader->t_list[i].target[0]);
-        free(t_reader->t_list[i].target);
+        FREE2(t_reader->t_list[i].target);
     }
-    free(t_reader->t_list);
+    FREE(t_reader->t_list);
 }
 
 static void set_target (
@@ -115,10 +114,8 @@ static void set_target (
         int dimension)
 {
     t->length = length;
-    MALLOC(t->target, t->length);
-    MALLOC(t->target[0], dimension * t->length);
+    MALLOC2(t->target, t->length, dimension);
     for (int n = 0; n < t->length; n++) {
-        t->target[n] = t->target[0] + (n * dimension);
         memcpy(t->target[n], vec_series[n], sizeof(double) * dimension);
     }
 }
@@ -180,11 +177,11 @@ int read_target_from_file (
     }
     stat = 1;
 error:
-    free(str);
+    FREE(str);
     for (int n = 0; n < max_length; n++) {
-        free(vec_series[n]);
+        FREE(vec_series[n]);
     }
-    free(vec_series);
+    FREE(vec_series);
     return (stat ? 0 : -1);
 }
 

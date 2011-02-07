@@ -106,16 +106,10 @@ static void test_rnn_jacobian_for_lyapunov_spectrum (struct rnn_state *rnn_s)
         rnn_s->rnn_p->c_state_size;
     out_and_c_state_size = rnn_s->rnn_p->out_state_size +
         rnn_s->rnn_p->c_state_size;
-    MALLOC(matrix, out_and_c_state_size);
-    for (int i = 0; i < out_and_c_state_size; i++) {
-        MALLOC(matrix[i], in_and_c_state_size);
-    }
+    MALLOC2(matrix, out_and_c_state_size, in_and_c_state_size);
 
     init_rnn_lyapunov_info(&rl_info, rnn_s, 1, 0);
-    MALLOC(rl_matrix, rl_info.dimension);
-    for (int i = 0; i < rl_info.dimension; i++) {
-        MALLOC(rl_matrix[i], rl_info.dimension);
-    }
+    MALLOC2(rl_matrix, rl_info.dimension, rl_info.dimension);
 
     assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, NULL,
             rl_info.dimension, 0, rl_matrix, &rl_info);
@@ -152,19 +146,13 @@ static void test_rnn_jacobian_for_lyapunov_spectrum (struct rnn_state *rnn_s)
                     rl_matrix[i], rl_info.dimension * sizeof(double));
         }
     }
-    for (int i = 0; i < rl_info.dimension; i++) {
-        free(rl_matrix[i]);
-    }
-    free(rl_matrix);
+    FREE2(rl_matrix);
     free_rnn_lyapunov_info(&rl_info);
 
 
     int I, J, K, L;
     init_rnn_lyapunov_info(&rl_info, rnn_s, 3, 0);
-    MALLOC(rl_matrix, rl_info.dimension);
-    for (int i = 0; i < rl_info.dimension; i++) {
-        MALLOC(rl_matrix[i], rl_info.dimension);
-    }
+    MALLOC2(rl_matrix, rl_info.dimension, rl_info.dimension);
     mu_assert(rnn_jacobian_for_lyapunov_spectrum(rl_info.state[0],
                 rl_info.dimension, 0, rl_matrix, &rl_info) != NULL);
     rnn_jacobian_matrix(matrix, rnn_s->rnn_p, rnn_s->init_c_state,
@@ -215,16 +203,10 @@ static void test_rnn_jacobian_for_lyapunov_spectrum (struct rnn_state *rnn_s)
                 rl_matrix[i+J]+L,
                 rnn_s->rnn_p->c_state_size * sizeof(double));
     }
-    for (int i = 0; i < rl_info.dimension; i++) {
-        free(rl_matrix[i]);
-    }
-    free(rl_matrix);
+    FREE2(rl_matrix);
     free_rnn_lyapunov_info(&rl_info);
 
-    for (int i = 0; i < out_and_c_state_size; i++) {
-        free(matrix[i]);
-    }
-    free(matrix);
+    FREE2(matrix);
 }
 
 

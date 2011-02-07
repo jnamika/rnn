@@ -55,7 +55,7 @@ static void fopen_array (
             goto error;
         }
     }
-    free(filename);
+    FREE(filename);
     return;
 error:
     exit(EXIT_FAILURE);
@@ -163,13 +163,13 @@ void free_output_files (struct output_files *fp_list)
         for (int i = 0; i < fp_list->array_size; i++) {
             fclose(fp_list->fp_wstate_array[i]);
         }
-        free(fp_list->fp_wstate_array);
+        FREE(fp_list->fp_wstate_array);
     }
     if (fp_list->fp_wclosed_state_array) {
         for (int i = 0; i < fp_list->array_size; i++) {
             fclose(fp_list->fp_wclosed_state_array[i]);
         }
-        free(fp_list->fp_wclosed_state_array);
+        FREE(fp_list->fp_wclosed_state_array);
     }
     if (fp_list->fp_wweight) {
         fclose(fp_list->fp_wweight);
@@ -498,13 +498,11 @@ static void print_lyapunov_spectrum_of_rnn (
     if (spectrum_size <= 0) return;
 
     double **spectrum = NULL;
-    MALLOC(spectrum, rnn->series_num);
-    MALLOC(spectrum[0], rnn->series_num * spectrum_size);
+    MALLOC2(spectrum, rnn->series_num, spectrum_size);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
     for (int i = 0; i < rnn->series_num; i++) {
-        spectrum[i] = spectrum[0] + i * spectrum_size;
         compute_lyapunov_spectrum_of_rnn_state(rnn->rnn_s + i, spectrum_size,
                 delay_length, truncate_length, spectrum[i]);
     }
@@ -515,8 +513,7 @@ static void print_lyapunov_spectrum_of_rnn (
         }
     }
     fprintf(fp, "\n");
-    free(spectrum[0]);
-    free(spectrum);
+    FREE2(spectrum);
 }
 
 
@@ -564,13 +561,9 @@ static void compute_kl_divergence_of_rnn_state (
         } else {
             min = 0.0; max = 1.0;
         }
-        MALLOC(sequence_t, length);
-        MALLOC(sequence_o, length);
-        MALLOC(sequence_t[0], length * rnn_s->rnn_p->out_state_size);
-        MALLOC(sequence_o[0], length * rnn_s->rnn_p->out_state_size);
+        MALLOC2(sequence_t, length, rnn_s->rnn_p->out_state_size);
+        MALLOC2(sequence_o, length, rnn_s->rnn_p->out_state_size);
         for (int n = 0; n < length; n++) {
-            sequence_t[n] = sequence_t[0] + n * rnn_s->rnn_p->out_state_size;
-            sequence_o[n] = sequence_o[0] + n * rnn_s->rnn_p->out_state_size;
             int N = n + truncate_length;
             for (int i = 0; i < rnn_s->rnn_p->out_state_size; i++) {
                 sequence_t[n][i] = f2symbol(rnn_s->teach_state[N][i],
@@ -589,10 +582,8 @@ static void compute_kl_divergence_of_rnn_state (
         *gen_rate = generation_rate(&bf_t, &bf_o);
         free_block_frequency(&bf_t);
         free_block_frequency(&bf_o);
-        free(sequence_t[0]);
-        free(sequence_o[0]);
-        free(sequence_t);
-        free(sequence_o);
+        FREE2(sequence_t);
+        FREE2(sequence_o);
     } else {
         *kl_div = 0;
         *entropy_t = 0;

@@ -41,11 +41,7 @@ static void init_test_solver_info (
     ts_info->length = length;
     ts_info->dim = dim;
 
-    MALLOC(ts_info->data, length);
-    MALLOC(ts_info->data[0], length * dim);
-    for (int n = 0; n < length; n++) {
-        ts_info->data[n] = ts_info->data[0] + dim * n;
-    }
+    MALLOC2(ts_info->data, length, dim);
     MALLOC(ts_info->vector, dim);
     for (int i = 0; i < dim; i++) {
         MALLOC(ts_info->vector[i], dim);
@@ -55,13 +51,12 @@ static void init_test_solver_info (
 
 static void free_test_solver_info (struct test_solver_info *ts_info)
 {
-    free(ts_info->data[0]);
-    free(ts_info->data);
+    FREE2(ts_info->data);
     for (int i = 0; i < ts_info->dim; i++) {
-        free(ts_info->vector[i]);
+        FREE(ts_info->vector[i]);
     }
-    free(ts_info->vector);
-    free(ts_info->spectrum);
+    FREE(ts_info->vector);
+    FREE(ts_info->spectrum);
 }
 
 
@@ -300,7 +295,7 @@ static void test_box_counter (struct test_solver_info *ts_info)
             ts_info->length, ts_info->dim, 1.0, box_count);
     assert_equal_int(10, box_num);
 
-    free(box_count);
+    FREE(box_count);
 }
 
 
@@ -327,7 +322,7 @@ static void test_generalized_dimension (struct test_solver_info *ts_info)
         mu_assert(dimension[q-1] >= dimension[q]);
     }
 
-    free(box_count);
+    FREE(box_count);
 }
 
 

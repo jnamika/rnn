@@ -93,8 +93,8 @@ void init_block_frequency (
 
 void free_block_frequency (struct block_frequency *bf)
 {
-    free(bf->count);
-    free(bf->index);
+    FREE(bf->count);
+    FREE(bf->index);
 }
 
 

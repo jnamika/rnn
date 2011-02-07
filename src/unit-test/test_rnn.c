@@ -330,13 +330,9 @@ void assert_effect_rnn_learn (struct recurrent_neural_network *rnn)
     rnn_forward_dynamics_forall(rnn);
 #ifdef ENABLE_ATTRACTION_OF_INIT_C
     double **mean, **variance;
-    MALLOC(mean, rnn->series_num);
-    MALLOC(variance, rnn->series_num);
-    MALLOC(mean[0], rnn->series_num * rnn->rnn_p.c_state_size);
-    MALLOC(variance[0], rnn->series_num * rnn->rnn_p.c_state_size);
+    MALLOC2(mean, rnn->series_num, rnn->rnn_p.c_state_size);
+    MALLOC2(variance, rnn->series_num, rnn->rnn_p.c_state_size);
     for (int i = 0; i < rnn->series_num; i++) {
-        mean[i] = mean[0] + i * rnn->rnn_p.c_state_size;
-        variance[i] = variance[0] + i * rnn->rnn_p.c_state_size;
         get_mean_and_variance(rnn->rnn_s + i, mean[i], variance[i]);
     }
     post_dist = get_posterior_distribution(rnn, mean, variance);
@@ -350,10 +346,8 @@ void assert_effect_rnn_learn (struct recurrent_neural_network *rnn)
     rnn_forward_dynamics_forall(rnn);
 #ifdef ENABLE_ATTRACTION_OF_INIT_C
     next_post_dist = get_posterior_distribution(rnn, mean, variance);
-    free(mean[0]);
-    free(mean);
-    free(variance[0]);
-    free(variance);
+    FREE2(mean);
+    FREE2(variance);
 #else
     next_post_dist = get_posterior_distribution(rnn);
 #endif
@@ -573,13 +567,9 @@ static void test_init_rnn_state (void)
     init_rnn_parameters(&rnn_p, 1, 1, 1);
     length = 1;
     dim = 1;
-    MALLOC(input, length);
-    MALLOC(target, length);
-    MALLOC(input[0], length * dim);
-    MALLOC(target[0], length * dim);
+    MALLOC2(input, length, dim);
+    MALLOC2(target, length, dim);
     for (int n = 0; n < length; n++) {
-        input[n] = input[0] + dim * n;
-        target[n] = target[0] + dim * n;
         memset(input[n], 0, dim * sizeof(double));
         memset(target[n], 0, dim * sizeof(double));
     }
@@ -591,10 +581,8 @@ static void test_init_rnn_state (void)
 
     free_rnn_state(&rnn_s);
     free_rnn_parameters(&rnn_p);
-    free(input[0]);
-    free(target[0]);
-    free(input);
-    free(target);
+    FREE2(input);
+    FREE2(target);
 }
 
 static void test_rnn_get_connection (void)
@@ -637,8 +625,8 @@ static void test_rnn_get_connection (void)
     assert_equal_int(7, connection[1].begin);
     assert_equal_int(9, connection[1].end);
     assert_equal_int(-1, connection[2].begin);
-    free(connection);
-    free(has_connection);
+    FREE(connection);
+    FREE(has_connection);
 }
 
 
@@ -1343,11 +1331,6 @@ static void test_rnn_learn_with_adapt_lr (
 static void test_rnn_jacobian_matrix (struct rnn_parameters *rnn_p)
 {
     double **matrix;
-    MALLOC(matrix, rnn_p->out_state_size + rnn_p->c_state_size);
-    for (int i = 0; i < (rnn_p->out_state_size + rnn_p->c_state_size); i++) {
-        MALLOC(matrix[i], rnn_p->in_state_size + rnn_p->c_state_size);
-    }
-
     double prev_c_inter_state[rnn_p->c_state_size],
            prev_c_state[rnn_p->c_state_size],
            c_inter_state[rnn_p->c_state_size],
@@ -1356,6 +1339,8 @@ static void test_rnn_jacobian_matrix (struct rnn_parameters *rnn_p)
            out_state[rnn_p->out_state_size];
     double **tmp_p;
 
+    MALLOC2(matrix, rnn_p->out_state_size + rnn_p->c_state_size,
+            rnn_p->in_state_size + rnn_p->c_state_size);
     rnn_p->output_type = STANDARD_TYPE;
     init_genrand(584937L);
     for (int i = 0; i < rnn_p->c_state_size; i++) {
@@ -1398,10 +1383,7 @@ static void test_rnn_jacobian_matrix (struct rnn_parameters *rnn_p)
     assert_jacobian_matrix_for_softmax(rnn_p, matrix, prev_c_inter_state,
             c_inter_state, out_state);
 
-    for (int i = 0; i < (rnn_p->out_state_size + rnn_p->c_state_size); i++) {
-        free(matrix[i]);
-    }
-    free(matrix);
+    FREE2(matrix);
 }
 
 
@@ -1434,13 +1416,9 @@ void test_rnn_state_setup (
     const int out_state_size = rnn->rnn_p.out_state_size;
     for (int i = 0; i < target_num; i++) {
         double **input, **target;
-        MALLOC(input, target_length[i]);
-        MALLOC(target, target_length[i]);
-        MALLOC(input[0], target_length[i] * in_state_size);
-        MALLOC(target[0], target_length[i] * out_state_size);
+        MALLOC2(input, target_length[i], in_state_size);
+        MALLOC2(target, target_length[i], out_state_size);
         for (int n = 0; n < target_length[i]; n++) {
-            input[n] = input[0] + (in_state_size * n);
-            target[n] = target[0] + (out_state_size * n);
             for (int j = 0; j < in_state_size; j++) {
                 input[n][j] = genrand_real1();
             }
@@ -1450,10 +1428,8 @@ void test_rnn_state_setup (
         }
         rnn_add_target(rnn, target_length[i], (const double* const*)input,
                 (const double* const*)target);
-        free(input[0]);
-        free(target[0]);
-        free(input);
-        free(target);
+        FREE2(input);
+        FREE2(target);
     }
 }
 

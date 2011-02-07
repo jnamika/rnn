@@ -261,7 +261,7 @@ void rnn_clean_target (struct recurrent_neural_network *rnn)
     for (int i = 0; i < rnn->series_num; i++) {
         free_rnn_state(rnn->rnn_s + i);
     }
-    free(rnn->rnn_s);
+    FREE(rnn->rnn_s);
     rnn->rnn_s = NULL;
     rnn->series_num = 0;
 }
@@ -275,44 +275,17 @@ void rnn_parameters_alloc (struct rnn_parameters *rnn_p)
 
     MALLOC(rnn_p->const_init_c, c_state_size);
     MALLOC(rnn_p->softmax_group_id, out_state_size);
-    MALLOC(rnn_p->weight_ci, c_state_size);
-    MALLOC(rnn_p->weight_cc, c_state_size);
-    MALLOC(rnn_p->weight_oc, out_state_size);
-    MALLOC(rnn_p->delta_weight_ci, c_state_size);
-    MALLOC(rnn_p->delta_weight_cc, c_state_size);
-    MALLOC(rnn_p->delta_weight_oc, out_state_size);
-    MALLOC(rnn_p->prior_weight_ci, c_state_size);
-    MALLOC(rnn_p->prior_weight_cc, c_state_size);
-    MALLOC(rnn_p->prior_weight_oc, out_state_size);
 
-    MALLOC(rnn_p->weight_ci[0], c_state_size * in_state_size);
-    MALLOC(rnn_p->weight_cc[0], c_state_size * c_state_size);
-    MALLOC(rnn_p->weight_oc[0], out_state_size * c_state_size);
-    MALLOC(rnn_p->delta_weight_ci[0], c_state_size * in_state_size);
-    MALLOC(rnn_p->delta_weight_cc[0], c_state_size * c_state_size);
-    MALLOC(rnn_p->delta_weight_oc[0], out_state_size * c_state_size);
-    MALLOC(rnn_p->prior_weight_ci[0], c_state_size * in_state_size);
-    MALLOC(rnn_p->prior_weight_cc[0], c_state_size * c_state_size);
-    MALLOC(rnn_p->prior_weight_oc[0], out_state_size * c_state_size);
-    for (int i = 0; i < c_state_size; i++) {
-        rnn_p->weight_ci[i] = rnn_p->weight_ci[0] + (i * in_state_size);
-        rnn_p->weight_cc[i] = rnn_p->weight_cc[0] + (i * c_state_size);
-        rnn_p->delta_weight_ci[i] = rnn_p->delta_weight_ci[0] +
-            (i * in_state_size);
-        rnn_p->delta_weight_cc[i] = rnn_p->delta_weight_cc[0] +
-            (i * c_state_size);
-        rnn_p->prior_weight_ci[i] = rnn_p->prior_weight_ci[0] +
-            (i * in_state_size);
-        rnn_p->prior_weight_cc[i] = rnn_p->prior_weight_cc[0] +
-            (i * c_state_size);
-    }
-    for (int i = 0; i < out_state_size; i++) {
-        rnn_p->weight_oc[i] = rnn_p->weight_oc[0] + (i * c_state_size);
-        rnn_p->delta_weight_oc[i] = rnn_p->delta_weight_oc[0] +
-            (i * c_state_size);
-        rnn_p->prior_weight_oc[i] = rnn_p->prior_weight_oc[0] +
-            (i * c_state_size);
-    }
+    MALLOC2(rnn_p->weight_ci, c_state_size, in_state_size);
+    MALLOC2(rnn_p->weight_cc, c_state_size, c_state_size);
+    MALLOC2(rnn_p->weight_oc, out_state_size, c_state_size);
+    MALLOC2(rnn_p->delta_weight_ci, c_state_size, in_state_size);
+    MALLOC2(rnn_p->delta_weight_cc, c_state_size, c_state_size);
+    MALLOC2(rnn_p->delta_weight_oc, out_state_size, c_state_size);
+    MALLOC2(rnn_p->prior_weight_ci, c_state_size, in_state_size);
+    MALLOC2(rnn_p->prior_weight_cc, c_state_size, c_state_size);
+    MALLOC2(rnn_p->prior_weight_oc, out_state_size, c_state_size);
+
     MALLOC(rnn_p->threshold_c, c_state_size);
     MALLOC(rnn_p->threshold_o, out_state_size);
     MALLOC(rnn_p->tau, c_state_size);
@@ -324,22 +297,9 @@ void rnn_parameters_alloc (struct rnn_parameters *rnn_p)
     MALLOC(rnn_p->prior_threshold_o, out_state_size);
     MALLOC(rnn_p->prior_tau, c_state_size);
 
-    MALLOC(rnn_p->connection_ci, c_state_size);
-    MALLOC(rnn_p->connection_cc, c_state_size);
-    MALLOC(rnn_p->connection_oc, out_state_size);
-    MALLOC(rnn_p->connection_ci[0], c_state_size * (in_state_size + 1));
-    MALLOC(rnn_p->connection_cc[0], c_state_size * (c_state_size + 1));
-    MALLOC(rnn_p->connection_oc[0], out_state_size * (c_state_size + 1));
-    for (int i = 0; i < c_state_size; i++) {
-        rnn_p->connection_ci[i] = rnn_p->connection_ci[0] +
-            (i * (in_state_size + 1));
-        rnn_p->connection_cc[i] = rnn_p->connection_cc[0] +
-            (i * (c_state_size + 1));
-    }
-    for (int i = 0; i < out_state_size; i++) {
-        rnn_p->connection_oc[i] = rnn_p->connection_oc[0] +
-            (i * (c_state_size + 1));
-    }
+    MALLOC2(rnn_p->connection_ci, c_state_size, (in_state_size + 1));
+    MALLOC2(rnn_p->connection_cc, c_state_size, (c_state_size + 1));
+    MALLOC2(rnn_p->connection_oc, out_state_size, (c_state_size + 1));
 
 #ifdef ENABLE_ADAPTIVE_LEARNING_RATE
     MALLOC(rnn_p->tmp_weight_ci, c_state_size * in_state_size);
@@ -354,50 +314,38 @@ void rnn_parameters_alloc (struct rnn_parameters *rnn_p)
 
 void free_rnn_parameters (struct rnn_parameters *rnn_p)
 {
-    free(rnn_p->const_init_c);
-    free(rnn_p->softmax_group_id);
-    free(rnn_p->weight_ci[0]);
-    free(rnn_p->weight_cc[0]);
-    free(rnn_p->weight_oc[0]);
-    free(rnn_p->delta_weight_ci[0]);
-    free(rnn_p->delta_weight_cc[0]);
-    free(rnn_p->delta_weight_oc[0]);
-    free(rnn_p->prior_weight_ci[0]);
-    free(rnn_p->prior_weight_cc[0]);
-    free(rnn_p->prior_weight_oc[0]);
-    free(rnn_p->weight_ci);
-    free(rnn_p->weight_cc);
-    free(rnn_p->weight_oc);
-    free(rnn_p->delta_weight_ci);
-    free(rnn_p->delta_weight_cc);
-    free(rnn_p->delta_weight_oc);
-    free(rnn_p->prior_weight_ci);
-    free(rnn_p->prior_weight_cc);
-    free(rnn_p->prior_weight_oc);
-    free(rnn_p->threshold_c);
-    free(rnn_p->threshold_o);
-    free(rnn_p->tau);
-    free(rnn_p->eta);
-    free(rnn_p->delta_threshold_c);
-    free(rnn_p->delta_threshold_o);
-    free(rnn_p->delta_tau);
-    free(rnn_p->prior_threshold_c);
-    free(rnn_p->prior_threshold_o);
-    free(rnn_p->prior_tau);
-    free(rnn_p->connection_ci[0]);
-    free(rnn_p->connection_cc[0]);
-    free(rnn_p->connection_oc[0]);
-    free(rnn_p->connection_ci);
-    free(rnn_p->connection_cc);
-    free(rnn_p->connection_oc);
+    FREE(rnn_p->const_init_c);
+    FREE(rnn_p->softmax_group_id);
+    FREE2(rnn_p->weight_ci);
+    FREE2(rnn_p->weight_cc);
+    FREE2(rnn_p->weight_oc);
+    FREE2(rnn_p->delta_weight_ci);
+    FREE2(rnn_p->delta_weight_cc);
+    FREE2(rnn_p->delta_weight_oc);
+    FREE2(rnn_p->prior_weight_ci);
+    FREE2(rnn_p->prior_weight_cc);
+    FREE2(rnn_p->prior_weight_oc);
+    FREE(rnn_p->threshold_c);
+    FREE(rnn_p->threshold_o);
+    FREE(rnn_p->tau);
+    FREE(rnn_p->eta);
+    FREE(rnn_p->delta_threshold_c);
+    FREE(rnn_p->delta_threshold_o);
+    FREE(rnn_p->delta_tau);
+    FREE(rnn_p->prior_threshold_c);
+    FREE(rnn_p->prior_threshold_o);
+    FREE(rnn_p->prior_tau);
+    FREE2(rnn_p->connection_ci);
+    FREE2(rnn_p->connection_cc);
+    FREE2(rnn_p->connection_oc);
 #ifdef ENABLE_ADAPTIVE_LEARNING_RATE
-    free(rnn_p->tmp_weight_ci);
-    free(rnn_p->tmp_weight_cc);
-    free(rnn_p->tmp_weight_oc);
-    free(rnn_p->tmp_threshold_c);
-    free(rnn_p->tmp_threshold_o);
-    free(rnn_p->tmp_tau);
-    free(rnn_p->tmp_eta);
+    FREE(rnn_p->tmp_weight_ci);
+    FREE(rnn_p->tmp_weight_cc);
+    FREE(rnn_p->tmp_weight_oc);
+    FREE(rnn_p->tmp_threshold_c);
+    FREE(rnn_p->tmp_threshold_o);
+    FREE(rnn_p->tmp_tau);
+    FREE(rnn_p->tmp_eta);
 #endif
 }
 
@@ -415,59 +363,21 @@ void rnn_state_alloc (struct rnn_state *rnn_s)
     MALLOC(rnn_s->init_c_state, c_state_size);
     MALLOC(rnn_s->delta_init_c_inter_state, c_state_size);
 
-    MALLOC(rnn_s->in_state, length);
-    MALLOC(rnn_s->c_state, length);
-    MALLOC(rnn_s->out_state, length);
-    MALLOC(rnn_s->teach_state, length);
-    MALLOC(rnn_s->c_inputsum, length);
-    MALLOC(rnn_s->c_inter_state, length);
-    MALLOC(rnn_s->o_inter_state, length);
-    MALLOC(rnn_s->likelihood, length);
-    MALLOC(rnn_s->delta_likelihood, length);
-    MALLOC(rnn_s->delta_c_inter, length);
-    MALLOC(rnn_s->delta_o_inter, length);
+    MALLOC2(rnn_s->in_state, length, in_state_size);
+    MALLOC2(rnn_s->c_state, length, c_state_size);
+    MALLOC2(rnn_s->out_state, length, out_state_size);
+    MALLOC2(rnn_s->teach_state, length, out_state_size);
+    MALLOC2(rnn_s->c_inputsum, length, c_state_size);
+    MALLOC2(rnn_s->c_inter_state, length, c_state_size);
+    MALLOC2(rnn_s->o_inter_state, length, out_state_size);
+    MALLOC2(rnn_s->likelihood, length, out_state_size);
+    MALLOC2(rnn_s->delta_likelihood, length, out_state_size);
+    MALLOC2(rnn_s->delta_c_inter, length, c_state_size);
+    MALLOC2(rnn_s->delta_o_inter, length, out_state_size);
 
-    MALLOC(rnn_s->in_state[0], in_state_size * length);
-    MALLOC(rnn_s->c_state[0], c_state_size * length);
-    MALLOC(rnn_s->out_state[0], out_state_size * length);
-    MALLOC(rnn_s->teach_state[0], out_state_size * length);
-    MALLOC(rnn_s->c_inputsum[0], c_state_size * length);
-    MALLOC(rnn_s->c_inter_state[0], c_state_size * length);
-    MALLOC(rnn_s->o_inter_state[0], out_state_size * length);
-    MALLOC(rnn_s->likelihood[0], out_state_size * length);
-    MALLOC(rnn_s->delta_likelihood[0], out_state_size * length);
-    MALLOC(rnn_s->delta_c_inter[0], c_state_size * length);
-    MALLOC(rnn_s->delta_o_inter[0], out_state_size * length);
-    for (int i = 0; i < length; i++) {
-        rnn_s->in_state[i] = rnn_s->in_state[0] + (i * in_state_size);
-        rnn_s->c_state[i] = rnn_s->c_state[0] + (i * c_state_size);
-        rnn_s->out_state[i] = rnn_s->out_state[0] + (i * out_state_size);
-        rnn_s->teach_state[i] = rnn_s->teach_state[0] + (i * out_state_size);
-        rnn_s->c_inputsum[i] = rnn_s->c_inputsum[0] + (i * c_state_size);
-        rnn_s->c_inter_state[i] = rnn_s->c_inter_state[0] + (i * c_state_size);
-        rnn_s->o_inter_state[i] = rnn_s->o_inter_state[0] +
-            (i * out_state_size);
-        rnn_s->likelihood[i] = rnn_s->likelihood[0] + (i * out_state_size);
-        rnn_s->delta_likelihood[i] = rnn_s->delta_likelihood[0] +
-            (i * out_state_size);
-        rnn_s->delta_c_inter[i] = rnn_s->delta_c_inter[0] + (i * c_state_size);
-        rnn_s->delta_o_inter[i] = rnn_s->delta_o_inter[0] +
-            (i * out_state_size);
-    }
-
-    MALLOC(rnn_s->delta_w_ci, c_state_size);
-    MALLOC(rnn_s->delta_w_cc, c_state_size);
-    MALLOC(rnn_s->delta_w_oc, out_state_size);
-    MALLOC(rnn_s->delta_w_ci[0], c_state_size * in_state_size);
-    MALLOC(rnn_s->delta_w_cc[0], c_state_size * c_state_size);
-    MALLOC(rnn_s->delta_w_oc[0], out_state_size * c_state_size);
-    for (int i = 0; i < c_state_size; i++) {
-        rnn_s->delta_w_ci[i] = rnn_s->delta_w_ci[0] + (i * in_state_size);
-        rnn_s->delta_w_cc[i] = rnn_s->delta_w_cc[0] + (i * c_state_size);
-    }
-    for (int i = 0; i < out_state_size; i++) {
-        rnn_s->delta_w_oc[i] = rnn_s->delta_w_oc[0] + (i * c_state_size);
-    }
+    MALLOC2(rnn_s->delta_w_ci, c_state_size, in_state_size);
+    MALLOC2(rnn_s->delta_w_cc, c_state_size, c_state_size);
+    MALLOC2(rnn_s->delta_w_oc, out_state_size, c_state_size);
     MALLOC(rnn_s->delta_t_c, c_state_size);
     MALLOC(rnn_s->delta_t_o, out_state_size);
     MALLOC(rnn_s->delta_tau, c_state_size);
@@ -481,44 +391,30 @@ void rnn_state_alloc (struct rnn_state *rnn_s)
 
 void free_rnn_state (struct rnn_state *rnn_s)
 {
-    free(rnn_s->init_c_inter_state);
-    free(rnn_s->init_c_state);
-    free(rnn_s->delta_init_c_inter_state);
-    free(rnn_s->in_state[0]);
-    free(rnn_s->c_state[0]);
-    free(rnn_s->out_state[0]);
-    free(rnn_s->teach_state[0]);
-    free(rnn_s->c_inputsum[0]);
-    free(rnn_s->c_inter_state[0]);
-    free(rnn_s->o_inter_state[0]);
-    free(rnn_s->likelihood[0]);
-    free(rnn_s->delta_likelihood[0]);
-    free(rnn_s->delta_c_inter[0]);
-    free(rnn_s->delta_o_inter[0]);
-    free(rnn_s->in_state);
-    free(rnn_s->c_state);
-    free(rnn_s->out_state);
-    free(rnn_s->teach_state);
-    free(rnn_s->c_inputsum);
-    free(rnn_s->c_inter_state);
-    free(rnn_s->o_inter_state);
-    free(rnn_s->likelihood);
-    free(rnn_s->delta_likelihood);
-    free(rnn_s->delta_c_inter);
-    free(rnn_s->delta_o_inter);
-    free(rnn_s->delta_w_ci[0]);
-    free(rnn_s->delta_w_cc[0]);
-    free(rnn_s->delta_w_oc[0]);
-    free(rnn_s->delta_w_ci);
-    free(rnn_s->delta_w_cc);
-    free(rnn_s->delta_w_oc);
-    free(rnn_s->delta_t_c);
-    free(rnn_s->delta_t_o);
-    free(rnn_s->delta_tau);
-    free(rnn_s->delta_i);
+    FREE(rnn_s->init_c_inter_state);
+    FREE(rnn_s->init_c_state);
+    FREE(rnn_s->delta_init_c_inter_state);
+    FREE2(rnn_s->in_state);
+    FREE2(rnn_s->c_state);
+    FREE2(rnn_s->out_state);
+    FREE2(rnn_s->teach_state);
+    FREE2(rnn_s->c_inputsum);
+    FREE2(rnn_s->c_inter_state);
+    FREE2(rnn_s->o_inter_state);
+    FREE2(rnn_s->likelihood);
+    FREE2(rnn_s->delta_likelihood);
+    FREE2(rnn_s->delta_c_inter);
+    FREE2(rnn_s->delta_o_inter);
+    FREE2(rnn_s->delta_w_ci);
+    FREE2(rnn_s->delta_w_cc);
+    FREE2(rnn_s->delta_w_oc);
+    FREE(rnn_s->delta_t_c);
+    FREE(rnn_s->delta_t_o);
+    FREE(rnn_s->delta_tau);
+    FREE(rnn_s->delta_i);
 #ifdef ENABLE_ADAPTIVE_LEARNING_RATE
-    free(rnn_s->tmp_init_c_inter_state);
-    free(rnn_s->tmp_init_c_state);
+    FREE(rnn_s->tmp_init_c_inter_state);
+    FREE(rnn_s->tmp_init_c_state);
 #endif
 }
 

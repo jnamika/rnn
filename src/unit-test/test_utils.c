@@ -72,8 +72,8 @@ static void test_getline (void)
     assert_equal_int(2, line);
     fclose(fp);
 
-    free(str1);
-    free(str2);
+    FREE(str1);
+    FREE(str2);
 }
 
 

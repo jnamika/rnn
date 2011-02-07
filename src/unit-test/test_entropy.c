@@ -57,11 +57,8 @@ static void test_block_entropy (void)
     length = 10000;
     max_block_length = 5;
 
-    MALLOC(sequence, length);
-    MALLOC(sequence[0], length * dimension);
-
+    MALLOC2(sequence, length, dimension);
     for (int n = 0; n < length; n++) {
-        sequence[n] = sequence[0] + n * dimension;
         for (int i = 0; i < dimension; i++) {
             sequence[n][i] = 0;
         }
@@ -108,7 +105,7 @@ static void test_block_entropy (void)
             sequence[n][i] = tmp[n];
         }
     }
-    free(tmp);
+    FREE(tmp);
     for (int n = 1; n <= max_block_length ; n++) {
         init_block_frequency(&bf, (const int* const*)sequence, dimension,
                 length, n);
@@ -116,8 +113,7 @@ static void test_block_entropy (void)
         mu_assert(entropy >= 0.5);
         free_block_frequency(&bf);
     }
-    free(sequence[0]);
-    free(sequence);
+    FREE2(sequence);
 }
 
 static void test_kullback_leibler_divergence (void)
@@ -131,14 +127,8 @@ static void test_kullback_leibler_divergence (void)
     length = 1024;
     max_block_length = 5;
 
-    MALLOC(x, length);
-    MALLOC(y, length);
-    MALLOC(x[0], length * dimension);
-    MALLOC(y[0], length * dimension);
-    for (int n = 0; n < length; n++) {
-        x[n] = x[0] + n * dimension;
-        y[n] = y[0] + n * dimension;
-    }
+    MALLOC2(x, length, dimension);
+    MALLOC2(y, length, dimension);
 
     int *tmp;
     MALLOC(tmp, length);
@@ -149,7 +139,7 @@ static void test_kullback_leibler_divergence (void)
             y[n][i] = tmp[(n+i+300) % length];
         }
     }
-    free(tmp);
+    FREE(tmp);
     for (int n = 1; n < max_block_length; n++) {
         init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
         init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
@@ -210,10 +200,8 @@ static void test_kullback_leibler_divergence (void)
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }
-    free(x[0]);
-    free(y[0]);
-    free(x);
-    free(y);
+    FREE2(x);
+    FREE2(y);
 }
 
 static void test_generation_rate (void)
@@ -227,14 +215,8 @@ static void test_generation_rate (void)
     length = 1024;
     max_block_length = 5;
 
-    MALLOC(x, length);
-    MALLOC(y, length);
-    MALLOC(x[0], length * dimension);
-    MALLOC(y[0], length * dimension);
-    for (int n = 0; n < length; n++) {
-        x[n] = x[0] + n * dimension;
-        y[n] = y[0] + n * dimension;
-    }
+    MALLOC2(x, length, dimension);
+    MALLOC2(y, length, dimension);
 
     int *tmp;
     MALLOC(tmp, length);
@@ -245,7 +227,7 @@ static void test_generation_rate (void)
             y[n][i] = tmp[(n+i+300) % length];
         }
     }
-    free(tmp);
+    FREE(tmp);
     for (int n = 1; n < max_block_length; n++) {
         init_block_frequency(&bf_x, (const int* const*)x, dimension, length, n);
         init_block_frequency(&bf_y, (const int* const*)y, dimension, length, n);
@@ -268,10 +250,8 @@ static void test_generation_rate (void)
         free_block_frequency(&bf_x);
         free_block_frequency(&bf_y);
     }
-    free(x[0]);
-    free(y[0]);
-    free(x);
-    free(y);
+    FREE2(x);
+    FREE2(y);
 }
 
 void test_entropy (void)
