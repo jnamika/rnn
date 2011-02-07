@@ -36,7 +36,7 @@ def generate_henon_map(length, truncate_length=0, a=1.4, b=0.3, x=None,
             yield x, y
         next_x = y + 1 - a * x * x
         y = b * x
-        x = next_x 
+        x = next_x
 
 
 def Runge_Kutta_4(df, x, delta, t):

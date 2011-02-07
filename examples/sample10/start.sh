@@ -1,7 +1,5 @@
 #!/bin/sh
 
-my_path=../../bin
-
 if [ "$1" = clean ]; then
     rm -f *.log *.dat target.txt
     exit
@@ -9,11 +7,11 @@ fi
 
 cat <<EOS | python > target.txt
 import sys
-sys.path.append('$my_path')
+sys.path.append('..')
 import gen_target
 gen_target.print_sin_curve(500, 20)
 EOS
 
-$my_path/rnn-learn -e 5000 -c config.txt target.txt
-$my_path/rnn-generate rnn.dat > orbit.log
+rnn-learn -e 5000 -c config.txt target.txt
+rnn-generate rnn.dat > orbit.log
 

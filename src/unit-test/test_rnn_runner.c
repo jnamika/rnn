@@ -55,7 +55,7 @@ typedef struct test_rnn_runner_data {
     int c_state_size;
     int out_state_size;
     int delay_length;
-    int output_type;
+    rnn_output_t output_type;
     int target_num;
 } test_rnn_runner_data;
 
@@ -72,7 +72,7 @@ static void test_init_rnn_runner (
         int c_state_size,
         int out_state_size,
         int delay_length,
-        int output_type,
+        rnn_output_t output_type,
         int target_num,
         int *target_length)
 {
@@ -113,7 +113,7 @@ static void test_init_rnn_runner (
             rnn_out_state_size_from_runner(&t_data->runner));
     assert_equal_int(delay_length,
             rnn_delay_length_from_runner(&t_data->runner));
-    assert_equal_int(output_type,
+    assert_equal_int((int)output_type,
             rnn_output_type_from_runner(&t_data->runner));
     assert_equal_int(target_num, rnn_target_num_from_runner(&t_data->runner));
     assert_equal_rnn_p(&rnn.rnn_p, &t_data->runner.rnn.rnn_p);
@@ -204,7 +204,7 @@ static void test_rnn_delay_length_from_runner (
 static void test_rnn_output_type_from_runner (
         struct test_rnn_runner_data *t_data)
 {
-    assert_equal_int(t_data->output_type,
+    assert_equal_int((int)t_data->output_type,
             rnn_output_type_from_runner(&t_data->runner));
 }
 
@@ -261,14 +261,14 @@ void test_rnn_runner (void)
 
     mu_run_test(test_new_rnn_runner);
 
-    mu_run_test_with_args(test_init_rnn_runner, t_data, 1, 10, 1, 1, 0, 2,
-            (int[]){50,100});
-    mu_run_test_with_args(test_init_rnn_runner, t_data+1, 3, 13, 3, 3, 1, 3,
-            (int[]){30,30,20});
-    mu_run_test_with_args(test_init_rnn_runner, t_data+2, 0, 7, 2, 5, 0, 2,
-            (int[]){100,50});
-    mu_run_test_with_args(test_init_rnn_runner, t_data+3, 4, 10, 4, 10, 1, 3,
-            (int[]){5,50,10});
+    mu_run_test_with_args(test_init_rnn_runner, t_data, 1, 10, 1, 1,
+            STANDARD_TYPE, 2, (int[]){50,100});
+    mu_run_test_with_args(test_init_rnn_runner, t_data+1, 3, 13, 3, 3,
+            SOFTMAX_TYPE, 3, (int[]){30,30,20});
+    mu_run_test_with_args(test_init_rnn_runner, t_data+2, 0, 7, 2, 5,
+            STANDARD_TYPE, 2, (int[]){100,50});
+    mu_run_test_with_args(test_init_rnn_runner, t_data+3, 4, 10, 4, 10,
+            SOFTMAX_TYPE, 3, (int[]){5,50,10});
 
     for (int i = 0; i < 4; i++) {
         mu_run_test_with_args(test_set_init_state_of_rnn_runner, t_data + i);

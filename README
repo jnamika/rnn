@@ -15,10 +15,9 @@ The package supports
 
 === Installation ===
 
-Type `make' to build the `rnn-learn' and `rnn-generate' programs.
+First, type `./autogen.sh' in the current directory to create configure file.
+Next, type `./configure' and when it finishes, type `make'. This will create `rnn-learn' and `rnn-generate'.
 Run them with the argument `-h' to show the usages of them.
-
-There are some other useful programs in this package.
 
 
 
@@ -26,7 +25,7 @@ There are some other useful programs in this package.
 
 Here is a sample session.
 
-> cd bin
+> cd examples
 > echo "import gen_target
 gen_target.print_sin_curve(500, 20)" | python > target.txt
 > rnn-learn -e 5000 target.txt

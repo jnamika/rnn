@@ -1,5 +1,13 @@
 *.[oa]
-depend.mk
-bin/
-obj/
-src/unit-test/coverage.log
+Makefile.in
+aclocal.m4
+autom4te.cache/*
+m4/*
+config.guess
+config.h.in
+config.sub
+configure
+depcomp
+install-sh
+ltmain.sh
+missing
