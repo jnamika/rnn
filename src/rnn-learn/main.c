@@ -21,12 +21,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
-#ifdef ENABLE_MTRACE
-#include <mcheck.h>
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+#ifdef ENABLE_MTRACE
+#include <mcheck.h>
 #endif
 #include "parameter.h"
 #include "utils.h"

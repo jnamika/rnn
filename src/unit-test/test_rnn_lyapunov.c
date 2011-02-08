@@ -20,6 +20,10 @@
 #include <string.h>
 #include <math.h>
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"
@@ -77,12 +81,12 @@ static void test_init_rnn_lyapunov_info (
         const struct rnn_state *rnn_s)
 {
     struct rnn_lyapunov_info rl_info;
-    assert_exit_call(init_rnn_lyapunov_info, &rl_info, rnn_s, 0, 0);
-    assert_exit_call(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, -1);
-    assert_exit_call(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, rnn_s->length);
+    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 0, 0);
+    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, -1);
+    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, rnn_s->length);
     if (rnn_s->rnn_p->in_state_size == rnn_s->rnn_p->out_state_size ||
             rnn_s->rnn_p->in_state_size == 0) {
-        assert_exit_nocall(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, 0);
+        assert_noexit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, 0);
         free_rnn_lyapunov_info(&rl_info);
     }
 }
@@ -111,21 +115,21 @@ static void test_rnn_jacobian_for_lyapunov_spectrum (struct rnn_state *rnn_s)
     init_rnn_lyapunov_info(&rl_info, rnn_s, 1, 0);
     MALLOC2(rl_matrix, rl_info.dimension, rl_info.dimension);
 
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, NULL,
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, NULL, rl_info.dimension, 0,
+            rl_matrix, &rl_info);
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[1],
             rl_info.dimension, 0, rl_matrix, &rl_info);
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[1],
-            rl_info.dimension, 0, rl_matrix, &rl_info);
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
             rl_info.dimension+1, 0, rl_matrix, &rl_info);
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
             rl_info.dimension-1, 0, rl_matrix, &rl_info);
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
             rl_info.dimension, -1, rl_matrix, &rl_info);
-    assert_exit_call(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
+    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
             rl_info.dimension, rnn_s->length, rl_matrix, &rl_info);
-    assert_exit_nocall(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
+    assert_noexit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
             rl_info.dimension, 0, rl_matrix, &rl_info);
-    assert_exit_nocall(rnn_jacobian_for_lyapunov_spectrum,
+    assert_noexit(rnn_jacobian_for_lyapunov_spectrum,
             rl_info.state[rnn_s->length-1], rl_info.dimension, rnn_s->length-1,
             rl_matrix, &rl_info);
 

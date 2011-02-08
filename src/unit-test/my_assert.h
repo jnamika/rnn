@@ -62,7 +62,7 @@ extern jmp_buf _g_jbuf; // defined in main.c
 /* In the target source codes, exit() is overwrited as longjmp(_g_jbuf, 1)
  * (see config.h) */
 
-#define assert_exit_call(func,...) \
+#define assert_exit(func,...) \
     do { \
         volatile int is_exit_called = 0; jmp_buf tmp_jbuf; \
         memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \
@@ -72,7 +72,7 @@ extern jmp_buf _g_jbuf; // defined in main.c
         mu_assert_with_msg(is_exit_called, "exit() was not called\n"); \
     } while(0)
 
-#define assert_exit_nocall(func,...) \
+#define assert_noexit(func,...) \
     do { \
         volatile int is_exit_called = 1; jmp_buf tmp_jbuf; \
         memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \

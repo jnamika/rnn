@@ -20,10 +20,14 @@
 #include <math.h>
 #include <string.h>
 #include <setjmp.h>
+
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
-
 #include "minunit.h"
 #include "test_utils.h"
 #include "test_rnn.h"

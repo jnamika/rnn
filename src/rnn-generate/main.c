@@ -18,12 +18,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-#ifdef ENABLE_MTRACE
-#include <mcheck.h>
-#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+#ifdef ENABLE_MTRACE
+#include <mcheck.h>
 #endif
 #include "utils.h"
 #include "main.h"

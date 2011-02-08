@@ -19,6 +19,10 @@
 #include <string.h>
 #include <math.h>
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"
@@ -546,14 +550,10 @@ static void test_init_rnn_parameters (void)
      * RNN has to contain at least one context neuron and one output neuron.
      * An input neuron is not necessarily required.
      */
-    assert_exit_call(init_rnn_parameters, &rnn_p,
-            -1, 1, 1);
-    assert_exit_call(init_rnn_parameters, &rnn_p,
-            0, 0, 1);
-    assert_exit_call(init_rnn_parameters, &rnn_p,
-            0, 1, 0);
-    assert_exit_nocall(init_rnn_parameters, &rnn_p,
-            0, 1, 1);
+    assert_exit(init_rnn_parameters, &rnn_p, -1, 1, 1);
+    assert_exit(init_rnn_parameters, &rnn_p, 0, 0, 1);
+    assert_exit(init_rnn_parameters, &rnn_p, 0, 1, 0);
+    assert_noexit(init_rnn_parameters, &rnn_p, 0, 1, 1);
     free_rnn_parameters(&rnn_p);
 }
 
@@ -574,9 +574,9 @@ static void test_init_rnn_state (void)
         memset(target[n], 0, dim * sizeof(double));
     }
 
-    assert_exit_call(init_rnn_state, &rnn_s, &rnn_p, 0,
-            (const double* const*)input, (const double* const*)target);
-    assert_exit_nocall(init_rnn_state, &rnn_s, &rnn_p, 1,
+    assert_exit(init_rnn_state, &rnn_s, &rnn_p, 0, (const double* const*)input,
+            (const double* const*)target);
+    assert_noexit(init_rnn_state, &rnn_s, &rnn_p, 1,
             (const double* const*)input, (const double* const*)target);
 
     free_rnn_state(&rnn_s);

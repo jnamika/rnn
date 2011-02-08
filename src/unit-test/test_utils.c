@@ -19,6 +19,10 @@
 #include <stddef.h>
 #include <string.h>
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"

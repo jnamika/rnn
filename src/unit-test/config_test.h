@@ -14,21 +14,23 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+/*
+ * This file is used in target source codes to test.
+ * DO NOT include this file in testing source codes because
+ * this overwrites some functions.
+ */
 
-#define MAX_ITERATION_IN_ADAPTIVE_LR 10000
-//#define MAX_PERF_INC (1.0-1e-10)
-#define MAX_PERF_INC (1.0+1e-10)
+#undef print_error_msg
+#define print_error_msg(...)
 
-
-#ifndef TEST_CODE
-#include "config_test.h"
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include "../../config.h"
-#endif
-
-#endif
+/*
+ * The followings are defined in order to overwrite exit(3) and assert(3).
+ * This code is evil!
+ */
+#include <setjmp.h>
+extern jmp_buf _g_jbuf; // defined in main.c
+#undef exit
+#undef assert
+#define exit(X) (longjmp(_g_jbuf, 1))
+#define assert(X) do { if (!(X)) { longjmp(_g_jbuf, 1); }} while(0)
 

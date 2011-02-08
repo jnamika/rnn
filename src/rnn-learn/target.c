@@ -128,12 +128,12 @@ int read_target_from_file (
     int stat = 0;
     char *str = NULL;
     size_t str_size = 0;
-    int line, length, max_length;
+    int line, length;
     int mem_length = INIT_MEMSIZE;
     double **vec_series = NULL;
     MALLOC(vec_series, mem_length);
 
-    line = length = max_length = 0;
+    line = length = 0;
     while (getline(&str, &str_size, fp) != -1) {
         char *p = strchr(str, '\n');
         if (p != NULL) { *p = '\0'; }
@@ -151,9 +151,6 @@ int read_target_from_file (
                 goto error;
             }
             length++;
-            if (max_length < length) {
-                max_length = length;
-            }
             if (t_reader->dimension < 0) {
                 t_reader->dimension = vec_size;
             } else if (t_reader->dimension != vec_size) {
@@ -166,6 +163,9 @@ int read_target_from_file (
             set_target(t_reader->t_list + t_reader->num - 1,
                     (const double* const*)vec_series, length,
                     t_reader->dimension);
+            for (int n = 0; n < length; n++) {
+                FREE(vec_series[n]);
+            }
             length = 0;
         }
     }
@@ -178,7 +178,7 @@ int read_target_from_file (
     stat = 1;
 error:
     FREE(str);
-    for (int n = 0; n < max_length; n++) {
+    for (int n = 0; n < length; n++) {
         FREE(vec_series[n]);
     }
     FREE(vec_series);
