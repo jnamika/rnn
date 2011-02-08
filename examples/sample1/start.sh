@@ -12,6 +12,16 @@ import gen_target
 gen_target.print_sin_curve(500, 20)
 EOS
 
-rnn-learn -e 5000 target.txt
-rnn-generate rnn.dat > orbit.log
+if [ x`which rnn-learn` == x ]; then
+    path1=../../src/rnn-learn/
+else
+    path1=
+fi
+if [ x`which rnn-generate` == x ]; then
+    path2=../../src/rnn-generate/
+else
+    path2=
+fi
+${path1}rnn-learn -e 5000 target.txt
+${path2}rnn-generate rnn.dat > orbit.log
 

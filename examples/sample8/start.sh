@@ -17,6 +17,16 @@ for n in xrange(4):
     sys.stdout = sys.__stdout__
 EOS
 
-rnn-learn -c config.txt target*.txt
-rnn-generate -n 2000 rnn.dat > orbit.log
+if [ x`which rnn-learn` == x ]; then
+    path1=../../src/rnn-learn/
+else
+    path1=
+fi
+if [ x`which rnn-generate` == x ]; then
+    path2=../../src/rnn-generate/
+else
+    path2=
+fi
+${path1}rnn-learn -c config.txt target*.txt
+${path2}rnn-generate -n 2000 rnn.dat > orbit.log
 
