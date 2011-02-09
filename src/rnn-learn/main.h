@@ -45,6 +45,10 @@ typedef struct main_parameters {
     int fixed_init_c_state;
     int fixed_sigma;
 
+    /* connectivity between layers */
+    double connectivity_i2c;
+    double connectivity_c2c;
+    double connectivity_c2o;
     /* connection between input neurons to context neurons */
     char *connection_i2c;
     /* connection between context neurons to context neurons */

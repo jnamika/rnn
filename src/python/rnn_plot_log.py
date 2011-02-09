@@ -323,6 +323,7 @@ def plot_unknown(f, filename):
     p.stdin.write('\n')
 
 def plot_log(f, file, epoch=None):
+    multiplot=False
     try:
         p = subprocess.Popen(['gnuplot --version'], stdout=subprocess.PIPE,
                 shell=True)
@@ -330,7 +331,7 @@ def plot_log(f, file, epoch=None):
         if float(version) >= 4.2:
             multiplot=True
     except:
-        multiplot=False
+        pass
     line = f.readline()
     if (re.compile(r'^# STATE FILE').match(line)):
         plot_state(f, file, epoch, multiplot)

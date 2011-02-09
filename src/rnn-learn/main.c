@@ -163,6 +163,9 @@ static void init_parameters (struct general_parameters *gp)
     gp->mp.fixed_tau = 0;
     gp->mp.fixed_init_c_state = 0;
     gp->mp.fixed_sigma = 0;
+    gp->mp.connectivity_i2c = 1.0;
+    gp->mp.connectivity_c2c = 1.0;
+    gp->mp.connectivity_c2o = 1.0;
     gp->mp.connection_i2c = salloc(NULL, "-t-");
     gp->mp.connection_c2c = salloc(NULL, "-t-");
     gp->mp.connection_c2o = salloc(NULL, "-t-");
@@ -316,6 +319,27 @@ static void set_fixed_init_c_state (
 static void set_fixed_sigma (const char *opt, struct general_parameters *gp)
 {
     gp->mp.fixed_sigma = 1;
+}
+
+static void set_connectivity_i2c (
+        const char *opt,
+        struct general_parameters *gp)
+{
+    gp->mp.connectivity_i2c = atof(opt);
+}
+
+static void set_connectivity_c2c (
+        const char *opt,
+        struct general_parameters *gp)
+{
+    gp->mp.connectivity_c2c = atof(opt);
+}
+
+static void set_connectivity_c2o (
+        const char *opt,
+        struct general_parameters *gp)
+{
+    gp->mp.connectivity_c2o = atof(opt);
 }
 
 static void set_connection_i2c (const char *opt, struct general_parameters *gp)
@@ -609,6 +633,9 @@ static struct option_information {
     {"fixed_tau", 0, set_fixed_tau},
     {"fixed_init_c_state", 0, set_fixed_init_c_state},
     {"fixed_sigma", 0, set_fixed_sigma},
+    {"connectivity_i2c", 1, set_connectivity_i2c},
+    {"connectivity_c2c", 1, set_connectivity_c2c},
+    {"connectivity_c2o", 1, set_connectivity_c2o},
     {"connection_i2c", 1, set_connection_i2c},
     {"connection_c2c", 1, set_connection_c2c},
     {"connection_c2o", 1, set_connection_c2o},

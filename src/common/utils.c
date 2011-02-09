@@ -51,19 +51,22 @@ void init_genrand(unsigned long s)
     init_xor128((uint32_t)(s & UINT32_MAX));
 }
 
+/* generates a random number on [0,1]-interval */
 double genrand_real1(void)
 {
-    return ((double)xor128())/UINT32_MAX;
+    return xor128() * (1.0 / UINT32_MAX);
 }
 
+/* generates a random number on [0,1)-interval */
 double genrand_real2(void)
 {
-    return ((double)xor128())/(UINT32_MAX + 1.0);
+    return xor128() * (1.0 / (UINT32_MAX + 1.0));
 }
 
+/* generates a random number on (0,1)-interval */
 double genrand_real3(void)
 {
-    return ((double)xor128() + 0.5)/(UINT32_MAX + 1.0);
+    return (xor128() + 0.5) * (1.0 / (UINT32_MAX + 1.0));
 }
 
 #ifndef _GNU_SOURCE

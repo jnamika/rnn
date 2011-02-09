@@ -20,15 +20,15 @@ Next, type `./configure' and when it finishes, type `make'. This will create `rn
 
 Run them with the argument `-h' to show the usages of them.
 
-If you wish to install the programs, type `make install'. By default, this will install all the files in `/usr/local/bin' or `/usr/local/lib'. You can change the install path with the `--prefix' option of the configure script, for instance `--prefix=$HOME' (use ./configure --help for other options).
+If you wish to install the programs, type `make install'. By default, this will install all the files in `/usr/local/bin' or `/usr/local/lib'. You can change the install path with the `--prefix' option of the configure script, for instance `--prefix=$HOME' (use `./configure --help' for other options).
 
 
 
 === Requirements ===
 
-Building this package requires C compiler supporting C99 and Autotools (GNU Autoconf, Automake and Libtool).
+Building this package requires a C compiler supporting C99 and Autotools (GNU Autoconf, Automake and Libtool).
 
-In addition, utility scripts in the `src/python' directory require python version 2.5 or later (but not python-3). Gnuplot is also needed to run `rnn-plot-log' script.
+In addition, utility scripts in the `src/python' directory require python version 2.5 or later (but not python-3.x). Gnuplot is also needed to run `rnn-plot-log' script.
 
 
 
