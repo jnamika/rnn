@@ -21,7 +21,8 @@ void str_to_connection (
         const char *str,
         int in_size,
         int out_size,
-        int **has_connection);
+        int **has_connection,
+        double **connectivity);
 
 void str_to_const_init_c (
         const char *str,

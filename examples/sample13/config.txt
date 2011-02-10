@@ -8,9 +8,9 @@ c_state_size=15
 output_type=0
 init_tau=10
 
-connectivity_i2c=0.5
-connectivity_c2c=0.2
-connectivity_c2o=0.5
+connection_i2c=-t-:0.5
+connection_c2c=-t-:0.2
+connection_c2o=-t-:0.5
 
 
 delay_length=3

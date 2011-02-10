@@ -45,10 +45,6 @@ typedef struct main_parameters {
     int fixed_init_c_state;
     int fixed_sigma;
 
-    /* connectivity between layers */
-    double connectivity_i2c;
-    double connectivity_c2c;
-    double connectivity_c2o;
     /* connection between input neurons to context neurons */
     char *connection_i2c;
     /* connection between context neurons to context neurons */
@@ -135,6 +131,9 @@ typedef struct internal_parameters {
     int **has_connection_ci;
     int **has_connection_cc;
     int **has_connection_oc;
+    double **connectivity_ci;
+    double **connectivity_cc;
+    double **connectivity_oc;
     int *const_init_c;
     int softmax_group_num;
     int *softmax_group_id;

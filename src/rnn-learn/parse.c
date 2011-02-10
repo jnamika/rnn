@@ -58,11 +58,13 @@ void str_to_connection (
         const char *str,
         int in_size,
         int out_size,
-        int **has_connection)
+        int **has_connection,
+        double ** connectivity)
 {
     for (int i = 0; i < out_size; i++) {
         for (int j = 0; j < in_size; j++) {
             has_connection[i][j] = 0;
+            connectivity[i][j] = 1.0;
         }
     }
     const int length = strlen(str);
@@ -72,7 +74,13 @@ void str_to_connection (
         strcpy(buf, str);
         char *p = strtok(buf, ",");
         while (p != NULL) {
+            double c = 1.0;
             char *q;
+            if ((q = strpbrk(p, ":")) != NULL) {
+                *q = '\0';
+                q++;
+                c = atof(q);
+            }
             if ((q = strpbrk(p, "t")) == NULL) {
                 print_error_msg("warning: syntax error in `%s'", str);
                 FREE(buf);
@@ -86,6 +94,7 @@ void str_to_connection (
             for (int i = out_begin; i < out_end; i++) {
                 for (int j = in_begin; j < in_end; j++) {
                     has_connection[i][j] = 1;
+                    connectivity[i][j] = c;
                 }
             }
             p = strtok(NULL, ",");
