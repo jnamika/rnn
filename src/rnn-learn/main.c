@@ -665,26 +665,39 @@ static struct option_information {
 };
 
 
+static char* strip (char *str, int c)
+{
+    if (str == NULL) {
+        return NULL;
+    }
+    while (*str == c) {
+        str++;
+    }
+    size_t len = strlen(str);
+    if (len > 0) {
+        for (char *p = str + len - 1; *p == c; p--) {
+            *p = '\0';
+            if (p == str) {
+                break;
+            }
+        }
+    }
+    return str;
+}
+
 static void parse_option_and_arg (char *str, char **opt, char **arg)
 {
-    char *p, *q;
-    p = str;
-    while (*p == ' ') { p++; }
-    if ((q = strpbrk(p, "#\n")) != NULL) { *q = '\0'; }
-    if (strlen(p) > 0) {
-        char *r = p + strlen(p) - 1;
-        while (*r == ' ' && r >= p) { *r = '\0'; r--; }
-        if ((q = strchr(p, '=')) != NULL) {
-            *q = '\0';
-            r = q - 1;
-            while (*r == ' ' && r >= p) { *r = '\0'; r--; }
-            q++;
-            while (*q == ' ') { q++; }
+    char *p;
+    if ((p = strpbrk(str, "#\n")) != NULL) { *p = '\0'; }
+    if (strlen(str) > 0) {
+        if ((p = strchr(str, '=')) != NULL) {
+            *p = '\0';
+            p++;
         } else {
-            q = NULL;
+            p = NULL;
         }
-        *opt = p;
-        *arg = q;
+        *opt = strip(str, ' ');
+        *arg = strip(p, ' ');
     } else {
         *opt = NULL;
         *arg = NULL;

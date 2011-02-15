@@ -6,7 +6,7 @@ while getopts f:h OPT
 do
     case $OPT in
         f ) parameter_file=${OPTARG};;
-        h ) echo "Usage: $0 [-f parameter-file] file ..."
+        h ) echo "Usage: `basename $0` [-f parameter-file] file ..."
             exit 0;;
         \?) exit 1;;
     esac

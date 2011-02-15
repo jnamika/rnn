@@ -8,7 +8,7 @@ do
     case $OPT in
         k ) output_type=${OPTARG};;
         f ) parameter_file=${OPTARG};;
-        h ) echo "Usage: $0 [-k output-type] [-f parameter-file] file ..."
+        h ) echo "Usage: `basename $0` [-k output-type] [-f parameter-file] file ..."
             exit 0;;
         \?) exit 1;;
     esac

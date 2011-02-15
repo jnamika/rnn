@@ -6,7 +6,7 @@ while getopts e:h OPT
 do
     case $OPT in
         e ) epoch=${OPTARG};;
-        h ) echo "Usage: $0 [-e epoch] file ..."
+        h ) echo "Usage: `basename $0` [-e epoch] file ..."
             exit 0;;
         \?) exit 1;;
     esac
