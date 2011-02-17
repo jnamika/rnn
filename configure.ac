@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([rnntools], [1.0], [jnamika@gmail.com])
+AC_INIT([rnn], [1.0], [jnamika@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_SRCDIR([src/common/rnn.c])
 AC_CONFIG_HEADERS([config.h])

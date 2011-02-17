@@ -260,7 +260,7 @@ static void reset_target_of_rnn (
                     "than time delay.");
             exit(EXIT_FAILURE);
         }
-        rnn_add_target(rnn, t_reader->t_list[i].length,
+        rnn_add_target(rnn, t_reader->t_list[i].length - gp->mp.delay_length,
                 (const double* const*)t_reader->t_list[i].target,
                 (const double* const*)t_reader->t_list[i].target +
                 gp->mp.delay_length);

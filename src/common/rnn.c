@@ -262,7 +262,6 @@ void rnn_clean_target (struct recurrent_neural_network *rnn)
         free_rnn_state(rnn->rnn_s + i);
     }
     FREE(rnn->rnn_s);
-    rnn->rnn_s = NULL;
     rnn->series_num = 0;
 }
 
