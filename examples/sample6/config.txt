@@ -19,4 +19,5 @@ error_file=error.log
 closed_error_file=closed_error.log
 lyapunov_file=lyapunov.log
 entropy_file=entropy.log
+period_file=period.log
 save_file=rnn.dat
