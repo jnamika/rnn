@@ -14,16 +14,17 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
 
-#define TEST_CODE
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"

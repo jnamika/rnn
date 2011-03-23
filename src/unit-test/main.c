@@ -14,20 +14,21 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
 #include <setjmp.h>
-
-#define TEST_CODE
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
+
 #include "minunit.h"
 #include "test_utils.h"
 #include "test_rnn.h"
@@ -38,9 +39,6 @@
 #include "test_parse.h"
 #include "test_rnn_runner.h"
 #include "utils.h"
-
-
-jmp_buf _g_jbuf;
 
 
 static void my_shutdown (void)
@@ -56,19 +54,15 @@ int main (void)
     atexit(my_shutdown);
     opterr = 0;
 
-    if (setjmp(_g_jbuf) == 0) {
-        test_utils();
-        test_rnn();
-        test_entropy();
-        test_solver();
-        test_rnn_lyapunov();
-        test_target();
-        test_parse();
-        test_rnn_runner();
-    } else {
-        print_error_msg("exit(3) was called due to an unanticipated error\n");
-        exit(EXIT_FAILURE);
-    }
+    test_utils();
+    test_rnn();
+    test_entropy();
+    test_solver();
+    test_rnn_lyapunov();
+    test_target();
+    test_parse();
+    test_rnn_runner();
+
 #ifdef ENABLE_MTRACE
     muntrace();
 #endif

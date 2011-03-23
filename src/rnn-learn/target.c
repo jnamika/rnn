@@ -14,6 +14,10 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -21,9 +25,6 @@
 #include <string.h>
 #include <errno.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "utils.h"
 #include "target.h"
 

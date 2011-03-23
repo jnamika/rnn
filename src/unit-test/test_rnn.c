@@ -14,15 +14,16 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
-#define TEST_CODE
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"
@@ -542,48 +543,6 @@ void assert_jacobian_matrix_for_softmax (
 
 
 /* test functions */
-
-static void test_init_rnn_parameters (void)
-{
-    struct rnn_parameters rnn_p;
-    /*
-     * RNN has to contain at least one context neuron and one output neuron.
-     * An input neuron is not necessarily required.
-     */
-    assert_exit(init_rnn_parameters, &rnn_p, -1, 1, 1);
-    assert_exit(init_rnn_parameters, &rnn_p, 0, 0, 1);
-    assert_exit(init_rnn_parameters, &rnn_p, 0, 1, 0);
-    assert_noexit(init_rnn_parameters, &rnn_p, 0, 1, 1);
-    free_rnn_parameters(&rnn_p);
-}
-
-static void test_init_rnn_state (void)
-{
-    struct rnn_parameters rnn_p;
-    struct rnn_state rnn_s;
-    double **input, **target;
-    int length, dim;
-
-    init_rnn_parameters(&rnn_p, 1, 1, 1);
-    length = 1;
-    dim = 1;
-    MALLOC2(input, length, dim);
-    MALLOC2(target, length, dim);
-    for (int n = 0; n < length; n++) {
-        memset(input[n], 0, dim * sizeof(double));
-        memset(target[n], 0, dim * sizeof(double));
-    }
-
-    assert_exit(init_rnn_state, &rnn_s, &rnn_p, 0, (const double* const*)input,
-            (const double* const*)target);
-    assert_noexit(init_rnn_state, &rnn_s, &rnn_p, 1,
-            (const double* const*)input, (const double* const*)target);
-
-    free_rnn_state(&rnn_s);
-    free_rnn_parameters(&rnn_p);
-    FREE2(input);
-    FREE2(target);
-}
 
 static void test_rnn_get_connection (void)
 {
@@ -1467,8 +1426,6 @@ static void test_rnn_data_setup (
 
 void test_rnn (void)
 {
-    mu_run_test(test_init_rnn_parameters);
-    mu_run_test(test_init_rnn_state);
     mu_run_test(test_rnn_get_connection);
 
     struct test_rnn_data t_data[5];

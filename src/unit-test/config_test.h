@@ -23,14 +23,3 @@
 #undef print_error_msg
 #define print_error_msg(...)
 
-/*
- * The followings are defined in order to overwrite exit(3) and assert(3).
- * This code is evil!
- */
-#include <setjmp.h>
-extern jmp_buf _g_jbuf; // defined in main.c
-#undef exit
-#undef assert
-#define exit(X) (longjmp(_g_jbuf, 1))
-#define assert(X) do { if (!(X)) { longjmp(_g_jbuf, 1); }} while(0)
-

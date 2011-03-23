@@ -52,36 +52,5 @@
                 "vector sequences %s and %s differ\n", #x, #y); \
     } while(0)
 
-
-
-
-
-
-extern jmp_buf _g_jbuf; // defined in main.c
-
-/* In the target source codes, exit() is overwrited as longjmp(_g_jbuf, 1)
- * (see config.h) */
-
-#define assert_exit(func,...) \
-    do { \
-        volatile int is_exit_called = 0; jmp_buf tmp_jbuf; \
-        memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \
-        if (setjmp(_g_jbuf) == 0) { func(__VA_ARGS__); \
-        } else { is_exit_called = 1; } \
-        memcpy(&_g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
-        mu_assert_with_msg(is_exit_called, "exit() was not called\n"); \
-    } while(0)
-
-#define assert_noexit(func,...) \
-    do { \
-        volatile int is_exit_called = 1; jmp_buf tmp_jbuf; \
-        memcpy(&tmp_jbuf, &_g_jbuf, sizeof(jmp_buf)); \
-        if (setjmp(_g_jbuf) == 0) { func(__VA_ARGS__); \
-        } else { is_exit_called = 0; } \
-        memcpy(&_g_jbuf, &tmp_jbuf, sizeof(jmp_buf)); \
-        mu_assert_with_msg(is_exit_called, "exit() was called\n"); \
-    } while(0)
-
-
 #endif
 

@@ -14,16 +14,17 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#define TEST_CODE
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 #include <math.h>
 
-#define TEST_CODE
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "minunit.h"
 #include "my_assert.h"
 #include "utils.h"
@@ -77,21 +78,6 @@ void assert_reset_rnn_lyapunov_info (struct rnn_lyapunov_info *rl_info)
 
 /* test functions */
 
-static void test_init_rnn_lyapunov_info (
-        const struct rnn_state *rnn_s)
-{
-    struct rnn_lyapunov_info rl_info;
-    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 0, 0);
-    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, -1);
-    assert_exit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, rnn_s->length);
-    if (rnn_s->rnn_p->in_state_size == rnn_s->rnn_p->out_state_size ||
-            rnn_s->rnn_p->in_state_size == 0) {
-        assert_noexit(init_rnn_lyapunov_info, &rl_info, rnn_s, 1, 0);
-        free_rnn_lyapunov_info(&rl_info);
-    }
-}
-
-
 double** rnn_jacobian_for_lyapunov_spectrum (const double* vector, int n, int t,
         double** matrix, void *obj);
 
@@ -114,24 +100,6 @@ static void test_rnn_jacobian_for_lyapunov_spectrum (struct rnn_state *rnn_s)
 
     init_rnn_lyapunov_info(&rl_info, rnn_s, 1, 0);
     MALLOC2(rl_matrix, rl_info.dimension, rl_info.dimension);
-
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, NULL, rl_info.dimension, 0,
-            rl_matrix, &rl_info);
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[1],
-            rl_info.dimension, 0, rl_matrix, &rl_info);
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
-            rl_info.dimension+1, 0, rl_matrix, &rl_info);
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
-            rl_info.dimension-1, 0, rl_matrix, &rl_info);
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
-            rl_info.dimension, -1, rl_matrix, &rl_info);
-    assert_exit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
-            rl_info.dimension, rnn_s->length, rl_matrix, &rl_info);
-    assert_noexit(rnn_jacobian_for_lyapunov_spectrum, rl_info.state[0],
-            rl_info.dimension, 0, rl_matrix, &rl_info);
-    assert_noexit(rnn_jacobian_for_lyapunov_spectrum,
-            rl_info.state[rnn_s->length-1], rl_info.dimension, rnn_s->length-1,
-            rl_matrix, &rl_info);
 
     rnn_jacobian_for_lyapunov_spectrum(rl_info.state[0], rl_info.dimension, 0,
             rl_matrix, &rl_info);
@@ -300,7 +268,6 @@ void test_rnn_lyapunov (void)
     test_rnn_lyapunov_setup(rnn+2, 5893L, 4, 12, 3);
 
     for (int i = 0; i < 3; i++) {
-        mu_run_test_with_args(test_init_rnn_lyapunov_info, rnn[i].rnn_s);
         mu_run_test_with_args(test_rnn_jacobian_for_lyapunov_spectrum,
                 rnn[i].rnn_s);
         mu_run_test_with_args(test_reset_rnn_lyapunov_info, rnn[i].rnn_s);

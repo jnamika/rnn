@@ -14,17 +14,18 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #ifdef ENABLE_MTRACE
 #include <mcheck.h>
 #endif
+
 #include "utils.h"
 #include "main.h"
 #include "rnn_runner.h"

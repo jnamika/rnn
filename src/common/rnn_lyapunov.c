@@ -14,14 +14,15 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "utils.h"
 #include "solver.h"
 #include "rnn_lyapunov.h"
