@@ -24,5 +24,5 @@ do
     fi
 done
 
-python `dirname $0`/rnn_scale.py 0 $output_type $parameter_file $@
+python `dirname $0`/rnn_scale.py 0 "$output_type" "$parameter_file" $@
 

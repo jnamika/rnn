@@ -22,5 +22,5 @@ do
     fi
 done
 
-python `dirname $0`/rnn_print_log.py $epoch $@
+python `dirname $0`/rnn_print_log.py "$epoch" $@
 

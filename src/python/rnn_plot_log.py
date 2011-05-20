@@ -183,8 +183,8 @@ def plot_init(f, filename, epoch):
             shell=True)
     p.stdin.write('set nokey;')
     p.stdin.write("set title 'Type=Init  File=%s';" % filename)
-    p.stdin.write("set xlabel 'Time step';")
-    p.stdin.write("set ylabel 'Initial state';")
+    p.stdin.write("set xlabel 'x';")
+    p.stdin.write("set ylabel 'y';")
     p.stdin.write('set pointsize 3;')
     command = ['plot ']
     index = [(2*x,(2*x+1)%c_state_size) for x in xrange(c_state_size) if 2*x <
@@ -232,7 +232,7 @@ def plot_lyapunov(f, filename):
     p = re.compile(r'(^#)|(^$)')
     tmp = tempfile.NamedTemporaryFile()
     for line in f:
-        if (p.match(line) == None):
+        if p.match(line) == None:
             input = map(float, line[:-1].split())
             lyapunov = [input[0]]
             for i in xrange(ls_size):
@@ -308,9 +308,9 @@ def plot_unknown(f, filename):
     columns = -1
     f.seek(0)
     for line in f:
-        if (p.match(line) == None):
+        if p.match(line) == None:
             n = len(line[:-1].split())
-            if (columns == -1 or columns > n):
+            if columns == -1 or columns > n:
                 columns = n
     p = subprocess.Popen(['gnuplot -persist'], stdin=subprocess.PIPE,
             shell=True)
@@ -333,27 +333,27 @@ def plot_log(f, file, epoch=None):
     except:
         pass
     line = f.readline()
-    if (re.compile(r'^# STATE FILE').match(line)):
+    if re.compile(r'^# STATE FILE').match(line):
         plot_state(f, file, epoch, multiplot)
-    elif (re.compile(r'^# WEIGHT FILE').match(line)):
+    elif re.compile(r'^# WEIGHT FILE').match(line):
         plot_weight(f, file, multiplot)
-    elif (re.compile(r'^# THRESHOLD FILE').match(line)):
+    elif re.compile(r'^# THRESHOLD FILE').match(line):
         plot_threshold(f, file, multiplot)
-    elif (re.compile(r'^# TAU FILE').match(line)):
+    elif re.compile(r'^# TAU FILE').match(line):
         plot_tau(f, file)
-    elif (re.compile(r'^# SIGMA FILE').match(line)):
+    elif re.compile(r'^# SIGMA FILE').match(line):
         plot_sigma(f, file)
-    elif (re.compile(r'^# INIT FILE').match(line)):
+    elif re.compile(r'^# INIT FILE').match(line):
         plot_init(f, file, epoch)
-    elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
+    elif re.compile(r'^# ADAPT_LR FILE').match(line):
         plot_adapt_lr(f, file)
-    elif (re.compile(r'^# ERROR FILE').match(line)):
+    elif re.compile(r'^# ERROR FILE').match(line):
         plot_error(f, file)
-    elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
+    elif re.compile(r'^# LYAPUNOV FILE').match(line):
         plot_lyapunov(f, file)
-    elif (re.compile(r'^# ENTROPY FILE').match(line)):
+    elif re.compile(r'^# ENTROPY FILE').match(line):
         plot_entropy(f, file, multiplot)
-    elif (re.compile(r'^# PERIOD FILE').match(line)):
+    elif re.compile(r'^# PERIOD FILE').match(line):
         plot_period(f, file)
     else:
         plot_unknown(f, file)

@@ -31,18 +31,18 @@ def read_parameter(f):
     params = {}
     for line in f:
         for k,v in r.iteritems():
-            if (v.match(line)):
+            if v.match(line):
                 x = line.split('=')[1]
                 if k == 'target':
                     m = int(v.match(line).group(1))
-                    if (k in params):
+                    if k in params:
                         params[k][m] = x
                     else:
                         params[k] = {m:x}
                 else:
                     params[k] = x
 
-        if (r_comment.match(line) == None):
+        if r_comment.match(line) == None:
             break
     f.seek(0)
     return params
@@ -55,9 +55,9 @@ def current_line(f, epoch=None):
     else:
         r = re.compile(r'(^#)|(^$)')
         for line in f:
-            if (r.match(line) == None):
+            if r.match(line) == None:
                 x = line[:-1].split('\t')
-                if (int(x[0]) == epoch):
+                if int(x[0]) == epoch:
                     s = x
     f.seek(0)
     return s
@@ -67,7 +67,7 @@ def current_target(f):
     target = 0
     for line in f:
         m = r.match(line)
-        if (m):
+        if m:
             target = int(m.group(1))
             break
     f.seek(0)
@@ -84,14 +84,14 @@ def print_state(f, epoch=None):
         lines = tail_n(f, length + 3)
         flag = 0
         for line in lines:
-            if (r.match(line)):
+            if r.match(line):
                 flag = 1
-            if (flag):
+            if flag:
                 print line
     else:
         current_epoch = -1
         for line in f:
-            if (r.match(line)):
+            if r.match(line):
                 current_epoch = int(line.split('=')[1])
             if current_epoch == epoch:
                 print line[:-1]
@@ -173,14 +173,14 @@ def print_init(f, epoch=None):
         lines = tail_n(f, target_num + 1)
         flag = 0
         for line in lines:
-            if (r.match(line)):
+            if r.match(line):
                 flag = 1
-            if (flag):
+            if flag:
                 print line
     else:
         current_epoch = -1
         for line in f:
-            if (r.match(line)):
+            if r.match(line):
                 current_epoch = int(line.split('=')[1])
             if current_epoch == epoch:
                 print line[:-1]
@@ -245,27 +245,27 @@ def print_period(f, epoch=None):
 
 def print_log(f, epoch=None):
     line = f.readline()
-    if (re.compile(r'^# STATE FILE').match(line)):
+    if re.compile(r'^# STATE FILE').match(line):
         print_state(f, epoch)
-    elif (re.compile(r'^# WEIGHT FILE').match(line)):
+    elif re.compile(r'^# WEIGHT FILE').match(line):
         print_weight(f, epoch)
-    elif (re.compile(r'^# THRESHOLD FILE').match(line)):
+    elif re.compile(r'^# THRESHOLD FILE').match(line):
         print_threshold(f, epoch)
-    elif (re.compile(r'^# TAU FILE').match(line)):
+    elif re.compile(r'^# TAU FILE').match(line):
         print_tau(f, epoch)
-    elif (re.compile(r'^# SIGMA FILE').match(line)):
+    elif re.compile(r'^# SIGMA FILE').match(line):
         print_sigma(f, epoch)
-    elif (re.compile(r'^# INIT FILE').match(line)):
+    elif re.compile(r'^# INIT FILE').match(line):
         print_init(f, epoch)
-    elif (re.compile(r'^# ADAPT_LR FILE').match(line)):
+    elif re.compile(r'^# ADAPT_LR FILE').match(line):
         print_adapt_lr(f, epoch)
-    elif (re.compile(r'^# ERROR FILE').match(line)):
+    elif re.compile(r'^# ERROR FILE').match(line):
         print_error(f, epoch)
-    elif (re.compile(r'^# LYAPUNOV FILE').match(line)):
+    elif re.compile(r'^# LYAPUNOV FILE').match(line):
         print_lyapunov(f, epoch)
-    elif (re.compile(r'^# ENTROPY FILE').match(line)):
+    elif re.compile(r'^# ENTROPY FILE').match(line):
         print_entropy(f, epoch)
-    elif (re.compile(r'^# PERIOD FILE').match(line)):
+    elif re.compile(r'^# PERIOD FILE').match(line):
         print_period(f, epoch)
 
 

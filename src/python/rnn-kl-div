@@ -73,5 +73,5 @@ if [ ! -f "$rnn_file" ]; then
     exit 1
 fi
 
-python `dirname $0`/rnn_kl_div.py $seed $length $samples $truncate_length $block_length $divide_num $rnn_file $@
+python `dirname $0`/rnn_kl_div.py "$seed" "$length" "$samples" "$truncate_length" "$block_length" "$divide_num" "$rnn_file" $@
 

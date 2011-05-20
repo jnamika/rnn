@@ -29,12 +29,12 @@ def kullback_leibler_divergence(f1, f2):
     q = frequency2probability(f2)
     kl_div = 0
     for k,v in p.iteritems():
-        if (k in q):
+        if k in q:
             kl_div += v * math.log(v/q[k])
         else:
             kl_div += v * math.log(v/lower)
     for k,v in q.iteritems():
-        if (k not in p):
+        if k not in p:
             kl_div += lower * math.log(lower/v)
     return kl_div
 
@@ -42,11 +42,11 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
         runner, files):
     def divide(x):
         s = int(math.floor(divide_num * x))
-        if (s == divide_num):
+        if s == divide_num:
             s = divide_num - 1
         return s
     output_type = runner.output_type()
-    if (output_type == 0):
+    if output_type == 0:
         func = lambda x: divide(0.5 * (x+1))
     else:
         func = lambda x: divide(x)
@@ -65,7 +65,7 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
     for file in files:
         sequence = []
         for line in open(file, 'r'):
-            if (p.match(line) == None):
+            if p.match(line) == None:
                 input = map(float, line[:-1].split())
                 s = tuple(map(func, input))
                 sequence.append(s)

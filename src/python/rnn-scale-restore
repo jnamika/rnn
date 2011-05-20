@@ -27,5 +27,5 @@ if [ ! -f "$parameter_file" ]; then
     exit 1
 fi
 
-python `dirname $0`/rnn_scale.py 1 0 $parameter_file $@
+python `dirname $0`/rnn_scale.py 1 0 "$parameter_file" $@
 

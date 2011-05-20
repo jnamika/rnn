@@ -202,6 +202,13 @@ def print_sin_curve(length, period, truncate_length=0):
         print '\t'.join([str(x) for x in v])
 
 
+def print_Lissajous_0curve(length, period, truncate_length=0):
+    for v in generate_Tn_torus(length=length,
+            parameters=[(0,(2*math.pi)/period,0.8,0),
+                ((0.5*math.pi,(2*math.pi)/period,0.8,0))], \
+                        truncate_length=truncate_length):
+        print '\t'.join([str(x) for x in v])
+
 def print_Lissajous_8curve(length, period, truncate_length=0):
     for v in generate_Tn_torus(length=length,
             parameters=[(0,(4*math.pi)/period,0.8,0),
@@ -424,6 +431,7 @@ def main():
     print_logistic_map(100)
     print_henon_map(100)
     print_sin_curve(100, 20)
+    print_Lissajous_0curve(100, 20)
     print_Lissajous_8curve(100, 20)
     print_Lorenz_attractor(1000,truncate_length=1000)
     print_van_der_Pol_attractor(1000,truncate_length=1000)
