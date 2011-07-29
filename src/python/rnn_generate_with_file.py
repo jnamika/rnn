@@ -15,7 +15,10 @@ def main():
     rnn_runner.init_genrand(seed)
     runner = rnn_runner.RNNRunner()
     runner.init(rnn_file)
-    runner.set_time_series_id()
+    runner.set_time_series_id(-1)
+
+    ignore_index = [i for i in ignore_index if i >= 0 and i <
+            runner.in_state_size() and i < runner.out_state_size()]
 
     p = re.compile(r'(^#)|(^$)')
     out_state_queue = []
@@ -26,7 +29,7 @@ def main():
                 out_state = out_state_queue.pop(0)
                 for i in ignore_index:
                     input[i] = out_state[i]
-            runner.in_state(input)
+            runner.in_state(input[:runner.in_state_size()])
             runner.update()
             out_state = runner.out_state()
             if type == 'o':
