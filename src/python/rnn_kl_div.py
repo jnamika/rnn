@@ -6,7 +6,7 @@ import math
 import rnn_runner
 
 def append_sequence_to_frequency(sequence, block_length=1, frequency={}):
-    for n in xrange(len(sequence) - block_length + 1):
+    for n in range(len(sequence) - block_length + 1):
         s = tuple(sequence[n:n+block_length])
         if s in frequency:
             frequency[s] += 1
@@ -16,9 +16,9 @@ def append_sequence_to_frequency(sequence, block_length=1, frequency={}):
 
 def frequency2probability(frequency):
     sum = 0
-    for k,v in frequency.iteritems():
+    for k,v in frequency.items():
         sum += v
-    for k,v in frequency.iteritems():
+    for k,v in frequency.items():
         frequency[k] = v / float(sum)
     return frequency
 
@@ -28,12 +28,12 @@ def kullback_leibler_divergence(f1, f2):
     p = frequency2probability(f1)
     q = frequency2probability(f2)
     kl_div = 0
-    for k,v in p.iteritems():
+    for k,v in p.items():
         if k in q:
             kl_div += v * math.log(v/q[k])
         else:
             kl_div += v * math.log(v/lower)
-    for k,v in q.iteritems():
+    for k,v in q.items():
         if k not in p:
             kl_div += lower * math.log(lower/v)
     return kl_div
@@ -51,7 +51,7 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
     else:
         func = lambda x: divide(x)
     f1 = {}
-    for i in xrange(samples):
+    for i in range(samples):
         runner.set_time_series_id(-1)
         for x in runner.closed_loop(truncate_length):
             pass
@@ -66,7 +66,7 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
         sequence = []
         for line in open(file, 'r'):
             if p.match(line) == None:
-                input = map(float, line[:-1].split())
+                input = list(map(float, line[:-1].split()))
                 s = tuple(map(func, input))
                 sequence.append(s)
         f2 = append_sequence_to_frequency(sequence, block_length, f2)
@@ -74,13 +74,13 @@ def get_KL_div(length, samples, truncate_length, block_length, divide_num,
 
 def main():
     seed, length, samples, truncate_length, block_length, divide_num = \
-            map(lambda x: int(x) if str.isdigit(x) else 0, sys.argv[1:7])
+            [int(x) if str.isdigit(x) else 0 for x in sys.argv[1:7]]
     rnn_file = sys.argv[7]
     rnn_runner.init_genrand(seed)
     runner = rnn_runner.RNNRunner()
     runner.init(rnn_file)
-    print get_KL_div(length, samples, truncate_length, block_length,
-            divide_num, runner, sys.argv[8:])
+    print(get_KL_div(length, samples, truncate_length, block_length,
+            divide_num, runner, sys.argv[8:]))
 
 
 if __name__ == '__main__':

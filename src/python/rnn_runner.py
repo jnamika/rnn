@@ -37,7 +37,8 @@ class RNNRunner(object):
 
     def init(self, file_name):
         self.free()
-        self.librunner.init_rnn_runner_with_filename(self.runner, file_name)
+        self.librunner.init_rnn_runner_with_filename(self.runner,
+                file_name.encode())
         self.is_initialized = True
 
     def free(self):
@@ -70,49 +71,49 @@ class RNNRunner(object):
         self.librunner.update_rnn_runner(self.runner)
 
     def closed_loop(self, length):
-        for n in xrange(length):
+        for n in range(length):
             self.update()
             yield self.out_state(), self.c_inter_state()
 
     def in_state(self, in_state=None):
         x = self.librunner.rnn_in_state_from_runner(self.runner)
         if in_state != None:
-            for i in xrange(len(in_state)):
+            for i in range(len(in_state)):
                 x[i] = c_double(in_state[i])
-        return [x[i] for i in xrange(self.in_state_size())]
+        return [x[i] for i in range(self.in_state_size())]
 
     def c_state(self, c_state=None):
         x = self.librunner.rnn_c_state_from_runner(self.runner)
         if c_state != None:
-            for i in xrange(len(c_state)):
+            for i in range(len(c_state)):
                 x[i] = c_double(c_state[i])
-        return [x[i] for i in xrange(self.c_state_size())]
+        return [x[i] for i in range(self.c_state_size())]
 
     def c_inter_state(self, c_inter_state=None):
         x = self.librunner.rnn_c_inter_state_from_runner(self.runner)
         if c_inter_state != None:
-            for i in xrange(len(c_inter_state)):
+            for i in range(len(c_inter_state)):
                 x[i] = c_double(c_inter_state[i])
-        return [x[i] for i in xrange(self.c_state_size())]
+        return [x[i] for i in range(self.c_state_size())]
 
     def out_state(self, out_state=None):
         x = self.librunner.rnn_out_state_from_runner(self.runner)
         if out_state != None:
-            for i in xrange(len(out_state)):
+            for i in range(len(out_state)):
                 x[i] = c_double(out_state[i])
-        return [x[i] for i in xrange(self.out_state_size())]
+        return [x[i] for i in range(self.out_state_size())]
 
 
 def main():
-    seed, steps, index = map(lambda x: int(x) if str.isdigit(x) else 0,
-            sys.argv[1:4])
+    seed, steps, index = [int(x) if str.isdigit(x) else 0 for x in
+            sys.argv[1:4]]
     rnn_file = sys.argv[4]
     init_genrand(seed)
     runner = RNNRunner()
     runner.init(rnn_file)
     runner.set_time_series_id(index)
     for x,y in runner.closed_loop(steps):
-        print '\t'.join([str(x) for x in x])
+        print('\t'.join([str(x) for x in x]))
 
 if __name__ == '__main__':
     main()

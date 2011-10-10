@@ -10,7 +10,7 @@ def get_standard_scale_parameter(files):
     for file in files:
         for line in open(file, 'r'):
             if not p.match(line):
-                input = map(float, line[:-1].split())
+                input = list(map(float, line[:-1].split()))
                 d = len(input)
                 if count > 0 and d != dim:
                     raise
@@ -19,14 +19,14 @@ def get_standard_scale_parameter(files):
                     upper = input
                     lower = input
                 else:
-                    upper = map(max, upper, input)
-                    lower = map(min, lower, input)
+                    upper = list(map(max, upper, input))
+                    lower = list(map(min, lower, input))
                 count += 1
     if count == 0:
         raise
     s = 0.8
-    a = map(lambda u,l: (2 * s) / (u - l), upper, lower)
-    b = map(lambda u,l: s * ((u + l) / (u - l)), upper, lower)
+    a = list(map(lambda u,l: (2 * s) / (u - l), upper, lower))
+    b = list(map(lambda u,l: s * ((u + l) / (u - l)), upper, lower))
     return a, b
 
 def get_softmax_scale_parameter(files):
@@ -34,7 +34,7 @@ def get_softmax_scale_parameter(files):
     for file in files:
         for line in open(file, 'r'):
             if not p.match(line):
-                input = map(float, line[:-1].split())
+                input = list(map(float, line[:-1].split()))
                 d = len(input)
                 if count > 0 and d != dim:
                     raise
@@ -59,12 +59,12 @@ def scale(output_type, parameter_file, files):
     else:
         return
     func = lambda x,a,b: a * x - b
-    conv = lambda x: map(func, x, a, b)
+    conv = lambda x: list(map(func, x, a, b))
     for file in files:
         f = open('%s.scale' % file, 'w')
         for line in open(file, 'r'):
             if not p.match(line):
-                input = map(float, line[:-1].split())
+                input = list(map(float, line[:-1].split()))
                 output = conv(input)
                 f.write('%s\n' % '\t'.join([str(x) for x in output]))
             else:
@@ -77,16 +77,16 @@ def scale(output_type, parameter_file, files):
 
 def restore(parameter_file, files):
     f = open(parameter_file, 'r')
-    a = map(float, f.readline()[:-1].split())
-    b = map(float, f.readline()[:-1].split())
+    a = list(map(float, f.readline()[:-1].split()))
+    b = list(map(float, f.readline()[:-1].split()))
     f.close()
     func = lambda x,a,b: (x + b) / a
-    conv = lambda x: map(func, x, a, b)
+    conv = lambda x: list(map(func, x, a, b))
     for file in files:
         f = open('%s.restore' % file, 'w')
         for line in open(file, 'r'):
             if not p.match(line):
-                input = map(float, line[:-1].split())
+                input = list(map(float, line[:-1].split()))
                 output = conv(input)
                 f.write('%s\n' % '\t'.join([str(x) for x in output]))
             else:
@@ -94,8 +94,8 @@ def restore(parameter_file, files):
         f.close()
 
 def main():
-    mode, output_type = map(lambda x: int(x) if str.isdigit(x) else 0,
-            sys.argv[1:3])
+    mode, output_type = [int(x) if str.isdigit(x) else 0 for x in
+            sys.argv[1:3]]
     parameter_file = sys.argv[3]
     if mode == 0:
         scale(output_type, parameter_file, sys.argv[4:])

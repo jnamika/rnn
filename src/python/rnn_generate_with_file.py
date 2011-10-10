@@ -24,7 +24,7 @@ def main():
     out_state_queue = []
     for line in open(sequence_file, 'r'):
         if p.match(line) == None:
-            input = map(float, line[:-1].split())
+            input = list(map(float, line[:-1].split()))
             if len(out_state_queue) >= runner.delay_length():
                 out_state = out_state_queue.pop(0)
                 for i in ignore_index:
@@ -33,13 +33,13 @@ def main():
             runner.update()
             out_state = runner.out_state()
             if type == 'o':
-                print '\t'.join([str(x) for x in out_state])
+                print('\t'.join([str(x) for x in out_state]))
             elif type == 'c':
                 c_state = runner.c_state()
-                print '\t'.join([str(x) for x in c_state])
+                print('\t'.join([str(x) for x in c_state]))
             elif type == 'a':
                 c_state = runner.c_state()
-                print '\t'.join([str(x) for x in out_state + c_state])
+                print('\t'.join([str(x) for x in out_state + c_state]))
             out_state_queue.append(out_state)
 
 if __name__ == '__main__':

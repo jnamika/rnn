@@ -28,7 +28,7 @@ If you wish to install the programs, type `make install'. By default, this will 
 
 Building this package requires a C compiler supporting C99 and Autotools (GNU Autoconf, Automake and Libtool).
 
-In addition, utility scripts in the `src/python' directory require python version 2.5 or later (but not python-3.x). Gnuplot is also needed to run `rnn-plot-log' script.
+In addition, utility scripts in the `src/python' directory require python version 2.7 or 3.2. Gnuplot is also needed to run `rnn-plot-log' script.
 
 
 
