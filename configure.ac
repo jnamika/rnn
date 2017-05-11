@@ -3,9 +3,11 @@
 
 AC_PREREQ([2.68])
 AC_INIT([rnn], [1.0], [jnamika@gmail.com])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/common/rnn.c])
 AC_CONFIG_HEADERS([config.h])
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
+LT_INIT
 AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
